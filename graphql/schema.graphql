@@ -1,0 +1,11 @@
+# Mutations
+
+type Mutation {
+  availabilitySubscribe(name: String, email: String, skuId: String): Boolean
+}
+
+# Queries
+
+type Query {
+  none: String
+}

@@ -1,0 +1,21 @@
+{
+  "stack": "dotnet",
+  "memory": 256,
+  "runtimeArgs": [
+  ],
+  "routes": {
+    "processNotification": {
+      "path": "/availability-notify/notify",
+      "public": true
+    }
+  },
+  "events": {
+    "onAppsLinked": {
+      "sender": "apps",
+      "keys": ["linked"]
+    },
+    "broadcasterCatalog": {
+      "sender": "vtex.broadcaster-adapter"
+    }
+  }
+}

@@ -1,0 +1,3 @@
+mutation AvailabilitySubscribe($name: String, $email: String, $skuId: String) {
+  availabilitySubscribe(name: $name, email: $email, skuId: $skuId)
+}
