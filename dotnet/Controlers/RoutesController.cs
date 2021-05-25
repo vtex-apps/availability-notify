@@ -33,6 +33,7 @@ namespace service.Controllers
                 string bodyAsText = await new System.IO.StreamReader(HttpContext.Request.Body).ReadToEndAsync();
                 Console.WriteLine($"[Notification] : '{bodyAsText}'");
                 AffiliateNotification notification = JsonConvert.DeserializeObject<AffiliateNotification>(bodyAsText);
+                bool sent = await _vtexAPIService.ProcessNotification(notification);
             }
             else
             {
