@@ -37,7 +37,8 @@
     "vtex.store-icons": "0.x",
     "vtex.store-image": "0.x",
     "vtex.store-resources": "0.x",
-    "vtex.styleguide": "9.x"
+    "vtex.styleguide": "9.x",
+    "vtex.broadcaster": "0.x"
   },
   "policies": [
     {
@@ -56,10 +57,30 @@
       "name": "ADMIN_DS"
     },
     {
+      "name": "send-message"
+    },
+    {
+      "name": "template-criar"
+    },
+    {
       "name": "outbound-access",
       "attrs": {
         "host": "{{account}}.vtexcommercestable.com.br",
         "path": "/api/dataentities/*"
+      }
+    },
+    {
+      "name": "outbound-access",
+      "attrs": {
+        "host": "raw.githubusercontent.com",
+        "path": "/vtex-apps/availability-notify/*"
+      }
+    },
+    {
+      "name": "outbound-access",
+      "attrs": {
+        "host": "mailservice.vtex.com.br",
+        "path": "/api/mail-service/pvt/sendmail"
       }
     },
     {

@@ -236,6 +236,32 @@ namespace AvailabilityNotify.Services
             return templateBody;
         }
 
+        public async Task<bool> CreateDefaultTemplate()
+        {
+            bool templateExists = false;
+            string templateName = Constants.DEFAULT_TEMPLATE_NAME;
+            string subjectText = string.Empty;
+
+            templateExists = await this.TemplateExists(templateName);
+            if (!templateExists)
+            {
+                string templateBody = await this.GetDefaultTemplate(templateName);
+                if (string.IsNullOrWhiteSpace(templateBody))
+                {
+                    Console.WriteLine($"Failed to Load Template {templateName}");
+                    _context.Vtex.Logger.Info("SendEmail", "Create Template", $"Failed to Load Template {templateName}");
+                }
+                else
+                {
+                    EmailTemplate emailTemplate = JsonConvert.DeserializeObject<EmailTemplate>(templateBody);
+                    emailTemplate.Templates.Email.Message = emailTemplate.Templates.Email.Message.Replace(@"\n", "\n");
+                    templateExists = await this.CreateOrUpdateTemplate(emailTemplate);
+                }
+            }
+
+            return templateExists;
+        }
+
         public async Task<GetSkuContextResponse> GetSkuContext(string skuId)
         {
             // GET https://{accountName}.{environment}.com.br/api/catalog_system/pvt/sku/stockkeepingunitbyid/skuId
@@ -279,14 +305,14 @@ namespace AvailabilityNotify.Services
             return getSkuContextResponse;
         }
 
-        public async Task<bool> SendEmail(string email, GetSkuContextResponse skuContext)
+        public async Task<bool> SendEmail(NotifyRequest notifyRequest, GetSkuContextResponse skuContext)
         {
             bool success = false;
-            MerchantSettings merchantSettings = await _availabilityRepository.GetMerchantSettings();
-            if(string.IsNullOrEmpty(merchantSettings.AppKey) || string.IsNullOrEmpty(merchantSettings.AppToken))
-            {
-                Console.WriteLine("App Settings missing.");
-            }
+            //MerchantSettings merchantSettings = await _availabilityRepository.GetMerchantSettings();
+            //if(string.IsNullOrEmpty(merchantSettings.AppKey) || string.IsNullOrEmpty(merchantSettings.AppToken))
+            //{
+            //    Console.WriteLine("App Settings missing.");
+            //}
 
             string responseText = string.Empty;
             string templateName = string.Empty;
@@ -297,11 +323,12 @@ namespace AvailabilityNotify.Services
             
             EmailMessage emailMessage = new EmailMessage
             {
-                templateName = templateName,
-                providerName = _context.Vtex.Account,
-                jsonData = new JsonData
+                TemplateName = templateName,
+                ProviderName = _context.Vtex.Account,
+                JsonData = new JsonData
                 {
-                    
+                    SkuContext = skuContext,
+                    NotifyRequest = notifyRequest
                 }
             };
 
@@ -325,8 +352,8 @@ namespace AvailabilityNotify.Services
                 request.Headers.Add(Constants.PROXY_AUTHORIZATION_HEADER_NAME, authToken);
             }
 
-            request.Headers.Add(Constants.AppKey, merchantSettings.AppKey);
-            request.Headers.Add(Constants.AppToken, merchantSettings.AppToken);
+            //request.Headers.Add(Constants.AppKey, merchantSettings.AppKey);
+            //request.Headers.Add(Constants.AppToken, merchantSettings.AppToken);
 
             HttpClient client = _clientFactory.CreateClient();
             try
@@ -383,14 +410,46 @@ namespace AvailabilityNotify.Services
             Console.WriteLine($"Sku:{skuId} Active?{isActive} Inventory Changed?{inventoryUpdated}");
             if(isActive && inventoryUpdated)
             {
-                NotifyRequest[] requests = await _availabilityRepository.ListRequestsForSkuId(skuId);
-                if(requests != null)
+                long available = await GetTotalAvailableForSku(skuId);
+                if(available > 0)
                 {
-                    foreach(NotifyRequest request in requests)
+                    NotifyRequest[] requests = await _availabilityRepository.ListRequestsForSkuId(skuId);
+                    if(requests != null)
                     {
-                        string email = request.Email;
-                        GetSkuContextResponse skuContextResponse = await GetSkuContext(skuId);
-                        bool sendMail = await SendEmail(email, skuContextResponse);
+                        foreach(NotifyRequest request in requests)
+                        {
+                            GetSkuContextResponse skuContextResponse = await GetSkuContext(skuId);
+                            bool sendMail = await SendEmail(request, skuContextResponse);
+                        }
+                    }
+                }
+            }
+
+            return success;
+        }
+
+        public async Task<bool> ProcessNotification(BroadcastNotification notification)
+        {
+            bool success = false;
+
+            bool isActive = notification.IsActive;
+            bool inventoryUpdated = notification.StockModified;
+            string skuId = notification.IdSku;
+            _context.Vtex.Logger.Debug("ProcessNotification", null, $"Sku:{skuId} Active?{isActive} Inventory Changed?{inventoryUpdated}");
+            Console.WriteLine($"Sku:{skuId} Active?{isActive} Inventory Changed?{inventoryUpdated}");
+            if(isActive && inventoryUpdated)
+            {
+                long available = await GetTotalAvailableForSku(skuId);
+                if(available > 0)
+                {
+                    NotifyRequest[] requests = await _availabilityRepository.ListRequestsForSkuId(skuId);
+                    if(requests != null)
+                    {
+                        foreach(NotifyRequest request in requests)
+                        {
+                            GetSkuContextResponse skuContextResponse = await GetSkuContext(skuId);
+                            bool sendMail = await SendEmail(request, skuContextResponse);
+                        }
                     }
                 }
             }

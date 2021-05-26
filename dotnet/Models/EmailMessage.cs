@@ -6,13 +6,14 @@ namespace AvailabilityNotify.Models
 {
     public class JsonData
     {
-        
+        public GetSkuContextResponse SkuContext { get; set; }
+        public NotifyRequest NotifyRequest { get; set; }
     }
 
     public class EmailMessage
     {
-        public object providerName { get; set; }
-        public string templateName { get; set; }
-        public JsonData jsonData { get; set; }
+        public object ProviderName { get; set; }
+        public string TemplateName { get; set; }
+        public JsonData JsonData { get; set; }
     }
 }

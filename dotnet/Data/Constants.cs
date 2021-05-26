@@ -45,5 +45,6 @@ namespace AvailabilityNotify.Data
         public const string RESPOSITORY = "vtex-apps/availability-notify/master";
         public const string TEMPLATE_FOLDER = "templates";
         public const string TEMPLATE_FILE_EXTENSION = "json";
+        public const string DEFAULT_TEMPLATE_NAME = "back-in-stock";
     }
 }

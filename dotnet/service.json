@@ -14,8 +14,8 @@
       "sender": "apps",
       "keys": ["linked"]
     },
-    "broadcasterCatalog": {
-      "sender": "vtex.broadcaster-adapter"
+    "broadcasterNotification": {
+      "keys": ["broadcaster.notification"]
     }
   }
 }

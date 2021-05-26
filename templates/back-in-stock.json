@@ -1,0 +1,34 @@
+{
+    "Name": "back-in-stock",
+    "FriendlyName": "back in stock",
+    "Description": null,
+    "IsDefaultTemplate": false,
+    "AccountId": null,
+    "AccountName": null,
+    "ApplicationId": null,
+    "IsPersisted": true,
+    "IsRemoved": false,
+    "Type": "",
+    "Templates": {
+        "email": {
+            "To": "{{NotifyRequest.Email}}",
+            "CC": null,
+            "BCC": null,
+            "Subject": "Back in Stock",
+            "Message": "{{SkuContext.SkuName}} is back in stock.\n<img src=\"{{SkuContext.ImageUrl}}\" alt=\"{{SkuContext.ProductName}}\">",
+            "Type": "E",
+            "ProviderId": "00000000-0000-0000-0000-000000000000",
+            "ProviderName": null,
+            "IsActive": true,
+            "withError": false
+        },
+        "sms": {
+            "Type": "S",
+            "ProviderId": null,
+            "ProviderName": null,
+            "IsActive": false,
+            "withError": false,
+            "Parameters": []
+        }
+    }
+}
