@@ -420,6 +420,12 @@ namespace AvailabilityNotify.Services
                         {
                             GetSkuContextResponse skuContextResponse = await GetSkuContext(skuId);
                             bool sendMail = await SendEmail(request, skuContextResponse);
+                            if(sendMail)
+                            {
+                                request.NotificationSent = "true";
+                                request.NotificationSentAt = DateTime.Now.ToUniversalTime().ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'");
+                                bool updatedRequest = await _availabilityRepository.SaveNotifyRequest(request);
+                            }
                         }
                     }
                 }
@@ -449,6 +455,12 @@ namespace AvailabilityNotify.Services
                         {
                             GetSkuContextResponse skuContextResponse = await GetSkuContext(skuId);
                             bool sendMail = await SendEmail(request, skuContextResponse);
+                            if(sendMail)
+                            {
+                                request.NotificationSent = "true";
+                                request.NotificationSentAt = DateTime.Now.ToUniversalTime().ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'");
+                                bool updatedRequest = await _availabilityRepository.SaveNotifyRequest(request);
+                            }
                         }
                     }
                 }
