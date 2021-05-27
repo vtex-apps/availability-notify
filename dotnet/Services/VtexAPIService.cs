@@ -102,6 +102,7 @@ namespace AvailabilityNotify.Services
                 var client = _clientFactory.CreateClient();
                 var response = await client.SendAsync(request);
                 string responseContent = await response.Content.ReadAsStringAsync();
+                //Console.WriteLine($"ListInventoryBySku {sku} : {responseContent}");
                 if(response.IsSuccessStatusCode)
                 {
                     inventoryBySku = JsonConvert.DeserializeObject<InventoryBySku>(responseContent);
@@ -119,12 +120,22 @@ namespace AvailabilityNotify.Services
         {
             long totalAvailable = 0;
             InventoryBySku inventoryBySku = await this.ListInventoryBySku(sku);
-            if(inventoryBySku != null)
+            if(inventoryBySku != null && inventoryBySku.Balance != null)
             {
-                long totalQuantity = inventoryBySku.Balance.Where(i => !i.HasUnlimitedQuantity).Sum(i => i.TotalQuantity);
-                long totalReseved = inventoryBySku.Balance.Where(i => !i.HasUnlimitedQuantity).Sum(i => i.ReservedQuantity);
-                totalAvailable = totalQuantity = totalReseved;
+                try
+                {
+                    long totalQuantity = inventoryBySku.Balance.Where(i => !i.HasUnlimitedQuantity).Sum(i => i.TotalQuantity);
+                    long totalReseved = inventoryBySku.Balance.Where(i => !i.HasUnlimitedQuantity).Sum(i => i.ReservedQuantity);
+                    totalAvailable = totalQuantity - totalReseved;
+                    Console.WriteLine($"Sku {sku} : {totalQuantity} - {totalReseved} = {totalAvailable}");
+                }
+                catch(Exception ex)
+                {
+                    _context.Vtex.Logger.Error("GetTotalAvailableForSku", null, $"Error calculating total available for sku '{sku}' '{JsonConvert.SerializeObject(inventoryBySku)}'", ex);
+                }
             }
+
+            Console.WriteLine($"Sku {sku} Total Available = {totalAvailable}");
 
             return totalAvailable;
         }
@@ -308,18 +319,9 @@ namespace AvailabilityNotify.Services
         public async Task<bool> SendEmail(NotifyRequest notifyRequest, GetSkuContextResponse skuContext)
         {
             bool success = false;
-            //MerchantSettings merchantSettings = await _availabilityRepository.GetMerchantSettings();
-            //if(string.IsNullOrEmpty(merchantSettings.AppKey) || string.IsNullOrEmpty(merchantSettings.AppToken))
-            //{
-            //    Console.WriteLine("App Settings missing.");
-            //}
 
             string responseText = string.Empty;
-            string templateName = string.Empty;
-            string subjectText = string.Empty;
-            string toEmail = string.Empty;
-            string nextAction = string.Empty;
-            string storeEmail = string.Empty;
+            string templateName = Constants.DEFAULT_TEMPLATE_NAME;
             
             EmailMessage emailMessage = new EmailMessage
             {
@@ -335,8 +337,6 @@ namespace AvailabilityNotify.Services
             string accountName = _httpContextAccessor.HttpContext.Request.Headers[Constants.VTEX_ACCOUNT_HEADER_NAME].ToString();
             string message = JsonConvert.SerializeObject(emailMessage);
 
-            //Console.WriteLine($"Email message = {message}");
-
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
@@ -349,11 +349,9 @@ namespace AvailabilityNotify.Services
             if (authToken != null)
             {
                 request.Headers.Add(Constants.AUTHORIZATION_HEADER_NAME, authToken);
+                request.Headers.Add(Constants.VTEX_ID_HEADER_NAME, authToken);
                 request.Headers.Add(Constants.PROXY_AUTHORIZATION_HEADER_NAME, authToken);
             }
-
-            //request.Headers.Add(Constants.AppKey, merchantSettings.AppKey);
-            //request.Headers.Add(Constants.AppToken, merchantSettings.AppToken);
 
             HttpClient client = _clientFactory.CreateClient();
             try
@@ -361,7 +359,7 @@ namespace AvailabilityNotify.Services
                 HttpResponseMessage responseMessage = await client.SendAsync(request);
                 string responseContent = await responseMessage.Content.ReadAsStringAsync();
                 responseText = $"[-] SendEmail [{responseMessage.StatusCode}] {responseContent}";
-                _context.Vtex.Logger.Info("SendEmail", null, $"{toEmail} [{responseMessage.StatusCode}] {responseContent}");
+                _context.Vtex.Logger.Info("SendEmail", null, $"{message} [{responseMessage.StatusCode}] {responseContent}");
                 success = responseMessage.IsSuccessStatusCode;
                 if (responseMessage.StatusCode.Equals(HttpStatusCode.NotFound))
                 {

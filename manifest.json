@@ -63,6 +63,9 @@
       "name": "template-criar"
     },
     {
+      "name": "LogisticsViewer"
+    },
+    {
       "name": "outbound-access",
       "attrs": {
         "host": "{{account}}.vtexcommercestable.com.br",
@@ -80,6 +83,13 @@
       "name": "outbound-access",
       "attrs": {
         "host": "mailservice.vtex.com.br",
+        "path": "/api/mail-service/pvt/sendmail"
+      }
+    },
+    {
+      "name": "outbound-access",
+      "attrs": {
+        "host": "{{account}}.vtex.com.br",
         "path": "/api/mail-service/pvt/sendmail"
       }
     },

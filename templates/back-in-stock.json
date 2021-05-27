@@ -11,7 +11,7 @@
     "Type": "",
     "Templates": {
         "email": {
-            "To": "{{NotifyRequest.Email}}",
+            "To": "{{NotifyRequest.email}}",
             "CC": null,
             "BCC": null,
             "Subject": "Back in Stock",
