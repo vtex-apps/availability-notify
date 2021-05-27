@@ -247,6 +247,11 @@ namespace AvailabilityNotify.Services
             return templateBody;
         }
 
+        public async Task<bool> VerifySchema()
+        {
+            return await _availabilityRepository.VerifySchema();
+        }
+
         public async Task<bool> CreateDefaultTemplate()
         {
             bool templateExists = false;

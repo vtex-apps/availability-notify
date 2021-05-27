@@ -44,9 +44,18 @@ namespace service.Controllers
             return status;
         }
 
-        public async Task<IActionResult> ListRequests()
+        public async Task<IActionResult> Initialize()
         {
-            return BadRequest();
+            Response.Headers.Add("Cache-Control", "private");
+            ActionResult status = BadRequest();
+            bool schema = await _vtexAPIService.VerifySchema();
+            bool template = await _vtexAPIService.CreateDefaultTemplate();
+            if(schema && template)
+            {
+                status = Ok();
+            }
+
+            return status;
         }
     }
 }

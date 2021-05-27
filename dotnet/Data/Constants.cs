@@ -35,7 +35,7 @@ namespace AvailabilityNotify.Data
 
         public const string DATA_ENTITY = "notify";
         public const string SCHEMA = "notify";
-        public const string SCHEMA_JSON = "{\"name\": \"notify\", \"properties\": {\"skuId\": {\"type\": \"string\", \"title\": \"skuId\"}, \"sendAt\": {\"type\": \"string\", \"title\": \"sendAt\"}, \"name\": {\"type\": \"string\", \"title\": \"name\"}, \"email\": {\"type\": \"string\", \"title\": \"email\"}, \"createdAt\": {\"type\": \"string\", \"title\": \"createdAt\"}, \"notificationSend\": {\"type\": \"string\", \"title\": \"notificationSend\"}}, \"v-indexed\": [\"skuId\", \"notificationSend\"], \"v-security\": {\"allowGetAll\": true}}";
+        public const string SCHEMA_JSON = "{\"name\":\"notify\",\"properties\":{\"skuId\":{\"type\":\"string\",\"title\":\"skuId\"},\"sendAt\":{\"type\":\"string\",\"title\":\"sendAt\"},\"name\":{\"type\":\"string\",\"title\":\"name\"},\"email\":{\"type\":\"string\",\"title\":\"email\"},\"createdAt\":{\"type\":\"string\",\"title\":\"createdAt\"},\"notificationSend\":{\"type\":\"string\",\"title\":\"notificationSend\"}},\"v-indexed\":[\"skuId\",\"notificationSend\"],\"v-security\":{\"allowGetAll\":true}}";
         public const string FIELDS = "id,email,skuId,notificationSend,sendAt,name,createdAt";
 
         public const string MAIL_SERVICE = "http://mailservice.vtex.com.br/api/mail-service/pvt/sendmail";

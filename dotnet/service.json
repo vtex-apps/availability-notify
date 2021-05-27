@@ -7,6 +7,10 @@
     "processNotification": {
       "path": "/availability-notify/notify",
       "public": true
+    },
+    "initialize": {
+      "path": "/availability-notify/initialize",
+      "public": true
     }
   },
   "events": {

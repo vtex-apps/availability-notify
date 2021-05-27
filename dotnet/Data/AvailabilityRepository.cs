@@ -173,6 +173,8 @@ namespace AvailabilityNotify.Services
             var response = await client.SendAsync(request);
             string responseContent = await response.Content.ReadAsStringAsync();
 
+            Console.WriteLine($"VerifySchema: {responseContent} ");
+
             if(response.IsSuccessStatusCode && !responseContent.Equals(Constants.SCHEMA_JSON))
             {
                 Console.WriteLine("--------------- Applying Schema ---------------");
