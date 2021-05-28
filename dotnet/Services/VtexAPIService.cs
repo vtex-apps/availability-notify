@@ -374,7 +374,7 @@ namespace AvailabilityNotify.Services
             catch (Exception ex)
             {
                 responseText = $"[-] SendEmail Failure [{ex.Message}]";
-                _context.Vtex.Logger.Error("SendEmail", null, "Failure", ex);
+                _context.Vtex.Logger.Error("SendEmail", null, $"Failure sending {message}", ex);
                 success = false;  //jic
             }
 
@@ -448,11 +448,11 @@ namespace AvailabilityNotify.Services
             Console.WriteLine($"Sku:{skuId} Active?{isActive} Inventory Changed?{inventoryUpdated}");
             if(isActive && inventoryUpdated)
             {
-                long available = await GetTotalAvailableForSku(skuId);
-                if(available > 0)
+                NotifyRequest[] requests = await _availabilityRepository.ListRequestsForSkuId(skuId);
+                if(requests != null)
                 {
-                    NotifyRequest[] requests = await _availabilityRepository.ListRequestsForSkuId(skuId);
-                    if(requests != null)
+                    long available = await GetTotalAvailableForSku(skuId);
+                    if(available > 0)
                     {
                         foreach(NotifyRequest request in requests)
                         {
@@ -466,6 +466,10 @@ namespace AvailabilityNotify.Services
                             }
                         }
                     }
+                }
+                else
+                {
+                    Console.WriteLine($"No requests to be notified for {skuId}");
                 }
             }
 

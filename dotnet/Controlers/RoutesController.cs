@@ -26,15 +26,18 @@ namespace service.Controllers
 
         public async Task<IActionResult> ProcessNotification()
         {
-            bool success = false;
-            //ActionResult status = BadRequest();
-            ActionResult status = Ok();
+            Response.Headers.Add("Cache-Control", "private");
+            ActionResult status = BadRequest();
             if ("post".Equals(HttpContext.Request.Method, StringComparison.OrdinalIgnoreCase))
             {
                 string bodyAsText = await new System.IO.StreamReader(HttpContext.Request.Body).ReadToEndAsync();
                 Console.WriteLine($"[Notification] : '{bodyAsText}'");
                 AffiliateNotification notification = JsonConvert.DeserializeObject<AffiliateNotification>(bodyAsText);
                 bool sent = await _vtexAPIService.ProcessNotification(notification);
+                if(sent)
+                {
+                    status = Ok();
+                }
             }
             else
             {
