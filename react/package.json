@@ -22,6 +22,8 @@
   },
   "devDependencies": {
     "@types/node": "^12.12.21",
+    "@types/react": "^16.8.10",
+    "@types/react-intl": "^2.3.17",
     "@vtex/intl-equalizer": "^2.4.2",
     "@vtex/prettier-config": "^0.3.1",
     "apollo-client": "^2.4.7",
@@ -40,7 +42,7 @@
     "typescript": "3.9.7",
     "vtex.address-form": "http://vtex.vtexassets.com/_v/public/typings/v1/vtex.address-form@4.7.2/public/@types/vtex.address-form",
     "vtex.apps-graphql": "http://vtex.vtexassets.com/_v/public/typings/v1/vtex.apps-graphql@2.8.0/public/@types/vtex.apps-graphql",
-    "vtex.availability-notify": "https://brian--sandboxusdev.myvtex.com/_v/private/typings/linked/v1/vtex.availability-notify@0.0.1+build1622203697/public/@types/vtex.availability-notify",
+    "vtex.availability-notify": "http://vtex.vtexassets.com/_v/public/typings/v1/vtex.availability-notify@0.0.1/public/@types/vtex.availability-notify",
     "vtex.broadcaster": "http://vtex.vtexassets.com/_v/public/typings/v1/vtex.broadcaster@0.7.6/public/_types/react",
     "vtex.checkout-resources": "http://vtex.vtexassets.com/_v/public/typings/v1/vtex.checkout-resources@0.46.0/public/@types/vtex.checkout-resources",
     "vtex.css-handles": "http://vtex.vtexassets.com/_v/public/typings/v1/vtex.css-handles@1.0.0/public/@types/vtex.css-handles",
@@ -64,8 +66,6 @@
     "vtex.store-icons": "http://vtex.vtexassets.com/_v/public/typings/v1/vtex.store-icons@0.18.0/public/@types/vtex.store-icons",
     "vtex.store-image": "http://vtex.vtexassets.com/_v/public/typings/v1/vtex.store-image@0.11.0/public/@types/vtex.store-image",
     "vtex.store-resources": "http://vtex.vtexassets.com/_v/public/typings/v1/vtex.store-resources@0.80.0/public/@types/vtex.store-resources",
-    "vtex.styleguide": "http://vtex.vtexassets.com/_v/public/typings/v1/vtex.styleguide@9.142.0/public/@types/vtex.styleguide",
-    "@types/react": "^16.8.10",
-    "@types/react-intl": "^2.3.17"
+    "vtex.styleguide": "http://vtex.vtexassets.com/_v/public/typings/v1/vtex.styleguide@9.142.0/public/@types/vtex.styleguide"
   }
 }

@@ -6,8 +6,8 @@ import { Button, Input } from 'vtex.styleguide'
 import { useProduct } from 'vtex.product-context'
 import type { Seller } from 'vtex.product-context'
 
-import ADD_TO_AVAILABILITY_SUBSCRIBER_MUTATION from './graphql/addToAvailabilitySubscriberMutation.gql'
-import styles from './AvailabilitySubscriber.css'
+import ADD_TO_AVAILABILITY_SUBSCRIBER_MUTATION from './graphql/addToAvailabilityNotifierMutation.gql'
+import styles from './AvailabilityNotifier.css'
 import { getDefaultSeller } from './utils/sellers'
 
 interface MutationVariables {
@@ -39,7 +39,7 @@ const isAvailable = (commertialOffer?: Seller['commertialOffer']) => {
  * A form where users can sign up to be alerted
  * when a product becomes available again
  */
-function AvailabilitySubscriber(props: Props) {
+function AvailabilityNotifier(props: Props) {
   const productContext = useProduct()
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
@@ -202,4 +202,4 @@ function AvailabilitySubscriber(props: Props) {
   )
 }
 
-export default AvailabilitySubscriber
+export default AvailabilityNotifier
