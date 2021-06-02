@@ -19,7 +19,7 @@ interface MutationVariables {
 interface Props {
   /* Product's availability */
   available?: boolean
-  /* SKU id to subscribe to */
+  /* SKU id to notify to */
   skuId?: string
 }
 
@@ -82,7 +82,7 @@ function AvailabilityNotifier(props: Props) {
       detail: {
         success: true,
         message: intl.formatMessage({
-          id: 'store/availability-subscriber.added-message',
+          id: 'store/availability-notify.added-message',
         }),
       },
     })
@@ -109,20 +109,20 @@ function AvailabilityNotifier(props: Props) {
 
   if (didBlurEmail && emailError) {
     emailErrorMessage = intl.formatMessage({
-      id: 'store/availability-subscriber.invalid-email',
+      id: 'store/availability-notify.invalid-email',
     })
   }
 
   const isFormDisabled = name === '' || email === '' || emailError || loading
 
   return (
-    <div className={styles.subscriberContainer}>
+    <div className={styles.notiferContainer}>
       <div className={`${styles.title} t-body mb3`}>
-        {intl.formatMessage({ id: 'store/availability-subscriber.title' })}
+        {intl.formatMessage({ id: 'store/availability-notify.title' })}
       </div>
-      <div className={`${styles.subscribeLabel} t-small fw3`}>
+      <div className={`${styles.notifyLabel} t-small fw3`}>
         {intl.formatMessage({
-          id: 'store/availability-subscriber.subscribe-label',
+          id: 'store/availability-notify.notify-label',
         })}
       </div>
       <form className={`${styles.form} mb4`} onSubmit={e => handleSubmit(e)}>
@@ -132,7 +132,7 @@ function AvailabilityNotifier(props: Props) {
               name="name"
               type="text"
               placeholder={intl.formatMessage({
-                id: 'store/availability-subscriber.name-placeholder',
+                id: 'store/availability-notify.name-placeholder',
               })}
               value={name}
               onChange={handleNameChange}
@@ -143,7 +143,7 @@ function AvailabilityNotifier(props: Props) {
               name="email"
               type="text"
               placeholder={intl.formatMessage({
-                id: 'store/availability-subscriber.email-placeholder',
+                id: 'store/availability-notify.email-placeholder',
               })}
               value={email}
               onChange={handleEmailChange}
@@ -161,7 +161,7 @@ function AvailabilityNotifier(props: Props) {
               isLoading={loading}
             >
               {intl.formatMessage({
-                id: 'store/availability-subscriber.send-label',
+                id: 'store/availability-notify.send-label',
               })}
             </Button>
           </div>
@@ -169,14 +169,14 @@ function AvailabilityNotifier(props: Props) {
         {!error && data && (
           <div className={`${styles.success} t-body c-success`}>
             {intl.formatMessage({
-              id: 'store/availability-subscriber.added-message',
+              id: 'store/availability-notify.added-message',
             })}
           </div>
         )}
         {error && (
           <div className={`${styles.error} c-danger`}>
             {intl.formatMessage({
-              id: 'store/availability-subscriber.error-message',
+              id: 'store/availability-notify.error-message',
             })}
           </div>
         )}
