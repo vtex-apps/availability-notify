@@ -11,14 +11,11 @@ import styles from './AvailabilityNotifier.css'
 import { getDefaultSeller } from './utils/sellers'
 
 interface MutationVariables {
-  acronym: string
-  document: {
-    fields: Array<{
-      key: string
-      value?: string | null
-    }>
-  }
+  skuId: string
+  name: string
+  email: string
 }
+
 interface Props {
   /* Product's availability */
   available?: boolean
@@ -67,23 +64,9 @@ function AvailabilityNotifier(props: Props) {
     e.preventDefault()
 
     const variables: MutationVariables = {
-      acronym: 'notify',
-      document: {
-        fields: [
-          {
-            key: 'skuId',
-            value: skuId,
-          },
-          {
-            key: 'name',
-            value: name,
-          },
-          {
-            key: 'email',
-            value: email,
-          }
-        ],
-      },
+      skuId,
+      name,
+      email,
     }
 
     const signUpMutationResult = await signUp({
