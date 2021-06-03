@@ -37,8 +37,6 @@ namespace AvailabilityNotify.Services
 
             this._applicationName =
                 $"{this._environmentVariableProvider.ApplicationVendor}.{this._environmentVariableProvider.ApplicationName}";
-
-            //this.VerifySchema();
         }
 
         public async Task<MerchantSettings> GetMerchantSettings()

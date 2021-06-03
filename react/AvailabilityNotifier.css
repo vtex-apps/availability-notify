@@ -1,12 +1,12 @@
 /**
-* AvailabilitySubscriber CSS Module
+* AvailabilityNotifier CSS Module
 */
 
-.subscriberContainer {}
+.notiferContainer {}
 
 .title {}
 
-.subscribeLabel {}
+.notifyLabel {}
 
 .form {}
 

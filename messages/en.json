@@ -1,0 +1,10 @@
+{
+  "store/availability-notify.title": "This product isn't available right now",
+  "store/availability-notify.notify-label": "I want to know when this product becomes available",
+  "store/availability-notify.email-placeholder": "Email",
+  "store/availability-notify.name-placeholder": "Name",
+  "store/availability-notify.send-label": "Send",
+  "store/availability-notify.invalid-email": "Invalid email",
+  "store/availability-notify.added-message": "E-mail registered successfully",
+  "store/availability-notify.error-message": "Failed, please try again"
+}

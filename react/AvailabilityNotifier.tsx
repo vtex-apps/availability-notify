@@ -6,23 +6,20 @@ import { Button, Input } from 'vtex.styleguide'
 import { useProduct } from 'vtex.product-context'
 import type { Seller } from 'vtex.product-context'
 
-import ADD_TO_AVAILABILITY_SUBSCRIBER_MUTATION from './graphql/addToAvailabilitySubscriberMutation.gql'
-import styles from './AvailabilitySubscriber.css'
+import ADD_TO_AVAILABILITY_SUBSCRIBER_MUTATION from './graphql/addToAvailabilityNotifierMutation.gql'
+import styles from './AvailabilityNotifier.css'
 import { getDefaultSeller } from './utils/sellers'
 
 interface MutationVariables {
-  acronym: string
-  document: {
-    fields: Array<{
-      key: string
-      value?: string | null
-    }>
-  }
+  skuId: string
+  name: string
+  email: string
 }
+
 interface Props {
   /* Product's availability */
   available?: boolean
-  /* SKU id to subscribe to */
+  /* SKU id to notify to */
   skuId?: string
 }
 
@@ -39,7 +36,7 @@ const isAvailable = (commertialOffer?: Seller['commertialOffer']) => {
  * A form where users can sign up to be alerted
  * when a product becomes available again
  */
-function AvailabilitySubscriber(props: Props) {
+function AvailabilityNotifier(props: Props) {
   const productContext = useProduct()
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
@@ -67,23 +64,9 @@ function AvailabilitySubscriber(props: Props) {
     e.preventDefault()
 
     const variables: MutationVariables = {
-      acronym: 'notify',
-      document: {
-        fields: [
-          {
-            key: 'skuId',
-            value: skuId,
-          },
-          {
-            key: 'name',
-            value: name,
-          },
-          {
-            key: 'email',
-            value: email,
-          }
-        ],
-      },
+      skuId,
+      name,
+      email,
     }
 
     const signUpMutationResult = await signUp({
@@ -99,7 +82,7 @@ function AvailabilitySubscriber(props: Props) {
       detail: {
         success: true,
         message: intl.formatMessage({
-          id: 'store/availability-subscriber.added-message',
+          id: 'store/availability-notify.added-message',
         }),
       },
     })
@@ -126,20 +109,20 @@ function AvailabilitySubscriber(props: Props) {
 
   if (didBlurEmail && emailError) {
     emailErrorMessage = intl.formatMessage({
-      id: 'store/availability-subscriber.invalid-email',
+      id: 'store/availability-notify.invalid-email',
     })
   }
 
   const isFormDisabled = name === '' || email === '' || emailError || loading
 
   return (
-    <div className={styles.subscriberContainer}>
+    <div className={styles.notiferContainer}>
       <div className={`${styles.title} t-body mb3`}>
-        {intl.formatMessage({ id: 'store/availability-subscriber.title' })}
+        {intl.formatMessage({ id: 'store/availability-notify.title' })}
       </div>
-      <div className={`${styles.subscribeLabel} t-small fw3`}>
+      <div className={`${styles.notifyLabel} t-small fw3`}>
         {intl.formatMessage({
-          id: 'store/availability-subscriber.subscribe-label',
+          id: 'store/availability-notify.notify-label',
         })}
       </div>
       <form className={`${styles.form} mb4`} onSubmit={e => handleSubmit(e)}>
@@ -149,7 +132,7 @@ function AvailabilitySubscriber(props: Props) {
               name="name"
               type="text"
               placeholder={intl.formatMessage({
-                id: 'store/availability-subscriber.name-placeholder',
+                id: 'store/availability-notify.name-placeholder',
               })}
               value={name}
               onChange={handleNameChange}
@@ -160,7 +143,7 @@ function AvailabilitySubscriber(props: Props) {
               name="email"
               type="text"
               placeholder={intl.formatMessage({
-                id: 'store/availability-subscriber.email-placeholder',
+                id: 'store/availability-notify.email-placeholder',
               })}
               value={email}
               onChange={handleEmailChange}
@@ -178,7 +161,7 @@ function AvailabilitySubscriber(props: Props) {
               isLoading={loading}
             >
               {intl.formatMessage({
-                id: 'store/availability-subscriber.send-label',
+                id: 'store/availability-notify.send-label',
               })}
             </Button>
           </div>
@@ -186,14 +169,14 @@ function AvailabilitySubscriber(props: Props) {
         {!error && data && (
           <div className={`${styles.success} t-body c-success`}>
             {intl.formatMessage({
-              id: 'store/availability-subscriber.added-message',
+              id: 'store/availability-notify.added-message',
             })}
           </div>
         )}
         {error && (
           <div className={`${styles.error} c-danger`}>
             {intl.formatMessage({
-              id: 'store/availability-subscriber.error-message',
+              id: 'store/availability-notify.error-message',
             })}
           </div>
         )}
@@ -202,4 +185,4 @@ function AvailabilitySubscriber(props: Props) {
   )
 }
 
-export default AvailabilitySubscriber
+export default AvailabilityNotifier

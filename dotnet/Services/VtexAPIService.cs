@@ -42,6 +42,9 @@ namespace AvailabilityNotify.Services
 
             this._applicationName =
                 $"{this._environmentVariableProvider.ApplicationVendor}.{this._environmentVariableProvider.ApplicationName}";
+
+            this.VerifySchema();
+            this.CreateDefaultTemplate();
         }
 
         public async Task GetShopperToNotifyBySku(string sku)
