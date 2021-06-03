@@ -1,0 +1,10 @@
+{
+  "store/availability-notify.title": "availability-notify.title",
+  "store/availability-notify.notify-label": "availability-notify.notify-label",
+  "store/availability-notify.email-placeholder": "availability-notify.email-placeholder",
+  "store/availability-notify.name-placeholder": "availability-notify.name-placeholder",
+  "store/availability-notify.send-label": "availability-notify.send-label",
+  "store/availability-notify.invalid-email": "availability-notify.invalid-email",
+  "store/availability-notify.added-message": "availability-notify.added-message",
+  "store/availability-notify.error-message": "availability-notify.error-message"
+}

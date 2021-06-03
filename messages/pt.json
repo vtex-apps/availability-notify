@@ -1,0 +1,10 @@
+{
+  "store/availability-notify.title": "Este produto não está disponível no momento",
+  "store/availability-notify.notify-label": "Quero saber quando estiver disponível",
+  "store/availability-notify.email-placeholder": "E-mail",
+  "store/availability-notify.name-placeholder": "Nome",
+  "store/availability-notify.send-label": "Enviar",
+  "store/availability-notify.invalid-email": "E-mail inválido",
+  "store/availability-notify.added-message": "E-mail cadastrado com sucesso",
+  "store/availability-notify.error-message": "Falha ao se cadastrar, tente novamente"
+}
