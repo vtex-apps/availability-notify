@@ -1,6 +1,8 @@
 namespace service.Controllers
 {
   using System;
+  using System.Threading.Tasks;
+  using AvailabilityNotify.Data;
   using AvailabilityNotify.Models;
   using AvailabilityNotify.Services;
   using Microsoft.AspNetCore.Mvc;
@@ -17,7 +19,6 @@ namespace service.Controllers
 
         public string OnAppsLinked(string account, string workspace)
         {
-            Console.WriteLine($"OnAppsLinked event detected for {account}/{workspace}");
             return $"OnAppsLinked event detected for {account}/{workspace}";
         } 
 
@@ -28,6 +29,15 @@ namespace service.Controllers
             Console.WriteLine($"[BroadcasterNotification Notification] : '{bodyAsText}'");
             BroadcastNotification notification = JsonConvert.DeserializeObject<BroadcastNotification>(bodyAsText);
             _vtexAPIService.ProcessNotification(notification);
+        }
+
+        public async Task OnAppInstalled([FromBody] AppInstalledEvent @event)
+        {
+            if (@event.To.Id.Contains(Constants.APP_SETTINGS))
+            {
+                await _vtexAPIService.VerifySchema();
+                await _vtexAPIService.CreateDefaultTemplate();
+            }
         }
     }
 }
