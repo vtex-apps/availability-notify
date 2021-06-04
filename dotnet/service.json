@@ -20,6 +20,10 @@
     },
     "broadcasterNotification": {
       "keys": ["broadcaster.notification"]
+    },
+    "OnAppInstalled": {
+      "sender": "apps",
+      "keys": [ "setup" ]
     }
   }
 }
