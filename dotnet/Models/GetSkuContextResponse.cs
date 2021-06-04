@@ -8,10 +8,10 @@ namespace AvailabilityNotify.Models
     public class GetSkuContextResponse
     {
         [JsonProperty("Id")]
-        public long Id { get; set; }
+        public long? Id { get; set; }
 
         [JsonProperty("ProductId")]
-        public long ProductId { get; set; }
+        public long? ProductId { get; set; }
 
         [JsonProperty("NameComplete")]
         public string NameComplete { get; set; }
@@ -122,7 +122,7 @@ namespace AvailabilityNotify.Models
         public bool IsDirectCategoryActive { get; set; }
 
         [JsonProperty("ProductGlobalCategoryId")]
-        public long ProductGlobalCategoryId { get; set; }
+        public long? ProductGlobalCategoryId { get; set; }
 
         [JsonProperty("ProductCategories")]
         public object ProductCategories { get; set; }
@@ -146,7 +146,7 @@ namespace AvailabilityNotify.Models
         public string MeasurementUnit { get; set; }
 
         [JsonProperty("UnitMultiplier")]
-        public long UnitMultiplier { get; set; }
+        public long? UnitMultiplier { get; set; }
 
         [JsonProperty("InformationSource")]
         public string InformationSource { get; set; }
@@ -170,7 +170,7 @@ namespace AvailabilityNotify.Models
         public bool IsProductActive { get; set; }
 
         [JsonProperty("ProductFinalScore")]
-        public long ProductFinalScore { get; set; }
+        public long? ProductFinalScore { get; set; }
     }
 
     public partial class AlternateIds
@@ -182,19 +182,19 @@ namespace AvailabilityNotify.Models
     public partial class Dimension
     {
         [JsonProperty("cubicweight")]
-        public long Cubicweight { get; set; }
+        public long? Cubicweight { get; set; }
 
         [JsonProperty("height")]
-        public long Height { get; set; }
+        public long? Height { get; set; }
 
         [JsonProperty("length")]
-        public long Length { get; set; }
+        public long? Length { get; set; }
 
         [JsonProperty("weight")]
-        public long Weight { get; set; }
+        public long? Weight { get; set; }
 
         [JsonProperty("width")]
-        public long Width { get; set; }
+        public long? Width { get; set; }
     }
 
     public partial class Image
@@ -206,7 +206,7 @@ namespace AvailabilityNotify.Models
         public string ImageName { get; set; }
 
         [JsonProperty("FileId")]
-        public long FileId { get; set; }
+        public long? FileId { get; set; }
     }
 
     public partial class PositionsInClusters
@@ -216,7 +216,7 @@ namespace AvailabilityNotify.Models
     public class Specification
     {
         [JsonProperty("FieldId")]
-        public long FieldId { get; set; }
+        public long? FieldId { get; set; }
 
         [JsonProperty("FieldName")]
         public string FieldName { get; set; }
@@ -231,7 +231,7 @@ namespace AvailabilityNotify.Models
         public bool IsFilter { get; set; }
 
         [JsonProperty("FieldGroupId")]
-        public long FieldGroupId { get; set; }
+        public long? FieldGroupId { get; set; }
 
         [JsonProperty("FieldGroupName")]
         public string FieldGroupName { get; set; }
@@ -240,19 +240,19 @@ namespace AvailabilityNotify.Models
     public partial class RealDimension
     {
         [JsonProperty("realCubicWeight")]
-        public long RealCubicWeight { get; set; }
+        public long? RealCubicWeight { get; set; }
 
         [JsonProperty("realHeight")]
-        public long RealHeight { get; set; }
+        public long? RealHeight { get; set; }
 
         [JsonProperty("realLength")]
-        public long RealLength { get; set; }
+        public long? RealLength { get; set; }
 
         [JsonProperty("realWeight")]
-        public long RealWeight { get; set; }
+        public long? RealWeight { get; set; }
 
         [JsonProperty("realWidth")]
-        public long RealWidth { get; set; }
+        public long? RealWidth { get; set; }
     }
 
     public partial class SkuSeller
@@ -261,7 +261,7 @@ namespace AvailabilityNotify.Models
         public string SellerId { get; set; }
 
         [JsonProperty("StockKeepingUnitId")]
-        public long StockKeepingUnitId { get; set; }
+        public long? StockKeepingUnitId { get; set; }
 
         [JsonProperty("SellerStockKeepingUnitId")]
         public string SellerStockKeepingUnitId { get; set; }
@@ -270,9 +270,9 @@ namespace AvailabilityNotify.Models
         public bool IsActive { get; set; }
 
         [JsonProperty("FreightCommissionPercentage")]
-        public long FreightCommissionPercentage { get; set; }
+        public long? FreightCommissionPercentage { get; set; }
 
         [JsonProperty("ProductCommissionPercentage")]
-        public long ProductCommissionPercentage { get; set; }
+        public long? ProductCommissionPercentage { get; set; }
     }
 }
