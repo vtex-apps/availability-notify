@@ -448,7 +448,6 @@ namespace AvailabilityNotify.Services
             bool inventoryUpdated = notification.StockModified;
             string skuId = notification.IdSku;
             _context.Vtex.Logger.Debug("ProcessNotification", null, $"Sku:{skuId} Active?{isActive} Inventory Changed?{inventoryUpdated}");
-            Console.WriteLine($"Sku:{skuId} Active?{isActive} Inventory Changed?{inventoryUpdated}");
             if(isActive && inventoryUpdated)
             {
                 NotifyRequest[] requests = await _availabilityRepository.ListRequestsForSkuId(skuId);
@@ -460,12 +459,19 @@ namespace AvailabilityNotify.Services
                         foreach(NotifyRequest request in requests)
                         {
                             GetSkuContextResponse skuContextResponse = await GetSkuContext(skuId);
-                            bool sendMail = await SendEmail(request, skuContextResponse);
-                            if(sendMail)
+                            if(skuContextResponse != null)
                             {
-                                request.NotificationSent = "true";
-                                request.NotificationSentAt = DateTime.Now.ToUniversalTime().ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'");
-                                bool updatedRequest = await _availabilityRepository.SaveNotifyRequest(request);
+                                bool sendMail = await SendEmail(request, skuContextResponse);
+                                if(sendMail)
+                                {
+                                    request.NotificationSent = "true";
+                                    request.NotificationSentAt = DateTime.Now.ToUniversalTime().ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'");
+                                    bool updatedRequest = await _availabilityRepository.SaveNotifyRequest(request);
+                                }
+                            }
+                            else
+                            {
+                                _context.Vtex.Logger.Warn("ProcessNotification", null, $"Null SkuContext for skuid {skuId}");
                             }
                         }
                     }
