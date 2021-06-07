@@ -197,7 +197,7 @@ namespace AvailabilityNotify.Services
             return response.IsSuccessStatusCode;
         }
 
-        public async Task<bool> SaveNotifyRequest(NotifyRequest notifyRequest)
+        public async Task<bool> SaveNotifyRequest(NotifyRequest notifyRequest, RequestContext requestContext)
         {
             // PATCH https://{{accountName}}.vtexcommercestable.com.br/api/dataentities/{{data_entity_name}}/documents
 
@@ -205,11 +205,11 @@ namespace AvailabilityNotify.Services
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Put,
-                RequestUri = new Uri($"http://{this._httpContextAccessor.HttpContext.Request.Headers[Constants.VTEX_ACCOUNT_HEADER_NAME]}.vtexcommercestable.com.br/api/dataentities/{Constants.DATA_ENTITY}/documents"), //?_schema={Constants.SCHEMA}"),
+                RequestUri = new Uri($"http://{requestContext.Account}.vtexcommercestable.com.br/api/dataentities/{Constants.DATA_ENTITY}/documents"), //?_schema={Constants.SCHEMA}"),
                 Content = new StringContent(jsonSerializedListItems, Encoding.UTF8, Constants.APPLICATION_JSON)
             };
 
-            string authToken = this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_CREDENTIAL];
+            string authToken = requestContext.AuthToken;
             if (authToken != null)
             {
                 request.Headers.Add(Constants.AUTHORIZATION_HEADER_NAME, authToken);
@@ -257,17 +257,17 @@ namespace AvailabilityNotify.Services
             return notifyRequests;
         }
 
-        public async Task<NotifyRequest[]> ListRequestsForSkuId(string skuId)
+        public async Task<NotifyRequest[]> ListRequestsForSkuId(string skuId, RequestContext requestContext)
         {
             NotifyRequest[] notifyRequests = null;
 
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Get,
-                RequestUri = new Uri($"http://{this._httpContextAccessor.HttpContext.Request.Headers[Constants.VTEX_ACCOUNT_HEADER_NAME]}.vtexcommercestable.com.br/api/dataentities/{Constants.DATA_ENTITY}/search?_fields={Constants.FIELDS}&_schema={Constants.SCHEMA}&notificationSend=false")
+                RequestUri = new Uri($"http://{requestContext.Account}.vtexcommercestable.com.br/api/dataentities/{Constants.DATA_ENTITY}/search?_fields={Constants.FIELDS}&_schema={Constants.SCHEMA}&notificationSend=false")
             };
 
-            string authToken = this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_CREDENTIAL];
+            string authToken = requestContext.AuthToken;
             if (authToken != null)
             {
                 request.Headers.Add(Constants.AUTHORIZATION_HEADER_NAME, authToken);
@@ -283,6 +283,7 @@ namespace AvailabilityNotify.Services
                 notifyRequests = JsonConvert.DeserializeObject<NotifyRequest[]>(responseContent);
             }
             
+            Console.WriteLine($"ListRequestsForSkuId '{skuId}' : {responseContent} ");
 
             return notifyRequests;
         }

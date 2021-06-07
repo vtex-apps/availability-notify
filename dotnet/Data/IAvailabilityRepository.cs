@@ -12,7 +12,7 @@ namespace AvailabilityNotify.Services
 
         Task<bool> VerifySchema();
 
-        Task<bool> SaveNotifyRequest(NotifyRequest notifyRequest);
-        Task<NotifyRequest[]> ListRequestsForSkuId(string skuId);
+        Task<bool> SaveNotifyRequest(NotifyRequest notifyRequest, RequestContext requestContext);
+        Task<NotifyRequest[]> ListRequestsForSkuId(string skuId, RequestContext requestContext);
     }
 }

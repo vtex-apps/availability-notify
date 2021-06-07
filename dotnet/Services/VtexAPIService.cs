@@ -79,10 +79,10 @@ namespace AvailabilityNotify.Services
             }
         }
 
-        public async Task<InventoryBySku> ListInventoryBySku(string sku)
+        public async Task<InventoryBySku> ListInventoryBySku(string sku, RequestContext requestContext)
         {
             // GET https://{accountName}.{environment}.com.br/api/logistics/pvt/inventory/skus/skuId
-
+        
             InventoryBySku inventoryBySku = new InventoryBySku();
 
             try
@@ -90,11 +90,11 @@ namespace AvailabilityNotify.Services
                 var request = new HttpRequestMessage
                 {
                     Method = HttpMethod.Get,
-                    RequestUri = new Uri($"http://{this._httpContextAccessor.HttpContext.Request.Headers[Constants.VTEX_ACCOUNT_HEADER_NAME]}.{Constants.ENVIRONMENT}.com.br/api/logistics/pvt/inventory/skus/{sku}")
+                    RequestUri = new Uri($"http://{requestContext.Account}.{Constants.ENVIRONMENT}.com.br/api/logistics/pvt/inventory/skus/{sku}")
                 };
-
+                Console.WriteLine(" ------------------------------ ListInventoryBySku 1");
                 request.Headers.Add(Constants.USE_HTTPS_HEADER_NAME, "true");
-                string authToken = this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_CREDENTIAL];
+                string authToken = requestContext.AuthToken;
                 if (authToken != null)
                 {
                     request.Headers.Add(Constants.AUTHORIZATION_HEADER_NAME, authToken);
@@ -104,25 +104,26 @@ namespace AvailabilityNotify.Services
 
                 var client = _clientFactory.CreateClient();
                 var response = await client.SendAsync(request);
-                string responseContent = await response.Content.ReadAsStringAsync();
-                //Console.WriteLine($"ListInventoryBySku {sku} : {responseContent}");
+                Console.WriteLine($"ListInventoryBySku [{response.StatusCode}] ");
                 if(response.IsSuccessStatusCode)
                 {
+                    string responseContent = await response.Content.ReadAsStringAsync();
                     inventoryBySku = JsonConvert.DeserializeObject<InventoryBySku>(responseContent);
                 }
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"Error getting inventory for sku '{sku}' {ex.Message}");
                 _context.Vtex.Logger.Error("ListInventoryBySku", null, $"Error getting inventory for sku '{sku}'", ex);
             }
 
             return inventoryBySku;
         }
 
-        public async Task<long> GetTotalAvailableForSku(string sku)
+        public async Task<long> GetTotalAvailableForSku(string sku, RequestContext requestContext)
         {
             long totalAvailable = 0;
-            InventoryBySku inventoryBySku = await this.ListInventoryBySku(sku);
+            InventoryBySku inventoryBySku = await this.ListInventoryBySku(sku, requestContext);
             if(inventoryBySku != null && inventoryBySku.Balance != null)
             {
                 try
@@ -134,6 +135,7 @@ namespace AvailabilityNotify.Services
                 }
                 catch(Exception ex)
                 {
+                    Console.WriteLine($"Error calculating total available for sku '{sku}' '{JsonConvert.SerializeObject(inventoryBySku)}'");
                     _context.Vtex.Logger.Error("GetTotalAvailableForSku", null, $"Error calculating total available for sku '{sku}' '{JsonConvert.SerializeObject(inventoryBySku)}'", ex);
                 }
             }
@@ -281,7 +283,7 @@ namespace AvailabilityNotify.Services
             return templateExists;
         }
 
-        public async Task<GetSkuContextResponse> GetSkuContext(string skuId)
+        public async Task<GetSkuContextResponse> GetSkuContext(string skuId, RequestContext requestContext)
         {
             // GET https://{accountName}.{environment}.com.br/api/catalog_system/pvt/sku/stockkeepingunitbyid/skuId
 
@@ -292,11 +294,11 @@ namespace AvailabilityNotify.Services
                 var request = new HttpRequestMessage
                 {
                     Method = HttpMethod.Get,
-                    RequestUri = new Uri($"http://{this._httpContextAccessor.HttpContext.Request.Headers[Constants.VTEX_ACCOUNT_HEADER_NAME]}.{Constants.ENVIRONMENT}.com.br/api/catalog_system/pvt/sku/stockkeepingunitbyid/{skuId}")
+                    RequestUri = new Uri($"http://{requestContext.Account}.{Constants.ENVIRONMENT}.com.br/api/catalog_system/pvt/sku/stockkeepingunitbyid/{skuId}")
                 };
 
                 request.Headers.Add(Constants.USE_HTTPS_HEADER_NAME, "true");
-                string authToken = this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_CREDENTIAL];
+                string authToken = requestContext.AuthToken;
                 if (authToken != null)
                 {
                     request.Headers.Add(Constants.AUTHORIZATION_HEADER_NAME, authToken);
@@ -313,18 +315,20 @@ namespace AvailabilityNotify.Services
                 }
                 else
                 {
+                    Console.WriteLine($"Could not get sku for id '{skuId}'");
                     _context.Vtex.Logger.Warn("GetSkuContext", null, $"Could not get sku for id '{skuId}' [{response.StatusCode}]");
                 }
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"Error getting sku for id '{skuId}' {ex.Message}");
                 _context.Vtex.Logger.Error("GetSkuContext", null, $"Error getting sku for id '{skuId}'", ex);
             }
 
             return getSkuContextResponse;
         }
 
-        public async Task<bool> SendEmail(NotifyRequest notifyRequest, GetSkuContextResponse skuContext)
+        public async Task<bool> SendEmail(NotifyRequest notifyRequest, GetSkuContextResponse skuContext, RequestContext requestContext)
         {
             bool success = false;
 
@@ -334,33 +338,33 @@ namespace AvailabilityNotify.Services
             EmailMessage emailMessage = new EmailMessage
             {
                 TemplateName = templateName,
-                ProviderName = _context.Vtex.Account,
+                ProviderName = requestContext.Account,
                 JsonData = new JsonData
                 {
                     SkuContext = skuContext,
                     NotifyRequest = notifyRequest
                 }
             };
-
-            string accountName = _httpContextAccessor.HttpContext.Request.Headers[Constants.VTEX_ACCOUNT_HEADER_NAME].ToString();
+            
+            string accountName = requestContext.Account;
             string message = JsonConvert.SerializeObject(emailMessage);
-
+            
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
                 RequestUri = new Uri($"{Constants.MAIL_SERVICE}?an={accountName}"),
                 Content = new StringContent(message, Encoding.UTF8, Constants.APPLICATION_JSON)
             };
-
+            
             request.Headers.Add(Constants.USE_HTTPS_HEADER_NAME, "true");
-            string authToken = this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_CREDENTIAL];
+            string authToken = requestContext.AuthToken;
             if (authToken != null)
             {
                 request.Headers.Add(Constants.AUTHORIZATION_HEADER_NAME, authToken);
                 request.Headers.Add(Constants.VTEX_ID_HEADER_NAME, authToken);
                 request.Headers.Add(Constants.PROXY_AUTHORIZATION_HEADER_NAME, authToken);
             }
-
+            
             HttpClient client = _clientFactory.CreateClient();
             try
             {
@@ -380,7 +384,7 @@ namespace AvailabilityNotify.Services
                 _context.Vtex.Logger.Error("SendEmail", null, $"Failure sending {message}", ex);
                 success = false;  //jic
             }
-
+            
             Console.WriteLine(responseText);
             return success;
         }
@@ -388,6 +392,11 @@ namespace AvailabilityNotify.Services
         public async Task<bool> AvailabilitySubscribe(string email, string sku, string name)
         {
             bool success = false;
+            RequestContext requestContext = new RequestContext
+            {
+                Account = _context.Vtex.Account,
+                AuthToken = _context.Vtex.AuthToken
+            };
 
             //await _availabilityRepository.VerifySchema();
 
@@ -400,14 +409,19 @@ namespace AvailabilityNotify.Services
                 NotificationSent = "false"
             };
 
-            success = await _availabilityRepository.SaveNotifyRequest(notifyRequest);
+            success = await _availabilityRepository.SaveNotifyRequest(notifyRequest, requestContext);
 
             return success;
         }
 
         public async Task<bool> ProcessNotification(AffiliateNotification notification)
         {
-            bool success = false;
+            bool success = true;
+            RequestContext requestContext = new RequestContext
+            {
+                Account = _context.Vtex.Account,
+                AuthToken = _context.Vtex.AuthToken
+            };
 
             bool isActive = notification.IsActive;
             bool inventoryUpdated = notification.StockModified;
@@ -416,21 +430,21 @@ namespace AvailabilityNotify.Services
             Console.WriteLine($"Sku:{skuId} Active?{isActive} Inventory Changed?{inventoryUpdated}");
             if(isActive && inventoryUpdated)
             {
-                long available = await GetTotalAvailableForSku(skuId);
+                long available = await GetTotalAvailableForSku(skuId, requestContext);
                 if(available > 0)
                 {
-                    NotifyRequest[] requests = await _availabilityRepository.ListRequestsForSkuId(skuId);
+                    NotifyRequest[] requests = await _availabilityRepository.ListRequestsForSkuId(skuId, requestContext);
                     if(requests != null)
                     {
                         foreach(NotifyRequest request in requests)
                         {
-                            GetSkuContextResponse skuContextResponse = await GetSkuContext(skuId);
-                            bool sendMail = await SendEmail(request, skuContextResponse);
+                            GetSkuContextResponse skuContextResponse = await GetSkuContext(skuId, requestContext);
+                            bool sendMail = await SendEmail(request, skuContextResponse, requestContext);
                             if(sendMail)
                             {
                                 request.NotificationSent = "true";
                                 request.NotificationSentAt = DateTime.Now.ToUniversalTime().ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'");
-                                bool updatedRequest = await _availabilityRepository.SaveNotifyRequest(request);
+                                success = await _availabilityRepository.SaveNotifyRequest(request, requestContext);
                             }
                         }
                     }
@@ -443,6 +457,11 @@ namespace AvailabilityNotify.Services
         public async Task<bool> ProcessNotification(BroadcastNotification notification)
         {
             bool success = false;
+            RequestContext requestContext = new RequestContext
+            {
+                Account = _context.Vtex.Account,
+                AuthToken = _context.Vtex.AuthToken
+            };
 
             bool isActive = notification.IsActive;
             bool inventoryUpdated = notification.StockModified;
@@ -450,30 +469,40 @@ namespace AvailabilityNotify.Services
             _context.Vtex.Logger.Debug("ProcessNotification", null, $"Sku:{skuId} Active?{isActive} Inventory Changed?{inventoryUpdated}");
             if(isActive && inventoryUpdated)
             {
-                NotifyRequest[] requests = await _availabilityRepository.ListRequestsForSkuId(skuId);
-                if(requests != null)
+                NotifyRequest[] requests = await _availabilityRepository.ListRequestsForSkuId(skuId, requestContext);
+                if(requests != null && requests.Length > 0)
                 {
-                    long available = await GetTotalAvailableForSku(skuId);
+                    long available = await GetTotalAvailableForSku(skuId, requestContext);
+                    Console.WriteLine($"SkuId '{skuId}' {available} available (1)");
                     if(available > 0)
                     {
+                        Console.WriteLine($"SkuId '{skuId}' {available} available (2)");
                         foreach(NotifyRequest request in requests)
                         {
-                            GetSkuContextResponse skuContextResponse = await GetSkuContext(skuId);
+                            Console.WriteLine($" -------------------- REQUEST: {JsonConvert.SerializeObject(request)} ");
+                            GetSkuContextResponse skuContextResponse = await GetSkuContext(skuId, requestContext);
                             if(skuContextResponse != null)
                             {
-                                bool sendMail = await SendEmail(request, skuContextResponse);
+                                //Console.WriteLine($"Sending '{JsonConvert.SerializeObject(request)}' '{JsonConvert.SerializeObject(skuContextResponse)}' ");
+                                bool sendMail = await SendEmail(request, skuContextResponse, requestContext);
+                                Console.WriteLine($"sendMail =  '{sendMail}' ");
                                 if(sendMail)
                                 {
                                     request.NotificationSent = "true";
                                     request.NotificationSentAt = DateTime.Now.ToUniversalTime().ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'");
-                                    bool updatedRequest = await _availabilityRepository.SaveNotifyRequest(request);
+                                    bool updatedRequest = await _availabilityRepository.SaveNotifyRequest(request, requestContext);
                                 }
                             }
                             else
                             {
-                                _context.Vtex.Logger.Warn("ProcessNotification", null, $"Null SkuContext for skuid {skuId}");
+                                Console.WriteLine($"Null SkuContext for skuId {skuId} ");
+                                _context.Vtex.Logger.Warn("ProcessNotification", null, $"Null SkuContext for skuId {skuId}");
                             }
                         }
+                    }
+                    else
+                    {
+                        Console.WriteLine($"SkuId '{skuId}' {available} available ");
                     }
                 }
                 else
