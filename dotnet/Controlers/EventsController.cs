@@ -31,7 +31,7 @@ namespace service.Controllers
             try
             {
                 string bodyAsText = new System.IO.StreamReader(HttpContext.Request.Body).ReadToEndAsync().Result;
-                _context.Vtex.Logger.Info("BroadcasterNotification", null, $"Notification: [{bodyAsText}]");
+                _context.Vtex.Logger.Info("BroadcasterNotification", null, $"Notification: {bodyAsText}");
                 notification = JsonConvert.DeserializeObject<BroadcastNotification>(bodyAsText);
             }
             catch(Exception ex)
