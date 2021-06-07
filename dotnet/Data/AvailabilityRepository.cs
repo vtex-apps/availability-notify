@@ -175,7 +175,7 @@ namespace AvailabilityNotify.Services
 
             if(response.IsSuccessStatusCode && !responseContent.Equals(Constants.SCHEMA_JSON))
             {
-                Console.WriteLine("--------------- Applying Schema ---------------");
+                //Console.WriteLine("--------------- Applying Schema ---------------");
                 request = new HttpRequestMessage
                 {
                     Method = HttpMethod.Put,
@@ -193,7 +193,7 @@ namespace AvailabilityNotify.Services
                 response = await client.SendAsync(request);
             }
 
-            Console.WriteLine($"Schema Response: {response.StatusCode}");
+            //Console.WriteLine($"Schema Response: {response.StatusCode}");
             return response.IsSuccessStatusCode;
         }
 
@@ -221,8 +221,8 @@ namespace AvailabilityNotify.Services
             var response = await client.SendAsync(request);
             string responseContent = await response.Content.ReadAsStringAsync();
 
-            Console.WriteLine($"    SaveNotifyRequest [{request.Method}] '{request.RequestUri}' = [{response.StatusCode}] '{responseContent}' ");
-            Console.WriteLine($"    SaveNotifyRequest {jsonSerializedListItems} ");
+            //Console.WriteLine($"    SaveNotifyRequest [{request.Method}] '{request.RequestUri}' = [{response.StatusCode}] '{responseContent}' ");
+            //Console.WriteLine($"    SaveNotifyRequest {jsonSerializedListItems} ");
 
             return response.IsSuccessStatusCode;
         }
@@ -283,7 +283,7 @@ namespace AvailabilityNotify.Services
                 notifyRequests = JsonConvert.DeserializeObject<NotifyRequest[]>(responseContent);
             }
             
-            Console.WriteLine($"ListRequestsForSkuId '{skuId}' : {responseContent} ");
+            //Console.WriteLine($"ListRequestsForSkuId '{skuId}' : {responseContent} ");
 
             return notifyRequests;
         }

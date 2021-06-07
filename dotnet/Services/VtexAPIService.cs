@@ -92,7 +92,7 @@ namespace AvailabilityNotify.Services
                     Method = HttpMethod.Get,
                     RequestUri = new Uri($"http://{requestContext.Account}.{Constants.ENVIRONMENT}.com.br/api/logistics/pvt/inventory/skus/{sku}")
                 };
-                Console.WriteLine(" ------------------------------ ListInventoryBySku 1");
+                //Console.WriteLine(" ------------------------------ ListInventoryBySku 1");
                 request.Headers.Add(Constants.USE_HTTPS_HEADER_NAME, "true");
                 string authToken = requestContext.AuthToken;
                 if (authToken != null)
@@ -104,7 +104,7 @@ namespace AvailabilityNotify.Services
 
                 var client = _clientFactory.CreateClient();
                 var response = await client.SendAsync(request);
-                Console.WriteLine($"ListInventoryBySku [{response.StatusCode}] ");
+                //Console.WriteLine($"ListInventoryBySku [{response.StatusCode}] ");
                 if(response.IsSuccessStatusCode)
                 {
                     string responseContent = await response.Content.ReadAsStringAsync();
@@ -113,7 +113,7 @@ namespace AvailabilityNotify.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error getting inventory for sku '{sku}' {ex.Message}");
+                //Console.WriteLine($"Error getting inventory for sku '{sku}' {ex.Message}");
                 _context.Vtex.Logger.Error("ListInventoryBySku", null, $"Error getting inventory for sku '{sku}'", ex);
             }
 
@@ -135,12 +135,12 @@ namespace AvailabilityNotify.Services
                 }
                 catch(Exception ex)
                 {
-                    Console.WriteLine($"Error calculating total available for sku '{sku}' '{JsonConvert.SerializeObject(inventoryBySku)}'");
+                    //Console.WriteLine($"Error calculating total available for sku '{sku}' '{JsonConvert.SerializeObject(inventoryBySku)}'");
                     _context.Vtex.Logger.Error("GetTotalAvailableForSku", null, $"Error calculating total available for sku '{sku}' '{JsonConvert.SerializeObject(inventoryBySku)}'", ex);
                 }
             }
 
-            Console.WriteLine($"Sku {sku} Total Available = {totalAvailable}");
+            //Console.WriteLine($"Sku {sku} Total Available = {totalAvailable}");
 
             return totalAvailable;
         }
@@ -171,7 +171,7 @@ namespace AvailabilityNotify.Services
             var client = _clientFactory.CreateClient();
             var response = await client.SendAsync(request);
             string responseContent = await response.Content.ReadAsStringAsync();
-            Console.WriteLine($"[-] CreateOrUpdateTemplate Response {response.StatusCode} Content = '{responseContent}' [-]");
+            //Console.WriteLine($"[-] CreateOrUpdateTemplate Response {response.StatusCode} Content = '{responseContent}' [-]");
             _context.Vtex.Logger.Info("Create Template", null, $"[{response.StatusCode}] {responseContent}");
 
             return response.IsSuccessStatusCode;
@@ -212,7 +212,7 @@ namespace AvailabilityNotify.Services
             var response = await client.SendAsync(request);
             string responseContent = await response.Content.ReadAsStringAsync();
             //Console.WriteLine($"[-] TemplateExists Response {response.StatusCode} Content = '{responseContent}' [-]");
-            Console.WriteLine($"[-] Template '{templateName}' Exists Response {response.StatusCode} [-]");
+            //Console.WriteLine($"[-] Template '{templateName}' Exists Response {response.StatusCode} [-]");
 
             return (int)response.StatusCode == StatusCodes.Status200OK;
         }
@@ -246,7 +246,7 @@ namespace AvailabilityNotify.Services
             }
             else
             {
-                Console.WriteLine($"[-] GetDefaultTemplate Failed [{Constants.GITHUB_URL}/{Constants.RESPOSITORY}/{Constants.TEMPLATE_FOLDER}/{templateName}.{Constants.TEMPLATE_FILE_EXTENSION}]");
+                //Console.WriteLine($"[-] GetDefaultTemplate Failed [{Constants.GITHUB_URL}/{Constants.RESPOSITORY}/{Constants.TEMPLATE_FOLDER}/{templateName}.{Constants.TEMPLATE_FILE_EXTENSION}]");
             }    
 
             return templateBody;
@@ -269,7 +269,7 @@ namespace AvailabilityNotify.Services
                 string templateBody = await this.GetDefaultTemplate(templateName);
                 if (string.IsNullOrWhiteSpace(templateBody))
                 {
-                    Console.WriteLine($"Failed to Load Template {templateName}");
+                    //Console.WriteLine($"Failed to Load Template {templateName}");
                     _context.Vtex.Logger.Info("SendEmail", "Create Template", $"Failed to Load Template {templateName}");
                 }
                 else
@@ -315,13 +315,13 @@ namespace AvailabilityNotify.Services
                 }
                 else
                 {
-                    Console.WriteLine($"Could not get sku for id '{skuId}'");
+                    //Console.WriteLine($"Could not get sku for id '{skuId}'");
                     _context.Vtex.Logger.Warn("GetSkuContext", null, $"Could not get sku for id '{skuId}' [{response.StatusCode}]");
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error getting sku for id '{skuId}' {ex.Message}");
+                //Console.WriteLine($"Error getting sku for id '{skuId}' {ex.Message}");
                 _context.Vtex.Logger.Error("GetSkuContext", null, $"Error getting sku for id '{skuId}'", ex);
             }
 
@@ -370,8 +370,8 @@ namespace AvailabilityNotify.Services
             {
                 HttpResponseMessage responseMessage = await client.SendAsync(request);
                 string responseContent = await responseMessage.Content.ReadAsStringAsync();
-                responseText = $"[-] SendEmail [{responseMessage.StatusCode}] {responseContent}";
-                _context.Vtex.Logger.Info("SendEmail", null, $"{message} [{responseMessage.StatusCode}] {responseContent}");
+                //responseText = $"[-] SendEmail [{responseMessage.StatusCode}] {responseContent}";
+                //_context.Vtex.Logger.Info("SendEmail", null, $"{message} [{responseMessage.StatusCode}] {responseContent}");
                 success = responseMessage.IsSuccessStatusCode;
                 if (responseMessage.StatusCode.Equals(HttpStatusCode.NotFound))
                 {
@@ -380,7 +380,7 @@ namespace AvailabilityNotify.Services
             }
             catch (Exception ex)
             {
-                responseText = $"[-] SendEmail Failure [{ex.Message}]";
+                //responseText = $"[-] SendEmail Failure [{ex.Message}]";
                 _context.Vtex.Logger.Error("SendEmail", null, $"Failure sending {message}", ex);
                 success = false;  //jic
             }
@@ -426,8 +426,8 @@ namespace AvailabilityNotify.Services
             bool isActive = notification.IsActive;
             bool inventoryUpdated = notification.StockModified;
             string skuId = notification.IdSku;
-            _context.Vtex.Logger.Debug("ProcessNotification", null, $"Sku:{skuId} Active?{isActive} Inventory Changed?{inventoryUpdated}");
-            Console.WriteLine($"Sku:{skuId} Active?{isActive} Inventory Changed?{inventoryUpdated}");
+            //_context.Vtex.Logger.Debug("ProcessNotification", null, $"Sku:{skuId} Active?{isActive} Inventory Changed?{inventoryUpdated}");
+            //Console.WriteLine($"Sku:{skuId} Active?{isActive} Inventory Changed?{inventoryUpdated}");
             if(isActive && inventoryUpdated)
             {
                 long available = await GetTotalAvailableForSku(skuId, requestContext);
@@ -466,26 +466,26 @@ namespace AvailabilityNotify.Services
             bool isActive = notification.IsActive;
             bool inventoryUpdated = notification.StockModified;
             string skuId = notification.IdSku;
-            _context.Vtex.Logger.Debug("ProcessNotification", null, $"Sku:{skuId} Active?{isActive} Inventory Changed?{inventoryUpdated}");
+            //_context.Vtex.Logger.Debug("ProcessNotification", null, $"Sku:{skuId} Active?{isActive} Inventory Changed?{inventoryUpdated}");
             if(isActive && inventoryUpdated)
             {
                 NotifyRequest[] requests = await _availabilityRepository.ListRequestsForSkuId(skuId, requestContext);
                 if(requests != null && requests.Length > 0)
                 {
                     long available = await GetTotalAvailableForSku(skuId, requestContext);
-                    Console.WriteLine($"SkuId '{skuId}' {available} available (1)");
+                    //Console.WriteLine($"SkuId '{skuId}' {available} available (1)");
                     if(available > 0)
                     {
-                        Console.WriteLine($"SkuId '{skuId}' {available} available (2)");
+                        //Console.WriteLine($"SkuId '{skuId}' {available} available (2)");
                         foreach(NotifyRequest request in requests)
                         {
-                            Console.WriteLine($" -------------------- REQUEST: {JsonConvert.SerializeObject(request)} ");
+                            //Console.WriteLine($" -------------------- REQUEST: {JsonConvert.SerializeObject(request)} ");
                             GetSkuContextResponse skuContextResponse = await GetSkuContext(skuId, requestContext);
                             if(skuContextResponse != null)
                             {
                                 //Console.WriteLine($"Sending '{JsonConvert.SerializeObject(request)}' '{JsonConvert.SerializeObject(skuContextResponse)}' ");
                                 bool sendMail = await SendEmail(request, skuContextResponse, requestContext);
-                                Console.WriteLine($"sendMail =  '{sendMail}' ");
+                                //Console.WriteLine($"sendMail =  '{sendMail}' ");
                                 if(sendMail)
                                 {
                                     request.NotificationSent = "true";
@@ -495,19 +495,19 @@ namespace AvailabilityNotify.Services
                             }
                             else
                             {
-                                Console.WriteLine($"Null SkuContext for skuId {skuId} ");
-                                _context.Vtex.Logger.Warn("ProcessNotification", null, $"Null SkuContext for skuId {skuId}");
+                                //Console.WriteLine($"Null SkuContext for skuId {skuId} ");
+                                //_context.Vtex.Logger.Warn("ProcessNotification", null, $"Null SkuContext for skuId {skuId}");
                             }
                         }
                     }
                     else
                     {
-                        Console.WriteLine($"SkuId '{skuId}' {available} available ");
+                        //Console.WriteLine($"SkuId '{skuId}' {available} available ");
                     }
                 }
                 else
                 {
-                    Console.WriteLine($"No requests to be notified for {skuId}");
+                    //Console.WriteLine($"No requests to be notified for {skuId}");
                 }
             }
 
