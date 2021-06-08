@@ -28,10 +28,11 @@ namespace service.Controllers
         public void BroadcasterNotification(string account, string workspace)
         {
             BroadcastNotification notification = null;
+            string bodyAsText = string.Empty;
             try
             {
-                string bodyAsText = new System.IO.StreamReader(HttpContext.Request.Body).ReadToEndAsync().Result;
-                _context.Vtex.Logger.Info("BroadcasterNotification", null, $"Notification: {bodyAsText}");
+                bodyAsText = new System.IO.StreamReader(HttpContext.Request.Body).ReadToEndAsync().Result;
+                //_context.Vtex.Logger.Info("BroadcasterNotification", null, $"Notification: {bodyAsText}");
                 notification = JsonConvert.DeserializeObject<BroadcastNotification>(bodyAsText);
             }
             catch(Exception ex)
@@ -39,7 +40,8 @@ namespace service.Controllers
                 _context.Vtex.Logger.Error("BroadcasterNotification", null, "Error reading Notification", ex);
             }
 
-            _vtexAPIService.ProcessNotification(notification);
+            bool processed = _vtexAPIService.ProcessNotification(notification).Result;
+            _context.Vtex.Logger.Info("BroadcasterNotification", null, $"Processed Notification? {processed} : {bodyAsText}");
         }
 
         public async Task OnAppInstalled([FromBody] AppInstalledEvent @event)

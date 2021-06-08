@@ -14,5 +14,6 @@ namespace AvailabilityNotify.Services
 
         Task<bool> SaveNotifyRequest(NotifyRequest notifyRequest, RequestContext requestContext);
         Task<NotifyRequest[]> ListRequestsForSkuId(string skuId, RequestContext requestContext);
+        Task<NotifyRequest[]> ListNotifyRequests();
     }
 }

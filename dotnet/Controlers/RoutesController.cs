@@ -1,9 +1,8 @@
 namespace service.Controllers
 {
     using System;
-    using System.Net;
+    using System.Collections.Generic;
     using System.Threading.Tasks;
-    using System.Web;
     using AvailabilityNotify.Models;
     using AvailabilityNotify.Services;
     using Microsoft.AspNetCore.Http;
@@ -59,6 +58,12 @@ namespace service.Controllers
             }
 
             return status;
+        }
+
+        public async Task<IActionResult> PrcocessAllRequests()
+        {            
+            List<string> results = await _vtexAPIService.ProcessAllRequests();
+            return Json(string.Join( ", ", results));
         }
     }
 }

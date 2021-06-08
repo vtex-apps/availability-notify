@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "LxDvAAO5Jz9aBdk2rX5VmPJANaUiGh8SOGP0CjgVqxjkefIEsokFJ3TJKtBcWykUss5ahYGyzV8Kstt7bSTexQ==",
+  "dgSpecHash": "TlsBhsaDLnJTrcRl02pT9MuJShWF8nq/O5Rg3XDQHbIGPb/tpJ5rqR8F4rz7bH0neuo2wDo0rJ4LiZlbt7b/xg==",
   "success": true,
   "projectFilePath": "c:\\Users\\brian\\source\\repos\\availability-notify\\dotnet\\availability-notify.csproj",
   "expectedPackageFiles": [
@@ -90,7 +90,7 @@
     "C:\\Users\\brian\\.nuget\\packages\\system.threading.timer\\4.0.1\\system.threading.timer.4.0.1.nupkg.sha512",
     "C:\\Users\\brian\\.nuget\\packages\\system.xml.readerwriter\\4.0.11\\system.xml.readerwriter.4.0.11.nupkg.sha512",
     "C:\\Users\\brian\\.nuget\\packages\\system.xml.xdocument\\4.0.11\\system.xml.xdocument.4.0.11.nupkg.sha512",
-    "C:\\Users\\brian\\.nuget\\packages\\vtex.api\\0.1.0-beta\\vtex.api.0.1.0-beta.nupkg.sha512"
+    "C:\\Users\\brian\\.nuget\\packages\\vtex.api\\0.1.1\\vtex.api.0.1.1.nupkg.sha512"
   ],
   "logs": []
 }
