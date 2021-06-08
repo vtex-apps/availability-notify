@@ -1,6 +1,8 @@
 {
   "stack": "dotnet",
-  "memory": 256,
+  "memory": 512,
+  "minReplicas": 10,
+  "maxReplicas": 100,
   "runtimeArgs": [
   ],
   "routes": {
@@ -10,6 +12,10 @@
     },
     "initialize": {
       "path": "/availability-notify/initialize",
+      "public": true
+    },
+    "prcocessAllRequests": {
+      "path": "/availability-notify/process-all-requests",
       "public": true
     }
   },

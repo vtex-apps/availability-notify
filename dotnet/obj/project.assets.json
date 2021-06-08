@@ -1374,7 +1374,7 @@
           "lib/netstandard1.3/System.Xml.XDocument.dll": {}
         }
       },
-      "Vtex.Api/0.1.0-beta": {
+      "Vtex.Api/0.1.1": {
         "type": "package",
         "dependencies": {
           "Microsoft.AspNetCore.Http": "2.2.2",
@@ -5186,15 +5186,15 @@
         "system.xml.xdocument.nuspec"
       ]
     },
-    "Vtex.Api/0.1.0-beta": {
-      "sha512": "qtBDGibRmdR5bGfQEfyMSJMebSajht35dte6nFygwS0WvwPvB/6X3wsxvd6JswFnkzruVDwrtPndl2Lh62qS1Q==",
+    "Vtex.Api/0.1.1": {
+      "sha512": "K8bfaEYTOqMVYT5kc79O5vKWFbR8pWvFXRkse4ikbFIgWXowQiTG2wfUN1IRptLKBpl0kuBa05NKUVFUCFB+mw==",
       "type": "package",
-      "path": "vtex.api/0.1.0-beta",
+      "path": "vtex.api/0.1.1",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "lib/netcoreapp3.0/Vtex.Api.dll",
-        "vtex.api.0.1.0-beta.nupkg.sha512",
+        "vtex.api.0.1.1.nupkg.sha512",
         "vtex.api.nuspec"
       ]
     }
@@ -5203,7 +5203,7 @@
     ".NETCoreApp,Version=v3.0": [
       "GraphQL >= 2.4.0",
       "Newtonsoft.Json >= 12.0.3",
-      "Vtex.Api >= 0.1.0-beta"
+      "Vtex.Api >= 0.1.1"
     ]
   },
   "packageFolders": {
@@ -5255,7 +5255,7 @@
           },
           "Vtex.Api": {
             "target": "Package",
-            "version": "[0.1.0-beta, )"
+            "version": "[0.1.1, )"
           }
         },
         "imports": [

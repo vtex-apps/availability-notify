@@ -43,8 +43,8 @@ namespace AvailabilityNotify.Services
             this._applicationName =
                 $"{this._environmentVariableProvider.ApplicationVendor}.{this._environmentVariableProvider.ApplicationName}";
 
-            //this.VerifySchema();
-            //this.CreateDefaultTemplate();
+            this.VerifySchema();
+            this.CreateDefaultTemplate();
         }
 
         public async Task GetShopperToNotifyBySku(string sku)
@@ -160,18 +160,19 @@ namespace AvailabilityNotify.Services
             if (authToken != null)
             {
                 request.Headers.Add(Constants.AUTHORIZATION_HEADER_NAME, authToken);
+                request.Headers.Add(Constants.VTEX_ID_HEADER_NAME, authToken);
                 request.Headers.Add(Constants.PROXY_AUTHORIZATION_HEADER_NAME, authToken);
             }
 
             request.Headers.Add(Constants.USE_HTTPS_HEADER_NAME, "true");
             MerchantSettings merchantSettings = await _availabilityRepository.GetMerchantSettings();
-            request.Headers.Add(Constants.AppKey, merchantSettings.AppKey);
-            request.Headers.Add(Constants.AppToken, merchantSettings.AppToken);
+            //request.Headers.Add(Constants.AppKey, merchantSettings.AppKey);
+            //request.Headers.Add(Constants.AppToken, merchantSettings.AppToken);
 
             var client = _clientFactory.CreateClient();
             var response = await client.SendAsync(request);
             string responseContent = await response.Content.ReadAsStringAsync();
-            //Console.WriteLine($"[-] CreateOrUpdateTemplate Response {response.StatusCode} Content = '{responseContent}' [-]");
+            Console.WriteLine($"[-] CreateOrUpdateTemplate Response {response.StatusCode} Content = '{responseContent}' [-]");
             _context.Vtex.Logger.Info("Create Template", null, $"[{response.StatusCode}] {responseContent}");
 
             return response.IsSuccessStatusCode;
@@ -180,7 +181,14 @@ namespace AvailabilityNotify.Services
         public async Task<bool> CreateOrUpdateTemplate(EmailTemplate template)
         {
             string jsonSerializedTemplate = JsonConvert.SerializeObject(template);
-            return await this.CreateOrUpdateTemplate(jsonSerializedTemplate);
+            if(string.IsNullOrEmpty(jsonSerializedTemplate))
+            {
+                return false;
+            }
+            else
+            {
+                return await this.CreateOrUpdateTemplate(jsonSerializedTemplate);
+            }
         }
 
         public async Task<bool> TemplateExists(string templateName)
@@ -212,7 +220,7 @@ namespace AvailabilityNotify.Services
             var response = await client.SendAsync(request);
             string responseContent = await response.Content.ReadAsStringAsync();
             //Console.WriteLine($"[-] TemplateExists Response {response.StatusCode} Content = '{responseContent}' [-]");
-            //Console.WriteLine($"[-] Template '{templateName}' Exists Response {response.StatusCode} [-]");
+            Console.WriteLine($"[-] Template '{templateName}' Exists Response {response.StatusCode} [-]");
 
             return (int)response.StatusCode == StatusCodes.Status200OK;
         }
@@ -247,6 +255,7 @@ namespace AvailabilityNotify.Services
             else
             {
                 //Console.WriteLine($"[-] GetDefaultTemplate Failed [{Constants.GITHUB_URL}/{Constants.RESPOSITORY}/{Constants.TEMPLATE_FOLDER}/{templateName}.{Constants.TEMPLATE_FILE_EXTENSION}]");
+                _context.Vtex.Logger.Info("GetDefaultTemplate", "Response", $"[{response.StatusCode}] {responseContent} [{Constants.GITHUB_URL}/{Constants.RESPOSITORY}/{Constants.TEMPLATE_FOLDER}/{templateName}.{Constants.TEMPLATE_FILE_EXTENSION}]");
             }    
 
             return templateBody;
@@ -264,12 +273,13 @@ namespace AvailabilityNotify.Services
             string subjectText = string.Empty;
 
             templateExists = await this.TemplateExists(templateName);
+            Console.WriteLine($"templateExists? {templateExists}");
             if (!templateExists)
             {
                 string templateBody = await this.GetDefaultTemplate(templateName);
                 if (string.IsNullOrWhiteSpace(templateBody))
                 {
-                    //Console.WriteLine($"Failed to Load Template {templateName}");
+                    Console.WriteLine($"Failed to Load Template {templateName}");
                     _context.Vtex.Logger.Info("SendEmail", "Create Template", $"Failed to Load Template {templateName}");
                 }
                 else
@@ -433,18 +443,18 @@ namespace AvailabilityNotify.Services
                 long available = await GetTotalAvailableForSku(skuId, requestContext);
                 if(available > 0)
                 {
-                    NotifyRequest[] requests = await _availabilityRepository.ListRequestsForSkuId(skuId, requestContext);
-                    if(requests != null)
+                    NotifyRequest[] requestsToNotify = await _availabilityRepository.ListRequestsForSkuId(skuId, requestContext);
+                    if(requestsToNotify != null)
                     {
-                        foreach(NotifyRequest request in requests)
+                        foreach(NotifyRequest requestToNotify in requestsToNotify)
                         {
                             GetSkuContextResponse skuContextResponse = await GetSkuContext(skuId, requestContext);
-                            bool sendMail = await SendEmail(request, skuContextResponse, requestContext);
+                            bool sendMail = await SendEmail(requestToNotify, skuContextResponse, requestContext);
                             if(sendMail)
                             {
-                                request.NotificationSent = "true";
-                                request.NotificationSentAt = DateTime.Now.ToUniversalTime().ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'");
-                                success = await _availabilityRepository.SaveNotifyRequest(request, requestContext);
+                                requestToNotify.NotificationSent = "true";
+                                requestToNotify.NotificationSentAt = DateTime.Now.ToUniversalTime().ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'");
+                                success = await _availabilityRepository.SaveNotifyRequest(requestToNotify, requestContext);
                             }
                         }
                     }
@@ -469,34 +479,34 @@ namespace AvailabilityNotify.Services
             //_context.Vtex.Logger.Debug("ProcessNotification", null, $"Sku:{skuId} Active?{isActive} Inventory Changed?{inventoryUpdated}");
             if(isActive && inventoryUpdated)
             {
-                NotifyRequest[] requests = await _availabilityRepository.ListRequestsForSkuId(skuId, requestContext);
-                if(requests != null && requests.Length > 0)
+                NotifyRequest[] requestsToNotify = await _availabilityRepository.ListRequestsForSkuId(skuId, requestContext);
+                if(requestsToNotify != null && requestsToNotify.Length > 0)
                 {
                     long available = await GetTotalAvailableForSku(skuId, requestContext);
                     //Console.WriteLine($"SkuId '{skuId}' {available} available (1)");
                     if(available > 0)
                     {
                         //Console.WriteLine($"SkuId '{skuId}' {available} available (2)");
-                        foreach(NotifyRequest request in requests)
+                        foreach(NotifyRequest requestToNotify in requestsToNotify)
                         {
-                            //Console.WriteLine($" -------------------- REQUEST: {JsonConvert.SerializeObject(request)} ");
+                            //Console.WriteLine($" -------------------- REQUEST: {JsonConvert.SerializeObject(requestToNotify)} ");
                             GetSkuContextResponse skuContextResponse = await GetSkuContext(skuId, requestContext);
                             if(skuContextResponse != null)
                             {
-                                //Console.WriteLine($"Sending '{JsonConvert.SerializeObject(request)}' '{JsonConvert.SerializeObject(skuContextResponse)}' ");
-                                bool sendMail = await SendEmail(request, skuContextResponse, requestContext);
+                                //Console.WriteLine($"Sending '{JsonConvert.SerializeObject(requestToNotify)}' '{JsonConvert.SerializeObject(skuContextResponse)}' ");
+                                bool sendMail = await SendEmail(requestToNotify, skuContextResponse, requestContext);
                                 //Console.WriteLine($"sendMail =  '{sendMail}' ");
                                 if(sendMail)
                                 {
-                                    request.NotificationSent = "true";
-                                    request.NotificationSentAt = DateTime.Now.ToUniversalTime().ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'");
-                                    bool updatedRequest = await _availabilityRepository.SaveNotifyRequest(request, requestContext);
+                                    requestToNotify.NotificationSent = "true";
+                                    requestToNotify.NotificationSentAt = DateTime.Now.ToUniversalTime().ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'");
+                                    bool updatedRequest = await _availabilityRepository.SaveNotifyRequest(requestToNotify, requestContext);
                                 }
                             }
                             else
                             {
                                 //Console.WriteLine($"Null SkuContext for skuId {skuId} ");
-                                //_context.Vtex.Logger.Warn("ProcessNotification", null, $"Null SkuContext for skuId {skuId}");
+                                _context.Vtex.Logger.Warn("ProcessNotification", null, $"Null SkuContext for skuId {skuId}");
                             }
                         }
                     }
@@ -512,6 +522,54 @@ namespace AvailabilityNotify.Services
             }
 
             return success;
+        }
+
+        public async Task<List<string>> ProcessAllRequests()
+        {
+            List<string> results = new List<string>();
+            RequestContext requestContext = new RequestContext
+            {
+                Account = _context.Vtex.Account,
+                AuthToken = _context.Vtex.AuthToken
+            };
+
+            NotifyRequest[] allRequests = await _availabilityRepository.ListNotifyRequests();
+            if(allRequests != null)
+            {
+                foreach(NotifyRequest requestToNotify in allRequests)
+                {
+                    bool sendMail = false;
+                    bool updatedRecord = false;
+                    string skuId = requestToNotify.SkuId;
+                    if(requestToNotify.NotificationSent.Equals("true"))
+                    {
+                        results.Add($"{skuId} {requestToNotify.Email} Sent at {requestToNotify.NotificationSentAt}");
+                    }
+                    else
+                    {
+                        long available = await GetTotalAvailableForSku(skuId, requestContext);
+                        if(available > 0)
+                        {
+                            GetSkuContextResponse skuContextResponse = await GetSkuContext(skuId, requestContext);
+                            sendMail = await SendEmail(requestToNotify, skuContextResponse, requestContext);
+                            if(sendMail)
+                            {
+                                requestToNotify.NotificationSent = "true";
+                                requestToNotify.NotificationSentAt = DateTime.Now.ToUniversalTime().ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'");
+                                updatedRecord = await _availabilityRepository.SaveNotifyRequest(requestToNotify, requestContext);
+                            }
+                        }
+
+                        results.Add($"{skuId} Qnty:{available} '{requestToNotify.Email}' Sent? {sendMail} Updated? {updatedRecord}");
+                    }
+                }
+            }
+            else
+            {
+                results.Add("No requests to notify.");
+            }
+
+            return results;
         }
     }
 }
