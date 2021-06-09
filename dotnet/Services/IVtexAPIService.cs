@@ -12,5 +12,6 @@ namespace AvailabilityNotify.Services
         Task<bool> VerifySchema();
         Task<bool> CreateDefaultTemplate();
         Task<List<string>> ProcessAllRequests();
+        Task<List<string>> ProcessUnsentRequests();
     }
 }

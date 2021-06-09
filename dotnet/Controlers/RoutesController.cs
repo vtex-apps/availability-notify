@@ -63,7 +63,15 @@ namespace service.Controllers
         public async Task<IActionResult> PrcocessAllRequests()
         {            
             List<string> results = await _vtexAPIService.ProcessAllRequests();
-            return Json(string.Join( ", ", results));
+            _context.Vtex.Logger.Info("PrcocessAllRequests", null, string.Join( ", ", results));
+            return Ok();
+        }
+
+        public async Task<IActionResult> ProcessUnsentRequests()
+        {            
+            List<string> results = await _vtexAPIService.ProcessUnsentRequests();
+            _context.Vtex.Logger.Info("ProcessUnsentRequests", null, string.Join( ", ", results));
+            return Ok();
         }
     }
 }
