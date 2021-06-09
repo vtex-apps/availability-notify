@@ -534,7 +534,7 @@ namespace AvailabilityNotify.Services
             };
 
             NotifyRequest[] allRequests = await _availabilityRepository.ListNotifyRequests();
-            if(allRequests != null)
+            if(allRequests != null && allRequests.Length > 0)
             {
                 foreach(NotifyRequest requestToNotify in allRequests)
                 {
@@ -562,6 +562,47 @@ namespace AvailabilityNotify.Services
 
                         results.Add($"{skuId} Qnty:{available} '{requestToNotify.Email}' Sent? {sendMail} Updated? {updatedRecord}");
                     }
+                }
+            }
+            else
+            {
+                results.Add("No requests to notify.");
+            }
+
+            return results;
+        }
+
+        public async Task<List<string>> ProcessUnsentRequests()
+        {
+            List<string> results = new List<string>();
+            RequestContext requestContext = new RequestContext
+            {
+                Account = _context.Vtex.Account,
+                AuthToken = _context.Vtex.AuthToken
+            };
+
+            NotifyRequest[] allRequests = await _availabilityRepository.ListUnsentNotifyRequests();
+            if(allRequests != null && allRequests.Length > 0)
+            {
+                foreach(NotifyRequest requestToNotify in allRequests)
+                {
+                    bool sendMail = false;
+                    bool updatedRecord = false;
+                    string skuId = requestToNotify.SkuId;
+                    long available = await GetTotalAvailableForSku(skuId, requestContext);
+                    if(available > 0)
+                    {
+                        GetSkuContextResponse skuContextResponse = await GetSkuContext(skuId, requestContext);
+                        sendMail = await SendEmail(requestToNotify, skuContextResponse, requestContext);
+                        if(sendMail)
+                        {
+                            requestToNotify.NotificationSent = "true";
+                            requestToNotify.NotificationSentAt = DateTime.Now.ToUniversalTime().ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'");
+                            updatedRecord = await _availabilityRepository.SaveNotifyRequest(requestToNotify, requestContext);
+                        }
+                    }
+
+                    results.Add($"{skuId} Qnty:{available} '{requestToNotify.Email}' Sent? {sendMail} Updated? {updatedRecord}");
                 }
             }
             else

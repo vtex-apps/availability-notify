@@ -17,6 +17,10 @@
     "prcocessAllRequests": {
       "path": "/availability-notify/process-all-requests",
       "public": true
+    },
+    "processUnsentRequests": {
+      "path": "/availability-notify/process-unsent-requests",
+      "public": true
     }
   },
   "events": {

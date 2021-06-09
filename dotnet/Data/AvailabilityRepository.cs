@@ -257,6 +257,36 @@ namespace AvailabilityNotify.Services
             return notifyRequests;
         }
 
+        public async Task<NotifyRequest[]> ListUnsentNotifyRequests()
+        {
+            NotifyRequest[] notifyRequests = null;
+
+            var request = new HttpRequestMessage
+            {
+                Method = HttpMethod.Get,
+                RequestUri = new Uri($"http://{this._httpContextAccessor.HttpContext.Request.Headers[Constants.VTEX_ACCOUNT_HEADER_NAME]}.vtexcommercestable.com.br/api/dataentities/{Constants.DATA_ENTITY}/search?_fields={Constants.FIELDS}&_schema=notify&_where=notificationSend=false")
+            };
+
+            string authToken = this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_CREDENTIAL];
+            if (authToken != null)
+            {
+                request.Headers.Add(Constants.AUTHORIZATION_HEADER_NAME, authToken);
+                request.Headers.Add(Constants.VTEX_ID_HEADER_NAME, authToken);
+                request.Headers.Add(Constants.PROXY_AUTHORIZATION_HEADER_NAME, authToken);
+            }
+
+            var client = _clientFactory.CreateClient();
+            var response = await client.SendAsync(request);
+            string responseContent = await response.Content.ReadAsStringAsync();
+            if(response.IsSuccessStatusCode)
+            {
+                notifyRequests = JsonConvert.DeserializeObject<NotifyRequest[]>(responseContent);
+            }
+            
+
+            return notifyRequests;
+        }
+
         public async Task<NotifyRequest[]> ListRequestsForSkuId(string skuId, RequestContext requestContext)
         {
             NotifyRequest[] notifyRequests = null;
