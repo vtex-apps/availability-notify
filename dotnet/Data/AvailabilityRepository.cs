@@ -49,8 +49,6 @@ namespace AvailabilityNotify.Services
                 RequestUri = new Uri($"http://apps.{this._environmentVariableProvider.Region}.vtex.io/{this._httpContextAccessor.HttpContext.Request.Headers[Constants.VTEX_ACCOUNT_HEADER_NAME]}/{this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_WORKSPACE]}/apps/{Constants.APP_SETTINGS}/settings"),
             };
 
-            //Console.WriteLine($"Request URL = {request.RequestUri}");
-
             string authToken = this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_CREDENTIAL];
             if (authToken != null)
             {
@@ -151,7 +149,6 @@ namespace AvailabilityNotify.Services
 
         public async Task<bool> VerifySchema()
         {
-            //Console.WriteLine("Verifing Schema");
             // https://{{accountName}}.vtexcommercestable.com.br/api/dataentities/{{data_entity_name}}/schemas/{{schema_name}}
             var request = new HttpRequestMessage
             {
@@ -193,7 +190,6 @@ namespace AvailabilityNotify.Services
                 response = await client.SendAsync(request);
             }
 
-            //Console.WriteLine($"Schema Response: {response.StatusCode}");
             return response.IsSuccessStatusCode;
         }
 
@@ -221,8 +217,30 @@ namespace AvailabilityNotify.Services
             var response = await client.SendAsync(request);
             string responseContent = await response.Content.ReadAsStringAsync();
 
-            //Console.WriteLine($"    SaveNotifyRequest [{request.Method}] '{request.RequestUri}' = [{response.StatusCode}] '{responseContent}' ");
-            //Console.WriteLine($"    SaveNotifyRequest {jsonSerializedListItems} ");
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<bool> DeleteNotifyRequest(string documentId)
+        {
+            // DELETE https://{accountName}.{environment}.com.br/api/dataentities/data_entity_name/documents/id
+
+            var request = new HttpRequestMessage
+            {
+                Method = HttpMethod.Delete,
+                RequestUri = new Uri($"http://{this._httpContextAccessor.HttpContext.Request.Headers[Constants.VTEX_ACCOUNT_HEADER_NAME]}.vtexcommercestable.com.br/api/dataentities/{Constants.DATA_ENTITY}/documents/{documentId}")
+            };
+
+            string authToken = this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_CREDENTIAL];
+            if (authToken != null)
+            {
+                request.Headers.Add(Constants.AUTHORIZATION_HEADER_NAME, authToken);
+                request.Headers.Add(Constants.VTEX_ID_HEADER_NAME, authToken);
+                request.Headers.Add(Constants.PROXY_AUTHORIZATION_HEADER_NAME, authToken);
+            }
+
+            var client = _clientFactory.CreateClient();
+            var response = await client.SendAsync(request);
+            string responseContent = await response.Content.ReadAsStringAsync();
 
             return response.IsSuccessStatusCode;
         }
@@ -253,7 +271,6 @@ namespace AvailabilityNotify.Services
                 notifyRequests = JsonConvert.DeserializeObject<NotifyRequest[]>(responseContent);
             }
             
-
             return notifyRequests;
         }
 
@@ -283,7 +300,6 @@ namespace AvailabilityNotify.Services
                 notifyRequests = JsonConvert.DeserializeObject<NotifyRequest[]>(responseContent);
             }
             
-
             return notifyRequests;
         }
 
@@ -312,8 +328,6 @@ namespace AvailabilityNotify.Services
             {
                 notifyRequests = JsonConvert.DeserializeObject<NotifyRequest[]>(responseContent);
             }
-            
-            //Console.WriteLine($"ListRequestsForSkuId '{skuId}' : {responseContent} ");
 
             return notifyRequests;
         }

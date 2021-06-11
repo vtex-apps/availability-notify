@@ -13,6 +13,7 @@ namespace AvailabilityNotify.Services
         Task<bool> VerifySchema();
 
         Task<bool> SaveNotifyRequest(NotifyRequest notifyRequest, RequestContext requestContext);
+        Task<bool> DeleteNotifyRequest(string documentId);
         Task<NotifyRequest[]> ListRequestsForSkuId(string skuId, RequestContext requestContext);
         Task<NotifyRequest[]> ListNotifyRequests();
         Task<NotifyRequest[]> ListUnsentNotifyRequests();

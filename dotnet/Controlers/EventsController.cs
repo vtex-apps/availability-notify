@@ -20,11 +20,6 @@ namespace service.Controllers
             this._context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        public string OnAppsLinked(string account, string workspace)
-        {
-            return $"OnAppsLinked event detected for {account}/{workspace}";
-        } 
-
         public void BroadcasterNotification(string account, string workspace)
         {
             BroadcastNotification notification = null;
