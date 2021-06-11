@@ -9,7 +9,7 @@ namespace AvailabilityNotify.GraphQL
     [GraphQLMetadata("Mutation")]
     public class Mutation : ObjectGraphType<object>
     {
-        public Mutation(IIOServiceContext context, IVtexAPIService vtexApiService)
+        public Mutation(IIOServiceContext context, IVtexAPIService vtexApiService, IAvailabilityRepository availabilityRepository)
         {
             Name = "Mutation";
 
@@ -27,6 +27,18 @@ namespace AvailabilityNotify.GraphQL
                     var skuId = context.GetArgument<string>("skuId");
 
                     return vtexApiService.AvailabilitySubscribe(email, skuId, name);
+                });
+
+            Field<BooleanGraphType>(
+                "deleteRequest",
+                arguments: new QueryArguments(
+                    new QueryArgument<StringGraphType> {Name = "id"}
+                ),
+                resolve: context =>
+                {
+                    var id = context.GetArgument<string>("id");
+
+                    return availabilityRepository.DeleteNotifyRequest(id);
                 });
         }
     }

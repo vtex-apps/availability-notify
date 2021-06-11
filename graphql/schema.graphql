@@ -2,10 +2,22 @@
 
 type Mutation {
   availabilitySubscribe(name: String, email: String, skuId: String): Boolean
+  deleteRequest(id: String): Boolean
 }
 
 # Queries
 
 type Query {
-  none: String
+  listRequests: [NotifyRequest]
+}
+
+type NotifyRequest
+{
+  id: String
+  name: String
+  notificationSent: String
+  notificationSentAt: String
+  requestedAt: String
+  skuId: String
+  email: String
 }
