@@ -1,4 +1,4 @@
-﻿using AvailabilityNotify.Data;
+using AvailabilityNotify.Data;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using System;
@@ -501,6 +501,11 @@ namespace AvailabilityNotify.Services
                                     requestToNotify.NotificationSent = "true";
                                     requestToNotify.NotificationSentAt = DateTime.Now.ToUniversalTime().ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'");
                                     bool updatedRequest = await _availabilityRepository.SaveNotifyRequest(requestToNotify, requestContext);
+                                    success = updatedRequest;
+                                    if(!updatedRequest)
+                                    {
+                                        _context.Vtex.Logger.Error("ProcessNotification", null, $"Mail was sent but failed to update record {JsonConvert.SerializeObject(requestToNotify)}");
+                                    }
                                 }
                             }
                             else
