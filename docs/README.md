@@ -8,25 +8,55 @@
 
 # Availability Notify
 
-## Description
-
 `AvailabilityNotfier` is a VTEX Component that shows the availability notify form that is shown when the product isn't available.
-The app will record the request for notification and monitor inventory updates.  When the requested sku is back in stock, the app
-will send an email to the shopper that requested to be notified.
 
-## Usage
+The app records the request for notification and monitors inventory updates.  When the requested sku is back in stock, the app will send an email to the shopper that requested to be notified.
 
-To use this app, you need to import it in your store theme peer dependencies on manifest.json.
+## Configuration
+
+1. [Install](https://developers.vtex.com/vtex-developer-docs/docs/vtex-io-documentation-installing-an-app) the Availability Notify app in the desired VTEX account by running `vtex install vtex.availability-notify` in your terminal.
+
+2. Open your store’s Store Theme app directory in your code editor.
+
+3. Add the Availability Notify app to your theme’s in your store theme peer dependencies on `manifest.json`.
 ```json
   "peerDependencies": {
     "vtex.availability-notify": "0.x"
   }
 ```
-Then, you can add the `availability-notify` component block to your PDP in your store theme.
+4. Add the `availability-notify` component block to your PDP in your store theme (`store.product`). For example:
 
-The email template that will be used is `back-in-stock`
+```json
+{
+ "store.product": {
+    "children": [
+      "availability-notify"
+    ]
+  },
 
-<!-- DOCS-IGNORE:start -->
+```
+
+
+>ℹ️ The email template that will be used is `back-in-stock`
+
+## Customization
+
+In order to apply CSS customizations to this and other blocks, follow the instructions given in the recipe on [Using CSS Handles for store customization](https://vtex.io/docs/recipes/style/using-css-handles-for-store-customization).
+
+| CSS Handles             |
+| ----------------------- |
+| `notiferContainer`|
+| `title`       |
+| `notifyLabelt`|
+| `form`      |
+| `content`   |
+| `input`     |
+| `inputName` |
+| `inputEmail`|
+| `submit`  |
+| `sucess`  |
+| `error`   |
+
 
 ## Contributors ✨
 
