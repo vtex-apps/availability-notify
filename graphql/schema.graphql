@@ -1,7 +1,13 @@
 # Mutations
 
 type Mutation {
-  availabilitySubscribe(name: String, email: String, skuId: String): Boolean
+  availabilitySubscribe(
+    name: String
+    email: String
+    skuId: String
+    locale: String
+    sellerObj: SellerObjInputType!
+  ): Boolean
   deleteRequest(id: String): Boolean
 }
 
@@ -11,8 +17,7 @@ type Query {
   listRequests: [NotifyRequest]
 }
 
-type NotifyRequest
-{
+type NotifyRequest {
   id: String
   name: String
   notificationSent: String
@@ -20,4 +25,20 @@ type NotifyRequest
   requestedAt: String
   skuId: String
   email: String
+  locale: String
+  sellerObj: SellerObj
+}
+
+input SellerObjInputType {
+  sellerId: String
+  sellerName: String
+  addToCartLink: String
+  sellerDefault: Boolean
+}
+
+type SellerObj {
+  sellerId: String
+  sellerName: String
+  addToCartLink: String
+  sellerDefault: Boolean
 }

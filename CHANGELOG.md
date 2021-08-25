@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added
+
+- Add Locale and Seller
+
 ## [0.0.11] - 2021-07-14
 
 ### Added
