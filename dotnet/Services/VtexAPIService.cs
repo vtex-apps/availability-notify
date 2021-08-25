@@ -131,7 +131,7 @@ namespace AvailabilityNotify.Services
                     long totalQuantity = inventoryBySku.Balance.Where(i => !i.HasUnlimitedQuantity).Sum(i => i.TotalQuantity);
                     long totalReseved = inventoryBySku.Balance.Where(i => !i.HasUnlimitedQuantity).Sum(i => i.ReservedQuantity);
                     totalAvailable = totalQuantity - totalReseved;
-                    Console.WriteLine($"Sku {sku} : {totalQuantity} - {totalReseved} = {totalAvailable}");
+                    //Console.WriteLine($"Sku {sku} : {totalQuantity} - {totalReseved} = {totalAvailable}");
                 }
                 catch(Exception ex)
                 {
@@ -172,7 +172,7 @@ namespace AvailabilityNotify.Services
             var client = _clientFactory.CreateClient();
             var response = await client.SendAsync(request);
             string responseContent = await response.Content.ReadAsStringAsync();
-            Console.WriteLine($"[-] CreateOrUpdateTemplate Response {response.StatusCode} Content = '{responseContent}' [-]");
+            //Console.WriteLine($"[-] CreateOrUpdateTemplate Response {response.StatusCode} Content = '{responseContent}' [-]");
             _context.Vtex.Logger.Info("Create Template", null, $"[{response.StatusCode}] {responseContent}");
 
             return response.IsSuccessStatusCode;
@@ -220,7 +220,7 @@ namespace AvailabilityNotify.Services
             var response = await client.SendAsync(request);
             string responseContent = await response.Content.ReadAsStringAsync();
             //Console.WriteLine($"[-] TemplateExists Response {response.StatusCode} Content = '{responseContent}' [-]");
-            Console.WriteLine($"[-] Template '{templateName}' Exists Response {response.StatusCode} [-]");
+            //Console.WriteLine($"[-] Template '{templateName}' Exists Response {response.StatusCode} [-]");
 
             return (int)response.StatusCode == StatusCodes.Status200OK;
         }
@@ -273,14 +273,14 @@ namespace AvailabilityNotify.Services
             string subjectText = string.Empty;
 
             templateExists = await this.TemplateExists(templateName);
-            Console.WriteLine($"templateExists? {templateExists}");
+            //Console.WriteLine($"templateExists? {templateExists}");
             if (!templateExists)
             {
                 string templateBody = await this.GetDefaultTemplate(templateName);
                 if (string.IsNullOrWhiteSpace(templateBody))
                 {
-                    Console.WriteLine($"Failed to Load Template {templateName}");
-                    _context.Vtex.Logger.Info("SendEmail", "Create Template", $"Failed to Load Template {templateName}");
+                    //Console.WriteLine($"Failed to Load Template {templateName}");
+                    _context.Vtex.Logger.Warn("SendEmail", "Create Template", $"Failed to Load Template {templateName}");
                 }
                 else
                 {
@@ -381,7 +381,7 @@ namespace AvailabilityNotify.Services
                 HttpResponseMessage responseMessage = await client.SendAsync(request);
                 string responseContent = await responseMessage.Content.ReadAsStringAsync();
                 //responseText = $"[-] SendEmail [{responseMessage.StatusCode}] {responseContent}";
-                //_context.Vtex.Logger.Info("SendEmail", null, $"{message} [{responseMessage.StatusCode}] {responseContent}");
+                _context.Vtex.Logger.Debug("SendEmail", null, $"{message}\n[{responseMessage.StatusCode}]\n{responseContent}");
                 success = responseMessage.IsSuccessStatusCode;
                 if (responseMessage.StatusCode.Equals(HttpStatusCode.NotFound))
                 {
@@ -395,11 +395,11 @@ namespace AvailabilityNotify.Services
                 success = false;  //jic
             }
             
-            Console.WriteLine(responseText);
+            //Console.WriteLine(responseText);
             return success;
         }
 
-        public async Task<bool> AvailabilitySubscribe(string email, string sku, string name)
+        public async Task<bool> AvailabilitySubscribe(string email, string sku, string name, string locale, SellerObj seller)
         {
             bool success = false;
             RequestContext requestContext = new RequestContext
@@ -416,7 +416,9 @@ namespace AvailabilityNotify.Services
                 Email = email,
                 SkuId = sku,
                 Name = name,
-                NotificationSent = "false"
+                NotificationSent = "false",
+                Locale = locale,
+                Seller = seller
             };
 
             success = await _availabilityRepository.SaveNotifyRequest(notifyRequest, requestContext);
@@ -455,6 +457,10 @@ namespace AvailabilityNotify.Services
                                 requestToNotify.NotificationSent = "true";
                                 requestToNotify.NotificationSentAt = DateTime.Now.ToUniversalTime().ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'");
                                 success = await _availabilityRepository.SaveNotifyRequest(requestToNotify, requestContext);
+                                if (!success)
+                                {     
+                                    _context.Vtex.Logger.Error("ProcessNotification", null, $"Mail was sent but failed to update record {JsonConvert.SerializeObject(requestToNotify)}");
+                                }
                             }
                         }
                     }

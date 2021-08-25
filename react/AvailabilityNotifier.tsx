@@ -4,7 +4,8 @@ import { useIntl } from 'react-intl'
 import { useMutation } from 'react-apollo'
 import { Button, Input } from 'vtex.styleguide'
 import { useProduct } from 'vtex.product-context'
-import type { Seller } from 'vtex.product-context'
+// import type { Seller } from 'vtex.product-context'
+import { useRuntime } from 'vtex.render-runtime'
 
 import ADD_TO_AVAILABILITY_SUBSCRIBER_MUTATION from './graphql/addToAvailabilityNotifierMutation.gql'
 import styles from './AvailabilityNotifier.css'
@@ -14,6 +15,8 @@ interface MutationVariables {
   skuId: string
   name: string
   email: string
+  locale: string
+  sellerObj: SellerObj
 }
 
 interface Props {
@@ -23,7 +26,14 @@ interface Props {
   skuId?: string
 }
 
-const isAvailable = (commertialOffer?: Seller['commertialOffer']) => {
+interface SellerObj {
+  sellerId: string
+  sellerName: string
+  addToCartLink: string
+  sellerDefault: boolean
+}
+
+const isAvailable = (commertialOffer?: any['commertialOffer']) => {
   return (
     commertialOffer &&
     (Number.isNaN(+commertialOffer.AvailableQuantity) ||
@@ -50,10 +60,19 @@ function AvailabilityNotifier(props: Props) {
 
   const intl = useIntl()
 
-  const seller = getDefaultSeller(productContext.selectedItem?.sellers)
+  const seller = getDefaultSeller(productContext.selectedItem?.sellers) as any
 
   const available = props.available ?? isAvailable(seller?.commertialOffer)
   const skuId = props.skuId ?? productContext.selectedItem?.itemId
+  const { locale } = useRuntime().culture
+  // console.log('Seller =>', seller)
+  // const sellerObj = seller as SellerObj
+  const sellerObj = {
+    sellerName: seller.sellerName,
+    sellerId: seller.sellerId,
+    addToCartLink: seller.addToCartLink,
+    sellerDefault: seller.sellerDefault,
+  }
 
   // Render component only if the product is out of stock
   if (available || !skuId) {
@@ -67,8 +86,16 @@ function AvailabilityNotifier(props: Props) {
       skuId,
       name,
       email,
+      locale,
+      sellerObj: {
+        sellerId: sellerObj.sellerId,
+        sellerName: sellerObj.sellerName,
+        addToCartLink: sellerObj.addToCartLink,
+        sellerDefault: sellerObj.sellerDefault,
+      },
     }
 
+    // console.log(variables)
     const signUpMutationResult = await signUp({
       variables,
     })
