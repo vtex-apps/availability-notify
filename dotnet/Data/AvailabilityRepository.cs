@@ -309,7 +309,7 @@ namespace AvailabilityNotify.Services
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Get,
-                RequestUri = new Uri($"http://{requestContext.Account}.vtexcommercestable.com.br/api/dataentities/{Constants.DATA_ENTITY}/search?_fields={Constants.FIELDS}&_schema={Constants.SCHEMA}&notificationSend=false")
+                RequestUri = new Uri($"http://{requestContext.Account}.vtexcommercestable.com.br/api/dataentities/{Constants.DATA_ENTITY}/search?_fields={Constants.FIELDS}&_schema={Constants.SCHEMA}&notificationSend=false&skuId={skuId}")
             };
 
             string authToken = requestContext.AuthToken;
