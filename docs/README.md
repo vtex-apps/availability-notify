@@ -8,7 +8,7 @@
 
 # Availability Notify
 
-`AvailabilityNotfier` is a VTEX Component that shows the availability notify form that is shown when the product isn't available.
+`AvailabilityNotifier` is a VTEX Component that provides an availability notification form that is shown when the product being viewed isn't available.
 
 The app records the request for notification and monitors inventory updates.  When the requested sku is back in stock, the app will send an email to the shopper that requested to be notified.
 
