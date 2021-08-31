@@ -18,7 +18,8 @@ The app records the request for notification and monitors inventory updates.  Wh
 
 2. Open your store’s Store Theme app directory in your code editor.
 
-3. Add the Availability Notify app to your theme’s in your store theme peer dependencies on `manifest.json`.
+3. Open your app's `manifest.json file` and add the Availability Notify app under the `peerDependencies` field.
+
 ```json
   "peerDependencies": {
     "vtex.availability-notify": "0.x"
