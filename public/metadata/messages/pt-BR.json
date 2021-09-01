@@ -1,0 +1,12 @@
+{
+  "name": "Notificador de disponibilidade",
+  "headline": "Notifica os clientes quando um SKU solicitado estiver de volta em estoque.",
+  "overview": "O Notificador de disponibilidade é um componente VTEX que mostra a opção de ser notificado sobre a disponibilidade de um produto indisponível. O app salva a solicitação de notificação e monitora as atualizações de estoque. Quando o SKU solicitado estiver de volta em estoque, o app enviará um e-mail para o cliente que solicitou ser notificado.",
+  "features": [
+      "Notificações por e-mail"
+  ],
+  "websiteURL": "https://vtex.com/",
+  "support": {
+    "url": "https://support.vtex.com/hc/requests"
+  }
+}
