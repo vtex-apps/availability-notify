@@ -25,5 +25,11 @@ namespace AvailabilityNotify.Models
 
         [JsonProperty("sendAt", NullValueHandling = NullValueHandling.Ignore)]
         public string NotificationSentAt { get; set; }
+
+        [JsonProperty("locale", NullValueHandling = NullValueHandling.Ignore)]
+        public string Locale { get; set; }
+
+        [JsonProperty("seller", NullValueHandling = NullValueHandling.Ignore)]
+        public SellerObj Seller { get; set; }
     }
 }
