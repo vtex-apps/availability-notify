@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added
+
+- Add icon, images, licenses, and descriptions for app store submission
+
 ## [0.0.11] - 2021-07-14
 
 ### Added
