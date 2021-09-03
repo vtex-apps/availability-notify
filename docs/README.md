@@ -51,7 +51,6 @@ The app records the notification request and monitors inventory updates. This wa
 
 
 ![template-back-in-stock](https://user-images.githubusercontent.com/67270558/131547198-a4eb3f0e-5a20-4e63-9f1f-d3bb312fa621.gif)
->ℹ️ The email template that will be used is `back-in-stock`
 
 
 Now you set up the template according to your necessities. Check out the next section, [Setting up the Back in stock template](#setting-up-the-back-in-stock-template), to learn how to do it.
