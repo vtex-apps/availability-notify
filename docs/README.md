@@ -8,9 +8,13 @@
 
 # Availability Notify
 
-`AvailabilityNotifier` is a VTEX Component that provides an availability notification form that is shown when the product being viewed isn't available.
+The Availability Notify component is responsible for showing a subscription form when a product SKU isn't available. The form lets customers subscribe to get notified when that item gets restocked. 
 
-The app records the request for notification and monitors inventory updates.  When the requested sku is back in stock, the app will send an email to the shopper that requested to be notified.
+
+![store-notifier](https://user-images.githubusercontent.com/67270558/132012045-06c65073-2692-4827-b08a-7be5730b6422.png)
+
+
+The app records the notification request and monitors inventory updates. This way, once the requested SKU gets back in stock, the app will email the shoppers who asked to be notified.
 
 ## Configuration
 
@@ -37,8 +41,24 @@ The app records the request for notification and monitors inventory updates.  Wh
 
 ```
 
+5. Once you have added the `availability-notify` component, access your store's Admin.
 
+7. Go to **Customer** > **Message center** > **Templates**.
+
+9. Search for the `availability-notify` component template, named **BACK IN STOCK** and click on it.
+
+11. After, you will see the email template and its configuration. For example:
+
+
+![template-back-in-stock](https://user-images.githubusercontent.com/67270558/131547198-a4eb3f0e-5a20-4e63-9f1f-d3bb312fa621.gif)
 >ℹ️ The email template that will be used is `back-in-stock`
+
+
+Now you set up the template according to your necessities. Check out the next section, [Setting up the Back in stock template](#setting-up-the-back-in-stock-template), to learn how to do it.
+
+## Setting up the Back in stock template
+🚧🚧
+
 
 ## Customization
 
