@@ -8,7 +8,7 @@
 
 # Availability Notify
 
-The Availability Notify component is responsible for showing a subscription form when a product SKU isn't available. The form lets customers subscribe to get notified when that item gets restocked. 
+The Availability Notify component is responsible for showing a subscription form when a product SKU is not available. The form lets customers subscribe to get notified when that item gets restocked. 
 
 
 ![store-notifier](https://user-images.githubusercontent.com/67270558/132012045-06c65073-2692-4827-b08a-7be5730b6422.png)
@@ -53,11 +53,16 @@ The app records the notification request and monitors inventory updates. This wa
 ![template-back-in-stock](https://user-images.githubusercontent.com/67270558/131547198-a4eb3f0e-5a20-4e63-9f1f-d3bb312fa621.gif)
 
 
-Now you set up the template according to your necessities. Check out the next section, [Setting up the Back in stock template](#setting-up-the-back-in-stock-template), to learn how to do it.
+Now you set up the template according to your necessities. Check out more details about it in the next section, [Customizing the Back in stock template](#customizing-the-back-in-stock-template).
 
-## Setting up the Back in stock template
-🚧🚧
+## Customizing the Back in stock template
+Once you have installed the app, you can customize the email template to send to the shoppers who asked to be notified. You find the email template, named **BACK IN STOCK**, in your store's Admin in **Customer** > **Message center** > **Templates**.
 
+![customize-template](https://user-images.githubusercontent.com/67270558/132258032-456a7d21-2f86-4445-98e1-ee727dadb967.png)
+
+To edit the email template's field, check the documentation on [How to create and edit transactional email templates](https://help.vtex.com/en/tracks/transactional-emails--6IkJwttMw5T84mlY9RifRP/335JZKUYgvYlGOJgvJYxRO), and you will notice the **JSON Data** field, which is responsible for adding variables that allow you to dynamically add data to the email. These variables are JSON properties, and you can see more details about them in [Get SKU and context](https://developers.vtex.com/vtex-rest-api/reference/catalog-api-sku#catalog-api-get-sku-context) and in [Including order variables in email template](https://help.vtex.com/en/tracks/transactional-emails--6IkJwttMw5T84mlY9RifRP/fLMUCPArCYB9vcTZEZ6bi).
+
+>⚠️ *JSON Data examples will only appear in templates when you complete the desired action in your store. If you have not transacted an order, recurrence or any other action, JSON Data will appear blank.*
 
 ## Customization
 
