@@ -46,37 +46,35 @@ namespace AvailabilityNotify.Services
             this.CreateDefaultTemplate();
         }
 
-        public async Task GetShopperToNotifyBySku(string sku)
-        {
-            // GET https://{accountName}.{environment}.com.br/api/dataentities/CL/search?email=
+        //public async Task GetShopperToNotifyBySku(string sku)
+        //{
+        //    try
+        //    {
+        //        var request = new HttpRequestMessage
+        //        {
+        //            Method = HttpMethod.Get,
+        //            RequestUri = new Uri($"http://{this._httpContextAccessor.HttpContext.Request.Headers[Constants.VTEX_ACCOUNT_HEADER_NAME]}.{Constants.ENVIRONMENT}.com.br/api/dataentities/{Constants.DATA_ENTITY}/search?skuId={sku}")
+        //        };
 
-            try
-            {
-                var request = new HttpRequestMessage
-                {
-                    Method = HttpMethod.Get,
-                    RequestUri = new Uri($"http://{this._httpContextAccessor.HttpContext.Request.Headers[Constants.VTEX_ACCOUNT_HEADER_NAME]}.{Constants.ENVIRONMENT}.com.br/api/dataentities/{Constants.DATA_ENTITY}/search?skuId={sku}")
-                };
+        //        request.Headers.Add(Constants.USE_HTTPS_HEADER_NAME, "true");
+        //        string authToken = this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_CREDENTIAL];
+        //        if (authToken != null)
+        //        {
+        //            request.Headers.Add(Constants.AUTHORIZATION_HEADER_NAME, authToken);
+        //            request.Headers.Add(Constants.VTEX_ID_HEADER_NAME, authToken);
+        //            request.Headers.Add(Constants.PROXY_AUTHORIZATION_HEADER_NAME, authToken);
+        //        }
 
-                request.Headers.Add(Constants.USE_HTTPS_HEADER_NAME, "true");
-                string authToken = this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_CREDENTIAL];
-                if (authToken != null)
-                {
-                    request.Headers.Add(Constants.AUTHORIZATION_HEADER_NAME, authToken);
-                    request.Headers.Add(Constants.VTEX_ID_HEADER_NAME, authToken);
-                    request.Headers.Add(Constants.PROXY_AUTHORIZATION_HEADER_NAME, authToken);
-                }
+        //        var client = _clientFactory.CreateClient();
+        //        var response = await client.SendAsync(request);
+        //        string responseContent = await response.Content.ReadAsStringAsync();
 
-                var client = _clientFactory.CreateClient();
-                var response = await client.SendAsync(request);
-                string responseContent = await response.Content.ReadAsStringAsync();
-
-            }
-            catch (Exception ex)
-            {
-                _context.Vtex.Logger.Error("GetShopperToNotifyBySku", null, $"Error getting shoppers for sku '{sku}'", ex);
-            }
-        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _context.Vtex.Logger.Error("GetShopperToNotifyBySku", null, $"Error getting shoppers for sku '{sku}'", ex);
+        //    }
+        //}
 
         public async Task<InventoryBySku> ListInventoryBySku(string sku, RequestContext requestContext)
         {
@@ -164,7 +162,7 @@ namespace AvailabilityNotify.Services
             }
 
             request.Headers.Add(Constants.USE_HTTPS_HEADER_NAME, "true");
-            MerchantSettings merchantSettings = await _availabilityRepository.GetMerchantSettings();
+            //MerchantSettings merchantSettings = await _availabilityRepository.GetMerchantSettings();
             //request.Headers.Add(Constants.AppKey, merchantSettings.AppKey);
             //request.Headers.Add(Constants.AppToken, merchantSettings.AppToken);
 
@@ -207,11 +205,11 @@ namespace AvailabilityNotify.Services
                 request.Headers.Add(Constants.VTEX_ID_HEADER_NAME, authToken);
             }
 
-            MerchantSettings merchantSettings = await _availabilityRepository.GetMerchantSettings();
-            string appKey = merchantSettings.AppKey;
-            string appToken = merchantSettings.AppToken;
-            request.Headers.Add(Constants.AppKey, appKey);
-            request.Headers.Add(Constants.AppToken, appToken);
+            //MerchantSettings merchantSettings = await _availabilityRepository.GetMerchantSettings();
+            //string appKey = merchantSettings.AppKey;
+            //string appToken = merchantSettings.AppToken;
+            //request.Headers.Add(Constants.AppKey, appKey);
+            //request.Headers.Add(Constants.AppToken, appToken);
 
             var client = _clientFactory.CreateClient();
             var response = await client.SendAsync(request);
@@ -426,33 +424,8 @@ namespace AvailabilityNotify.Services
             bool isActive = notification.IsActive;
             bool inventoryUpdated = notification.StockModified;
             string skuId = notification.IdSku;
-            //_context.Vtex.Logger.Debug("ProcessNotification", null, $"Sku:{skuId} Active?{isActive} Inventory Changed?{inventoryUpdated}");
-            if(isActive && inventoryUpdated)
-            {
-                long available = await GetTotalAvailableForSku(skuId, requestContext);
-                if(available > 0)
-                {
-                    NotifyRequest[] requestsToNotify = await _availabilityRepository.ListRequestsForSkuId(skuId, requestContext);
-                    if(requestsToNotify != null)
-                    {
-                        foreach(NotifyRequest requestToNotify in requestsToNotify)
-                        {
-                            GetSkuContextResponse skuContextResponse = await GetSkuContext(skuId, requestContext);
-                            bool sendMail = await SendEmail(requestToNotify, skuContextResponse, requestContext);
-                            if(sendMail)
-                            {
-                                requestToNotify.NotificationSent = "true";
-                                requestToNotify.NotificationSentAt = DateTime.Now.ToUniversalTime().ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'");
-                                success = await _availabilityRepository.SaveNotifyRequest(requestToNotify, requestContext);
-                                if (!success)
-                                {     
-                                    _context.Vtex.Logger.Error("ProcessNotification", null, $"Mail was sent but failed to update record {JsonConvert.SerializeObject(requestToNotify)}");
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+            _context.Vtex.Logger.Debug("ProcessNotification", "AffiliateNotification", $"Sku:{skuId} Active?{isActive} Inventory Changed?{inventoryUpdated}");
+            success = await this.ProcessNotification(requestContext, isActive, inventoryUpdated, skuId);
 
             return success;
         }
@@ -469,32 +442,140 @@ namespace AvailabilityNotify.Services
             bool isActive = notification.IsActive;
             bool inventoryUpdated = notification.StockModified;
             string skuId = notification.IdSku;
-            _context.Vtex.Logger.Debug("ProcessNotification", null, $"Sku:{skuId} Active?{isActive} Inventory Changed?{inventoryUpdated}");
-            if(isActive && inventoryUpdated)
+            _context.Vtex.Logger.Debug("ProcessNotification", "BroadcastNotification", $"Sku:{skuId} Active?{isActive} Inventory Changed?{inventoryUpdated}");
+            success = await this.ProcessNotification(requestContext, isActive, inventoryUpdated, skuId);
+
+            return success;
+        }
+
+        public async Task<ShopperRecord> GetShopperByEmail(string email)
+        {
+            // GET https://{accountName}.{environment}.com.br/api/dataentities/CL/search?email=
+
+            ShopperRecord shopperRecord = null;
+
+            try
             {
+                var request = new HttpRequestMessage
+                {
+                    Method = HttpMethod.Get,
+                    RequestUri = new Uri($"http://{this._httpContextAccessor.HttpContext.Request.Headers[Constants.VTEX_ACCOUNT_HEADER_NAME]}.{Constants.ENVIRONMENT}.com.br/api/dataentities/CL/search?email={email}")
+                };
+
+                request.Headers.Add(Constants.USE_HTTPS_HEADER_NAME, "true");
+                string authToken = this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_CREDENTIAL];
+                if (authToken != null)
+                {
+                    request.Headers.Add(Constants.AUTHORIZATION_HEADER_NAME, authToken);
+                    request.Headers.Add(Constants.VTEX_ID_HEADER_NAME, authToken);
+                    request.Headers.Add(Constants.PROXY_AUTHORIZATION_HEADER_NAME, authToken);
+                }
+
+                var client = _clientFactory.CreateClient();
+                var response = await client.SendAsync(request);
+                string responseContent = await response.Content.ReadAsStringAsync();
+                if(response.IsSuccessStatusCode)
+                {
+                    shopperRecord = JsonConvert.DeserializeObject<ShopperRecord>(responseContent);
+                }
+                else
+                {
+                    _context.Vtex.Logger.Warn("GetShopperByEmail", null, $"Could not find shopper '{email}'\n[{response.StatusCode}] '{responseContent}'");
+                }
+            }
+            catch (Exception ex)
+            {
+                _context.Vtex.Logger.Error("GetShopperByEmail", null, $"Error getting shopper '{email}'", ex);
+            }
+
+            return shopperRecord;
+        }
+
+        public async Task<ShopperAddress[]> GetShopperAddressById(string id)
+        {
+            // GET https://{accountName}.{environment}.com.br/api/dataentities/AD/search?userId=&_fields=
+
+            ShopperAddress[] shopperAddress = null;
+            string searchFields = "country,postalCode";
+
+            try
+            {
+                var request = new HttpRequestMessage
+                {
+                    Method = HttpMethod.Get,
+                    RequestUri = new Uri($"http://{this._httpContextAccessor.HttpContext.Request.Headers[Constants.VTEX_ACCOUNT_HEADER_NAME]}.{Constants.ENVIRONMENT}.com.br/api/dataentities/AD/search?userId={id}&_fields={searchFields}")
+                };
+
+                request.Headers.Add(Constants.USE_HTTPS_HEADER_NAME, "true");
+                string authToken = this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_CREDENTIAL];
+                if (authToken != null)
+                {
+                    request.Headers.Add(Constants.AUTHORIZATION_HEADER_NAME, authToken);
+                    request.Headers.Add(Constants.VTEX_ID_HEADER_NAME, authToken);
+                    request.Headers.Add(Constants.PROXY_AUTHORIZATION_HEADER_NAME, authToken);
+                }
+
+                var client = _clientFactory.CreateClient();
+                var response = await client.SendAsync(request);
+                string responseContent = await response.Content.ReadAsStringAsync();
+                if (response.IsSuccessStatusCode)
+                {
+                    shopperAddress = JsonConvert.DeserializeObject<ShopperAddress[]>(responseContent);
+                }
+                else
+                {
+                    _context.Vtex.Logger.Warn("GetShopperAddressById", null, $"Could not find shopper '{id}'\n[{response.StatusCode}] '{responseContent}'");
+                }
+            }
+            catch (Exception ex)
+            {
+                _context.Vtex.Logger.Error("GetShopperAddressById", null, $"Error getting shopper '{id}'", ex);
+            }
+
+            return shopperAddress;
+        }
+
+        private async Task<bool> ProcessNotification(RequestContext requestContext, bool isActive, bool inventoryUpdated, string skuId)
+        {
+            bool success = false;
+            if (isActive && inventoryUpdated)
+            {
+                MerchantSettings merchantSettings = await _availabilityRepository.GetMerchantSettings();
                 NotifyRequest[] requestsToNotify = await _availabilityRepository.ListRequestsForSkuId(skuId, requestContext);
-                if(requestsToNotify != null && requestsToNotify.Length > 0)
+                if (requestsToNotify != null && requestsToNotify.Length > 0)
                 {
                     long available = await GetTotalAvailableForSku(skuId, requestContext);
-                    if(available > 0)
+                    if (available > 0)
                     {
                         GetSkuContextResponse skuContextResponse = await GetSkuContext(skuId, requestContext);
                         if (skuContextResponse != null)
                         {
                             foreach (NotifyRequest requestToNotify in requestsToNotify)
                             {
-                                _context.Vtex.Logger.Warn("ProcessNotification", null, $"SkuId '{skuId}' : Notification skuId '{requestToNotify.SkuId}' ");
-                                bool sendMail = await SendEmail(requestToNotify, skuContextResponse, requestContext);
+                                bool sendMail = true;
+                                if(merchantSettings.DoShippingSim)
+                                {
+                                    sendMail = await this.CanShipToShopper(requestToNotify, requestContext);
+                                }
+
                                 if (sendMail)
                                 {
-                                    requestToNotify.NotificationSent = "true";
-                                    requestToNotify.NotificationSentAt = DateTime.Now.ToUniversalTime().ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'");
-                                    bool updatedRequest = await _availabilityRepository.SaveNotifyRequest(requestToNotify, requestContext);
-                                    success = updatedRequest;
-                                    if (!updatedRequest)
+                                    bool mailSent = await SendEmail(requestToNotify, skuContextResponse, requestContext);
+                                    if (mailSent)
                                     {
-                                        _context.Vtex.Logger.Error("ProcessNotification", null, $"Mail was sent but failed to update record {JsonConvert.SerializeObject(requestToNotify)}");
+                                        requestToNotify.NotificationSent = "true";
+                                        requestToNotify.NotificationSentAt = DateTime.Now.ToUniversalTime().ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'");
+                                        bool updatedRequest = await _availabilityRepository.SaveNotifyRequest(requestToNotify, requestContext);
+                                        success = updatedRequest;
+                                        if (!updatedRequest)
+                                        {
+                                            _context.Vtex.Logger.Error("ProcessNotification", null, $"Mail was sent but failed to update record {JsonConvert.SerializeObject(requestToNotify)}");
+                                        }
                                     }
+                                }
+                                else
+                                {
+                                    _context.Vtex.Logger.Debug("ProcessNotification", null, $"SkuId '{skuId}' can not be shipped to '{requestToNotify.Email}' ");
                                 }
                             }
                         }
@@ -604,6 +685,99 @@ namespace AvailabilityNotify.Services
             }
 
             return results;
+        }
+
+        public async Task<bool> CanShipToShopper(NotifyRequest requestToNotify, RequestContext requestContext)
+        {
+            bool sendMail = false;
+            ShopperRecord shopperRecord = await this.GetShopperByEmail(requestToNotify.Email);
+            if (shopperRecord != null)
+            {
+                ShopperAddress[] shopperAddresses = await this.GetShopperAddressById(shopperRecord.Id);
+                if (shopperAddresses != null)
+                {
+                    string sellerId = string.Empty;
+                    if (requestToNotify.Seller != null && requestToNotify.Seller.sellerId != null)
+                    {
+                        sellerId = requestToNotify.Seller.sellerId;
+                    }
+
+                    CartSimulationRequest cartSimulationRequest = new CartSimulationRequest
+                    {
+                        Items = new List<CartItem>
+                        {
+                            new CartItem
+                            {
+                                Id = requestToNotify.Id,
+                                Quantity = 1,
+                                Seller = sellerId
+                            }
+                        },
+                        PostalCode = string.Empty,
+                        Country = string.Empty
+                    };
+
+                    var addressList = shopperAddresses.Distinct();
+                    foreach (ShopperAddress shopperAddress in addressList)
+                    {
+                        CartSimulationResponse cartSimulationResponse = await this.CartSimulation(cartSimulationRequest, requestContext);
+                        if (cartSimulationResponse != null)
+                        {
+                            if (cartSimulationResponse.Items[0].Availability.Equals(Constants.Availability.Available))
+                            {
+                                sendMail = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            return sendMail;
+        }
+
+        public async Task<CartSimulationResponse> CartSimulation(CartSimulationRequest cartSimulationRequest, RequestContext requestContext)
+        {
+            CartSimulationResponse cartSimulationResponse = null;
+            string jsonSerializedData = JsonConvert.SerializeObject(cartSimulationRequest);
+
+            try
+            {
+                var request = new HttpRequestMessage
+                {
+                    Method = HttpMethod.Post,
+                    RequestUri = new Uri($"http://{this._httpContextAccessor.HttpContext.Request.Headers[Constants.VTEX_ACCOUNT_HEADER_NAME]}.{Constants.ENVIRONMENT}.com.br/api/checkout/pub/orderForms/simulation"),
+                    Content = new StringContent(jsonSerializedData, Encoding.UTF8, Constants.APPLICATION_JSON)
+                };
+
+                request.Headers.Add(Constants.USE_HTTPS_HEADER_NAME, "true");
+                string authToken = requestContext.AuthToken;
+                if (authToken != null)
+                {
+                    request.Headers.Add(Constants.AUTHORIZATION_HEADER_NAME, authToken);
+                    request.Headers.Add(Constants.VTEX_ID_HEADER_NAME, authToken);
+                    request.Headers.Add(Constants.PROXY_AUTHORIZATION_HEADER_NAME, authToken);
+                }
+
+                var client = _clientFactory.CreateClient();
+                var response = await client.SendAsync(request);
+                string responseContent = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"CartSimulation {cartSimulationRequest.PostalCode},{cartSimulationRequest.Country} : [{response.StatusCode}] ");
+                if(response.IsSuccessStatusCode)
+                {
+                    cartSimulationResponse = JsonConvert.DeserializeObject<CartSimulationResponse>(responseContent);
+                }
+                else
+                {
+                    _context.Vtex.Logger.Warn("CartSimulation", null, $"[{response.StatusCode}] '{responseContent}'\n{jsonSerializedData}");
+                }
+            }
+            catch (Exception ex)
+            {
+                _context.Vtex.Logger.Error("CartSimulation", null, $"Error in Cart Simulation '{jsonSerializedData}'", ex);
+            }
+
+            return cartSimulationResponse;
         }
     }
 }

@@ -13,5 +13,6 @@ namespace AvailabilityNotify.Services
         Task<bool> CreateDefaultTemplate();
         Task<List<string>> ProcessAllRequests();
         Task<List<string>> ProcessUnsentRequests();
+        Task<CartSimulationResponse> CartSimulation(CartSimulationRequest cartSimulationRequest, RequestContext requestContext);
     }
 }
