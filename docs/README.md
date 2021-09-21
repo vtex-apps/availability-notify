@@ -26,6 +26,10 @@ Then, you can add the `availability-notify` component block to your PDP in your 
 
 The email template that will be used is `back-in-stock`
 
+## Configuration
+
+`Verify Availability` runs a shipping simulation to verify that the item can be shipped to the shopper before sending a notificaiton.
+
 <!-- DOCS-IGNORE:start -->
 
 ## Contributors ✨

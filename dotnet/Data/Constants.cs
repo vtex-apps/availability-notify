@@ -46,5 +46,11 @@ namespace AvailabilityNotify.Data
         public const string TEMPLATE_FOLDER = "templates";
         public const string TEMPLATE_FILE_EXTENSION = "json";
         public const string DEFAULT_TEMPLATE_NAME = "back-in-stock";
+
+        public class Availability
+        {
+            public const string CannotBeDelivered = "cannotBeDelivered";
+            public const string Available = "available";
+        }
     }
 }

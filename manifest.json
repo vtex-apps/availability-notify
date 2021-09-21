@@ -42,6 +42,17 @@
     "vtex.styleguide": "9.x",
     "vtex.broadcaster": "0.x"
   },
+  "settingsSchema": {
+    "title": "Availability Notifier",
+    "type": "object",
+    "properties": {
+      "doShippingSim": {
+        "title": "Verify Availability",
+        "description": "Verify that the item is available to the shopper.",
+        "type": "boolean"
+      }
+    }
+  },
   "policies": [
     {
       "name": "outbound-access",
@@ -106,9 +117,7 @@
     },
     "free": true,
     "type": "free",
-    "availableCountries": [
-      "*"
-    ]
+    "availableCountries": ["*"]
   },
   "$schema": "https://raw.githubusercontent.com/vtex/node-vtex-api/master/gen/manifest.schema"
 }
