@@ -274,6 +274,7 @@ namespace AvailabilityNotify.Services
                 else
                 {
                     EmailTemplate emailTemplate = JsonConvert.DeserializeObject<EmailTemplate>(templateBody);
+                    emailTemplate.Templates.Email.Message = emailTemplate.Templates.Email.Message.Replace(@"\r", string.Empty);
                     emailTemplate.Templates.Email.Message = emailTemplate.Templates.Email.Message.Replace(@"\n", "\n");
                     templateExists = await this.CreateOrUpdateTemplate(emailTemplate);
                 }
