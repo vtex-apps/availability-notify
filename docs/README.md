@@ -19,7 +19,7 @@ will send an email to the shopper that requested to be notified.
 To use this app, you need to import it in your store theme peer dependencies on manifest.json.
 ```json
   "peerDependencies": {
-    "vtex.availability-notify": "0.x"
+    "vtex.availability-notify": "1.x"
   }
 ```
 Then, you can add the `availability-notify` component block to your PDP in your store theme.
