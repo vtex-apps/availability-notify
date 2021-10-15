@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added
+- Updated README to let developers know that the broadcaster doesn't triger the email on dev workspaces
+
 ## [1.1.1] - 2021-10-04
 
 ## [1.1.0] - 2021-09-21
