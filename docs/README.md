@@ -25,6 +25,7 @@ To use this app, you need to import it in your store theme peer dependencies on 
 Then, you can add the `availability-notify` component block to your PDP in your store theme.
 
 The email template that will be used is `back-in-stock`
+
 *NOTE: notification email is only triggered when on the `master` workspace*
 
 ## Configuration
