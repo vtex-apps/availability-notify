@@ -120,16 +120,48 @@ namespace AvailabilityNotify.Services
             return inventoryBySku;
         }
 
+        public async Task<ListAllWarehousesResponse[]> ListAllWarehouses()
+        {
+            ListAllWarehousesResponse[] listAllWarehousesResponse = null;
+            var request = new HttpRequestMessage
+            {
+                Method = HttpMethod.Get,
+                RequestUri = new Uri($"http://{this._httpContextAccessor.HttpContext.Request.Headers[Constants.VTEX_ACCOUNT_HEADER_NAME]}.vtexcommercestable.com.br/api/logistics/pvt/configuration/warehouses")
+            };
+
+            request.Headers.Add(Constants.USE_HTTPS_HEADER_NAME, "true");
+            string authToken = this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_CREDENTIAL];
+            if (authToken != null)
+            {
+                request.Headers.Add(Constants.AUTHORIZATION_HEADER_NAME, authToken);
+                request.Headers.Add(Constants.VTEX_ID_HEADER_NAME, authToken);
+                request.Headers.Add(Constants.PROXY_AUTHORIZATION_HEADER_NAME, authToken);
+            }
+
+            var client = _clientFactory.CreateClient();
+            var response = await client.SendAsync(request);
+            string responseContent = await response.Content.ReadAsStringAsync();
+            Console.WriteLine($"ListAllWarehouses [{response.StatusCode}] {responseContent}");
+            if (response.IsSuccessStatusCode)
+            {
+                listAllWarehousesResponse = JsonConvert.DeserializeObject<ListAllWarehousesResponse[]>(responseContent);
+            }
+
+            return listAllWarehousesResponse;
+        }
+
         public async Task<long> GetTotalAvailableForSku(string sku, RequestContext requestContext)
         {
             long totalAvailable = 0;
+            ListAllWarehousesResponse[] listAllWarehouses = await this.ListAllWarehouses();
             InventoryBySku inventoryBySku = await this.ListInventoryBySku(sku, requestContext);
             if(inventoryBySku != null && inventoryBySku.Balance != null)
             {
                 try
                 {
-                    long totalQuantity = inventoryBySku.Balance.Where(i => !i.HasUnlimitedQuantity).Sum(i => i.TotalQuantity);
-                    long totalReseved = inventoryBySku.Balance.Where(i => !i.HasUnlimitedQuantity).Sum(i => i.ReservedQuantity);
+                    List<string> activeWarehouseIds = listAllWarehouses.Where(w => w.IsActive).Select(w => w.Id).ToList();
+                    long totalQuantity = inventoryBySku.Balance.Where(i => !i.HasUnlimitedQuantity && activeWarehouseIds.Contains(i.WarehouseId)).Sum(i => i.TotalQuantity);
+                    long totalReseved = inventoryBySku.Balance.Where(i => !i.HasUnlimitedQuantity && activeWarehouseIds.Contains(i.WarehouseId)).Sum(i => i.ReservedQuantity);
                     totalAvailable = totalQuantity - totalReseved;
                     _context.Vtex.Logger.Debug("GetTotalAvailableForSku", null, $"Sku '{sku}' {totalQuantity} - {totalReseved} = {totalAvailable}");
                 }
