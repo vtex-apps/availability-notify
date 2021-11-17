@@ -72,7 +72,7 @@ In order to apply CSS customizations to this and other blocks, follow the instru
 | ----------------------- |
 | `notiferContainer`|
 | `title`       |
-| `notifyLabelt`|
+| `notifyLabel`|
 | `form`      |
 | `content`   |
 | `input`     |
