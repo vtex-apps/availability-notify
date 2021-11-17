@@ -27,7 +27,7 @@ The app records the notification request and monitors inventory updates. This wa
 
 ```json
   "peerDependencies": {
-    "vtex.availability-notify": "0.x"
+    "vtex.availability-notify": "1.x"
   }
 ```
 4. Add the `availability-notify` component block to your PDP in your store theme (`store.product`). For example:
