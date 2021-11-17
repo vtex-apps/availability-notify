@@ -65,6 +65,20 @@ To edit the email template's field, check the documentation on [How to create an
 
 >⚠️ *JSON Data examples will only appear in templates when you complete the desired action in your store. If you have not transacted an order, recurrence or any other action, JSON Data will appear blank.*
 
+## Searching and Processing Availability Notify data
+This app uses [Master Data V2](https://developers.vtex.com/vtex-rest-api/reference/master-data-api-v2-overview), to search for stored data you should use Master Data API - v2 endpoints with the variables `data_entity_name` and `schema` with the value `notify`. 
+
+If you want to run the services manually you can use the two endpoints below:
+
+- To process Unsent Requests:
+`https://{{accountName}}.myvtex.com/availability-notify/process-unsent-requests`
+
+- To process All Requests:
+`https://{{accountName}}.myvtex.com/availability-notify/process-all-requests`
+
+Check out the [Open API Schemas repository](https://github.com/vtex/openapi-schemas) containing several VTEX Postman Collections including Master Data API - v2.
+
+
 ## Customization
 
 In order to apply CSS customizations to this and other blocks, follow the instructions given in the recipe on [Using CSS Handles for store customization](https://vtex.io/docs/recipes/style/using-css-handles-for-store-customization).
@@ -82,19 +96,6 @@ In order to apply CSS customizations to this and other blocks, follow the instru
 | `submit`  |
 | `sucess`  |
 | `error`   |
-
-## Searching and Processing Availability Notify data
-This app uses [Master Data V2](https://developers.vtex.com/vtex-rest-api/reference/master-data-api-v2-overview), to search for stored data you should use Master Data API - v2 endpoints with the variables `data_entity_name` and `schema` with the value `notify`. 
-
-If you want to run the services manually you can use the two endpoints below:
-
-To process Unsent Requests:
-`https://{{accountName}}.myvtex.com/availability-notify/process-unsent-requests`
-
-To process All Requests:
-`https://{{accountName}}.myvtex.com/availability-notify/process-all-requests`
-
-Check out the [Open API Schemas repository](https://github.com/vtex/openapi-schemas) containing several VTEX Postman Collections including Master Data API - v2.
 
 ## Contributors ✨
 
