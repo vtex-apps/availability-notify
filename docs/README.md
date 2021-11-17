@@ -23,6 +23,7 @@ The app records the notification request and monitors inventory updates. This wa
 2. Open your store’s Store Theme app directory in your code editor.
 
 3. Open your app's `manifest.json file` and add the Availability Notify app under the `peerDependencies` field.
+>⚠️ *Due to changes in its peer dependencies you will need to release a new major version. Check the documentation on [How to migrate CMS settings after a theme major update](https://developers.vtex.com/vtex-developer-docs/docs/vtex-io-documentation-migrating-cms-settings-after-major-update) *
 
 ```json
   "peerDependencies": {
