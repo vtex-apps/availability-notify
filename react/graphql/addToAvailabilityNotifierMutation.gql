@@ -1,3 +1,15 @@
-mutation AvailabilitySubscribe($name: String, $email: String, $skuId: String) {
-  availabilitySubscribe(name: $name, email: $email, skuId: $skuId)
+mutation AvailabilitySubscribe(
+  $name: String
+  $email: String
+  $skuId: String
+  $locale: String
+  $sellerObj: SellerObjInputType!
+) {
+  availabilitySubscribe(
+    name: $name
+    email: $email
+    skuId: $skuId
+    locale: $locale
+    sellerObj: $sellerObj
+  )
 }

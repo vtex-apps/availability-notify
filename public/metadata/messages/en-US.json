@@ -1,0 +1,12 @@
+{
+  "name": "Availability Notifier",
+  "headline": "Notifies customers when a requested SKU is back in stock.",
+  "overview": "Availability Notfier is a VTEX Component that shows the availability notify form that is shown when the product isn't available. The app will record the request for notification and monitor inventory updates. When the requested sku is back in stock, the app will send an email to the shopper that requested to be notified.",
+  "features": [
+    "Email Notifications"
+  ],
+  "websiteURL": "https://vtex.com/",
+  "support": {
+    "url": "https://support.vtex.com/hc/requests"
+  }
+}

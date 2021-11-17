@@ -1,10 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using AvailabilityNotify.Data;
 using AvailabilityNotify.Models;
 using System;
-using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -90,7 +88,6 @@ namespace AvailabilityNotify.Services
 
             var client = _clientFactory.CreateClient();
             var response = await client.SendAsync(request);
-            Console.WriteLine($"SetMerchantSettings Init?{merchantSettings.Initialized} [{response.StatusCode}]");
 
             response.EnsureSuccessStatusCode();
         }
@@ -167,12 +164,10 @@ namespace AvailabilityNotify.Services
             var client = _clientFactory.CreateClient();
             var response = await client.SendAsync(request);
             string responseContent = await response.Content.ReadAsStringAsync();
+            _context.Vtex.Logger.Debug("VerifySchema", null, $"[{response.StatusCode}] {responseContent}");
 
-            Console.WriteLine($"VerifySchema: {responseContent} ");
-
-            if(response.IsSuccessStatusCode && !responseContent.Equals(Constants.SCHEMA_JSON))
+            if (response.IsSuccessStatusCode && !responseContent.Equals(Constants.SCHEMA_JSON))
             {
-                //Console.WriteLine("--------------- Applying Schema ---------------");
                 request = new HttpRequestMessage
                 {
                     Method = HttpMethod.Put,
@@ -188,6 +183,9 @@ namespace AvailabilityNotify.Services
                 }
 
                 response = await client.SendAsync(request);
+                responseContent = await response.Content.ReadAsStringAsync();
+
+                _context.Vtex.Logger.Debug("VerifySchema", null, $"Applying Schema [{response.StatusCode}] {responseContent}");
             }
 
             return response.IsSuccessStatusCode;
@@ -216,6 +214,7 @@ namespace AvailabilityNotify.Services
             var client = _clientFactory.CreateClient();
             var response = await client.SendAsync(request);
             string responseContent = await response.Content.ReadAsStringAsync();
+            _context.Vtex.Logger.Debug("SaveNotifyRequest", null, $"[{response.StatusCode}] '{responseContent}'\n{jsonSerializedListItems}");
 
             return response.IsSuccessStatusCode;
         }
@@ -310,7 +309,7 @@ namespace AvailabilityNotify.Services
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Get,
-                RequestUri = new Uri($"http://{requestContext.Account}.vtexcommercestable.com.br/api/dataentities/{Constants.DATA_ENTITY}/search?_fields={Constants.FIELDS}&_schema={Constants.SCHEMA}&notificationSend=false")
+                RequestUri = new Uri($"http://{requestContext.Account}.vtexcommercestable.com.br/api/dataentities/{Constants.DATA_ENTITY}/search?_fields={Constants.FIELDS}&_schema={Constants.SCHEMA}&notificationSend=false&skuId={skuId}")
             };
 
             string authToken = requestContext.AuthToken;

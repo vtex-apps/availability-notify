@@ -6,6 +6,56 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [1.2.1] - 2021-10-22
+
+### Added
+- filter out inactive warehouses 
+- Add new model ListAllWarehouses
+- Add new Request ListAllWarehouses
+
+## [1.2.0] - 2021-10-15
+
+### Added
+- Updated README to let developers know that the broadcaster doesn't triger the email on dev workspaces
+
+## [1.1.1] - 2021-10-04
+
+## [1.1.0] - 2021-09-21
+
+### Added
+
+- Added option to run shipping simulation to verify that the item can be shipped.
+
+## [1.0.1] - 2021-09-02
+
+### Added
+
+- Update billing options with type and availableCountries fields
+
+## [1.0.0] - 2021-09-02
+
+### Added
+
+- Add billing options to manifest
+
+## [0.1.2] - 2021-09-01
+
+### Added
+
+- Add icon, images, licenses, and descriptions for app store submission
+
+## [0.1.1] - 2021-08-26
+
+### Fixed
+
+- Fixed search query for notifications
+
+## [0.1.0] - 2021-08-25
+
+### Added
+
+- Add Locale and Seller
+
 ## [0.0.11] - 2021-07-14
 
 ### Added

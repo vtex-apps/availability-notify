@@ -9,5 +9,6 @@ namespace AvailabilityNotify.Models
         public string AppKey { get; set; }
         public string AppToken { get; set; }
         public bool Initialized { get; set; }
+        public bool DoShippingSim { get; set; }
     }
 }

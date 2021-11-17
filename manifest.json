@@ -1,7 +1,7 @@
 {
   "name": "availability-notify",
   "vendor": "vtex",
-  "version": "0.0.11",
+  "version": "1.2.1",
   "title": "Availability Notify",
   "description": "Record and send notification when an item is back in stock",
   "scripts": {
@@ -41,6 +41,17 @@
     "vtex.store-resources": "0.x",
     "vtex.styleguide": "9.x",
     "vtex.broadcaster": "0.x"
+  },
+  "settingsSchema": {
+    "title": "Availability Notifier",
+    "type": "object",
+    "properties": {
+      "doShippingSim": {
+        "title": "Verify Availability",
+        "description": "Verify that the item is available to the shopper.",
+        "type": "boolean"
+      }
+    }
   },
   "policies": [
     {
@@ -99,5 +110,16 @@
       "name": "vbase-read-write"
     }
   ],
+  "billingOptions": {
+    "termsURL": "https://compliance.vtex.com/gdpr/policies/vtex-privacy-policy",
+    "support": {
+      "url": "https://support.vtex.com/hc/requests"
+    },
+    "free": true,
+    "type": "free",
+    "availableCountries": [
+      "*"
+    ]
+  },
   "$schema": "https://raw.githubusercontent.com/vtex/node-vtex-api/master/gen/manifest.schema"
 }

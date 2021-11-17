@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using AvailabilityNotify.Models;
 
@@ -6,12 +6,13 @@ namespace AvailabilityNotify.Services
 {
     public interface IVtexAPIService
     {
-        Task<bool> AvailabilitySubscribe(string email, string sku, string name);
+        Task<bool> AvailabilitySubscribe(string email, string sku, string name, string locale, SellerObj sellerObj);
         Task<bool> ProcessNotification(AffiliateNotification notification);
         Task<bool> ProcessNotification(BroadcastNotification notification);
         Task<bool> VerifySchema();
         Task<bool> CreateDefaultTemplate();
         Task<List<string>> ProcessAllRequests();
         Task<List<string>> ProcessUnsentRequests();
+        Task<CartSimulationResponse> CartSimulation(CartSimulationRequest cartSimulationRequest, RequestContext requestContext);
     }
 }
