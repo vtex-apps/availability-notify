@@ -83,6 +83,18 @@ In order to apply CSS customizations to this and other blocks, follow the instru
 | `sucess`  |
 | `error`   |
 
+## Searching and Processing Availability Notify data
+This app uses [Master Data V2](https://developers.vtex.com/vtex-rest-api/reference/master-data-api-v2-overview), to search for stored data you should use Master Data API - v2 endpoints with the variables `data_entity_name` and `schema` with the value `notify`. 
+
+If you want to run the services manually you can use the two endpoints below:
+
+To process Unsent Requests:
+`https://{{accountName}}.myvtex.com/availability-notify/process-unsent-requests`
+
+To process All Requests:
+`https://{{accountName}}.myvtex.com/availability-notify/process-all-requests`
+
+Check out the [Open API Schemas repository](https://github.com/vtex/openapi-schemas) containing several VTEX Postman Collections including Master Data API - v2.
 
 ## Contributors ✨
 
