@@ -3,24 +3,23 @@
   "memory": 512,
   "minReplicas": 10,
   "maxReplicas": 100,
-  "runtimeArgs": [
-  ],
+  "runtimeArgs": [],
   "routes": {
     "processNotification": {
-      "path": "/availability-notify/notify",
+      "path": "/_v/availability-notify/notify",
       "public": true
     },
     "initialize": {
-      "path": "/availability-notify/initialize",
+      "path": "/_v/availability-notify/initialize",
       "public": true
     },
     "prcocessAllRequests": {
-      "path": "/availability-notify/process-all-requests",
-      "public": true
+      "path": "/_v/availability-notify/process-all-requests",
+      "public": false
     },
     "processUnsentRequests": {
-      "path": "/availability-notify/process-unsent-requests",
-      "public": true
+      "path": "/_v/availability-notify/process-unsent-requests",
+      "public": false
     }
   },
   "events": {

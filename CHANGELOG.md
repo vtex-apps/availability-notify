@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Changed
+
+- Updated default template and dependecy version
+- Added option to forward notifications to another account
+
 ## [1.2.1] - 2021-10-22
 
 ### Added
