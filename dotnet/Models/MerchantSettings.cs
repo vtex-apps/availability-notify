@@ -10,5 +10,6 @@ namespace AvailabilityNotify.Models
         public string AppToken { get; set; }
         public bool Initialized { get; set; }
         public bool DoShippingSim { get; set; }
+        public string NotifyMarketplace { get; set; }
     }
 }

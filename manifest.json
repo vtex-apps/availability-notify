@@ -50,6 +50,11 @@
         "title": "Verify Availability",
         "description": "Verify that the item is available to the shopper.",
         "type": "boolean"
+      },
+      "notifyMarketplace": {
+        "title": "Marketplace to Notify",
+        "description": "Account name of Marketplace to notify.",
+        "type": "string"
       }
     }
   },
@@ -117,9 +122,7 @@
     },
     "free": true,
     "type": "free",
-    "availableCountries": [
-      "*"
-    ]
+    "availableCountries": ["*"]
   },
   "$schema": "https://raw.githubusercontent.com/vtex/node-vtex-api/master/gen/manifest.schema"
 }
