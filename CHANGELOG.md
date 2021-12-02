@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Changed
+
+- Check seller inventory when getting availability
+
 ## [1.3.0] - 2021-11-22
 
 ### Changed

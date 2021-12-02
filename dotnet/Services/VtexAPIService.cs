@@ -46,36 +46,6 @@ namespace AvailabilityNotify.Services
             this.CreateDefaultTemplate();
         }
 
-        //public async Task GetShopperToNotifyBySku(string sku)
-        //{
-        //    try
-        //    {
-        //        var request = new HttpRequestMessage
-        //        {
-        //            Method = HttpMethod.Get,
-        //            RequestUri = new Uri($"http://{this._httpContextAccessor.HttpContext.Request.Headers[Constants.VTEX_ACCOUNT_HEADER_NAME]}.{Constants.ENVIRONMENT}.com.br/api/dataentities/{Constants.DATA_ENTITY}/search?skuId={sku}")
-        //        };
-
-        //        request.Headers.Add(Constants.USE_HTTPS_HEADER_NAME, "true");
-        //        string authToken = this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_CREDENTIAL];
-        //        if (authToken != null)
-        //        {
-        //            request.Headers.Add(Constants.AUTHORIZATION_HEADER_NAME, authToken);
-        //            request.Headers.Add(Constants.VTEX_ID_HEADER_NAME, authToken);
-        //            request.Headers.Add(Constants.PROXY_AUTHORIZATION_HEADER_NAME, authToken);
-        //        }
-
-        //        var client = _clientFactory.CreateClient();
-        //        var response = await client.SendAsync(request);
-        //        string responseContent = await response.Content.ReadAsStringAsync();
-
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _context.Vtex.Logger.Error("GetShopperToNotifyBySku", null, $"Error getting shoppers for sku '{sku}'", ex);
-        //    }
-        //}
-
         public async Task<InventoryBySku> ListInventoryBySku(string sku, RequestContext requestContext)
         {
             // GET https://{accountName}.{environment}.com.br/api/logistics/pvt/inventory/skus/skuId
@@ -155,7 +125,7 @@ namespace AvailabilityNotify.Services
             long totalAvailable = 0;
             ListAllWarehousesResponse[] listAllWarehouses = await this.ListAllWarehouses();
             InventoryBySku inventoryBySku = await this.ListInventoryBySku(sku, requestContext);
-            if(inventoryBySku != null && inventoryBySku.Balance != null)
+            if (inventoryBySku != null && inventoryBySku.Balance != null)
             {
                 try
                 {
@@ -165,15 +135,59 @@ namespace AvailabilityNotify.Services
                     totalAvailable = totalQuantity - totalReseved;
                     _context.Vtex.Logger.Debug("GetTotalAvailableForSku", null, $"Sku '{sku}' {totalQuantity} - {totalReseved} = {totalAvailable}");
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     _context.Vtex.Logger.Error("GetTotalAvailableForSku", null, $"Error calculating total available for sku '{sku}' '{JsonConvert.SerializeObject(inventoryBySku)}'", ex);
                 }
             }
 
+            // if marketplace inventory is zero, check seller inventory
+            if (totalAvailable == 0)
+            {
+                GetSkuContextResponse skuContextResponse = await GetSkuContext(sku, requestContext);
+                if (skuContextResponse != null && skuContextResponse.SkuSellers != null)
+                {
+                    CartSimulationRequest cartSimulationRequest = new CartSimulationRequest
+                    {
+                        Items = new List<CartItem>(),
+                        PostalCode = string.Empty,
+                        Country = string.Empty
+                    };
+
+                    foreach (SkuSeller skuSeller in skuContextResponse.SkuSellers)
+                    {
+                        cartSimulationRequest.Items.Add(
+                            new CartItem
+                            {
+                                Id = skuSeller.SellerStockKeepingUnitId,
+                                Quantity = 1,
+                                Seller = skuSeller.SellerId
+                            }
+                        );
+                    }
+
+                    try
+                    {
+                        CartSimulationResponse cartSimulationResponse = await this.CartSimulation(cartSimulationRequest, requestContext);
+                        if (cartSimulationResponse != null)
+                        {
+                            var availabilityItems = cartSimulationResponse.Items.Where(i => i.Availability.Equals(Constants.Availability.Available));
+                            if (availabilityItems != null)
+                            {
+                                totalAvailable += availabilityItems.Sum(i => i.Quantity);
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _context.Vtex.Logger.Error("GetTotalAvailableForSku", null, $"Error calculating total available for sku '{sku}' from seller(s)", ex);
+                    }
+                }
+            }
+
             return totalAvailable;
         }
-
+        
         public async Task<bool> CreateOrUpdateTemplate(string jsonSerializedTemplate)
         {
             // POST: "http://hostname/api/template-render/pvt/templates"
