@@ -147,39 +147,40 @@ namespace AvailabilityNotify.Services
                 GetSkuContextResponse skuContextResponse = await GetSkuContext(sku, requestContext);
                 if (skuContextResponse != null && skuContextResponse.SkuSellers != null)
                 {
+                    CartSimulationRequest cartSimulationRequest = new CartSimulationRequest
+                    {
+                        Items = new List<CartItem>(),
+                        PostalCode = string.Empty,
+                        Country = string.Empty
+                    };
+
                     foreach (SkuSeller skuSeller in skuContextResponse.SkuSellers)
                     {
-                        CartSimulationRequest cartSimulationRequest = new CartSimulationRequest
-                        {
-                            Items = new List<CartItem>
+                        cartSimulationRequest.Items.Add(
+                            new CartItem
                             {
-                                new CartItem
-                                {
-                                    Id = skuSeller.SellerStockKeepingUnitId,
-                                    Quantity = 1,
-                                    Seller = skuSeller.SellerId
-                                }
-                            },
-                            PostalCode = string.Empty,
-                            Country = string.Empty
-                        };
+                                Id = skuSeller.SellerStockKeepingUnitId,
+                                Quantity = 1,
+                                Seller = skuSeller.SellerId
+                            }
+                        );
+                    }
 
-                        try
+                    try
+                    {
+                        CartSimulationResponse cartSimulationResponse = await this.CartSimulation(cartSimulationRequest, requestContext);
+                        if (cartSimulationResponse != null)
                         {
-                            CartSimulationResponse cartSimulationResponse = await this.CartSimulation(cartSimulationRequest, requestContext);
-                            if (cartSimulationResponse != null)
+                            var availabilityItems = cartSimulationResponse.Items.Where(i => i.Availability.Equals(Constants.Availability.Available));
+                            if (availabilityItems != null)
                             {
-                                var availabilityItems = cartSimulationResponse.Items.Where(i => i.Availability.Equals(Constants.Availability.Available));
-                                if (availabilityItems != null)
-                                {
-                                    totalAvailable += availabilityItems.Sum(i => i.Quantity);
-                                }
+                                totalAvailable += availabilityItems.Sum(i => i.Quantity);
                             }
                         }
-                        catch(Exception ex)
-                        {
-                            _context.Vtex.Logger.Error("GetTotalAvailableForSku", null, $"Error calculating total available for sku '{sku}' from seller '{skuSeller.SellerId}'", ex);
-                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _context.Vtex.Logger.Error("GetTotalAvailableForSku", null, $"Error calculating total available for sku '{sku}' from seller(s)", ex);
                     }
                 }
             }
