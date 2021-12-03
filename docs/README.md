@@ -30,7 +30,11 @@ The email template that will be used is `back-in-stock`
 
 ## Configuration
 
+![image](https://user-images.githubusercontent.com/47258865/144638028-32f060ee-9b73-4588-aa00-731afb862b1e.png)
+
+
 `Verify Availability` runs a shipping simulation to verify that the item can be shipped to the shopper before sending a notificaiton.
+`Marketplace to Notify` allows a seller account to specify a comma separated list of marketplace account names to notify of inventory updates.
 
 <!-- DOCS-IGNORE:start -->
 
