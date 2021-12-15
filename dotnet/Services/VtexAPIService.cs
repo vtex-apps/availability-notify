@@ -507,11 +507,11 @@ namespace AvailabilityNotify.Services
             return success;
         }
 
-        public async Task<ShopperRecord> GetShopperByEmail(string email)
+        public async Task<ShopperRecord[]> GetShopperByEmail(string email)
         {
             // GET https://{accountName}.{environment}.com.br/api/dataentities/CL/search?email=
 
-            ShopperRecord shopperRecord = null;
+            ShopperRecord[] shopperRecord = null;
 
             try
             {
@@ -535,7 +535,8 @@ namespace AvailabilityNotify.Services
                 string responseContent = await response.Content.ReadAsStringAsync();
                 if(response.IsSuccessStatusCode)
                 {
-                    shopperRecord = JsonConvert.DeserializeObject<ShopperRecord>(responseContent);
+                    _context.Vtex.Logger.Debug("GetShopperByEmail", null, $"Shopper '{email}'\n[{response.StatusCode}] '{responseContent}'");
+                    shopperRecord = JsonConvert.DeserializeObject<ShopperRecord[]>(responseContent);
                 }
                 else
                 {
@@ -749,10 +750,10 @@ namespace AvailabilityNotify.Services
         public async Task<bool> CanShipToShopper(NotifyRequest requestToNotify, RequestContext requestContext)
         {
             bool sendMail = false;
-            ShopperRecord shopperRecord = await this.GetShopperByEmail(requestToNotify.Email);
+            ShopperRecord[] shopperRecord = await this.GetShopperByEmail(requestToNotify.Email);
             if (shopperRecord != null)
             {
-                ShopperAddress[] shopperAddresses = await this.GetShopperAddressById(shopperRecord.Id);
+                ShopperAddress[] shopperAddresses = await this.GetShopperAddressById(shopperRecord.FirstOrDefault().Id);
                 if (shopperAddresses != null)
                 {
                     string sellerId = string.Empty;
@@ -864,7 +865,7 @@ namespace AvailabilityNotify.Services
                 var request = new HttpRequestMessage
                 {
                     Method = HttpMethod.Post,
-                    RequestUri = new Uri($"http://{accountName}.myvtex.com/_v/availability-notify/notify"),
+                    RequestUri = new Uri($"http://{accountName}.{Constants.ENVIRONMENT}.com.br/_v/availability-notify/notify"),
                     Content = new StringContent(jsonSerializedData, Encoding.UTF8, Constants.APPLICATION_JSON)
                 };
 

@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Fixed
+- Fix ForwardNotification deserialization
+- Add log for notification email
+
 ## [1.3.2] - 2021-12-08
 
 ### Added
