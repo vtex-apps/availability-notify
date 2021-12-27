@@ -23,7 +23,9 @@ The app records the notification request and monitors inventory updates. This wa
 2. Open your store’s Store Theme app directory in your code editor.
 
 3. Open your app's `manifest.json file` and add the Availability Notify app under the `peerDependencies` field.
->⚠️ *Due to changes in its peer dependencies you will need to release a new major version. Check the documentation on [How to migrate CMS settings after a theme major update](https://developers.vtex.com/vtex-developer-docs/docs/vtex-io-documentation-migrating-cms-settings-after-major-update) *
+>⚠️ Warning
+>
+> Due to changes in its peer dependencies you will need to release a new major version. Check the documentation on [How to migrate CMS settings after a theme major update](https://developers.vtex.com/vtex-developer-docs/docs/vtex-io-documentation-migrating-cms-settings-after-major-update).
 
 ```json
   "peerDependencies": {
@@ -43,23 +45,27 @@ The app records the notification request and monitors inventory updates. This wa
 ```
 
 5. Once you have added the `availability-notify` component, access your store's Admin.
+6. Go to **ACCOUNT SETTINGS** > **Apps** > **My apps**, search for `Availability Notify` and click on it.
+7. Then, you will see the app's settings:
 
-7. Go to **Customer** > **Message center** > **Templates**.
+![app-setting](https://user-images.githubusercontent.com/47258865/144638028-32f060ee-9b73-4588-aa00-731afb862b1e.png)
 
-9. Search for the `availability-notify` component template, named **BACK IN STOCK** and click on it.
-
-11. After, you will see the email template and its configuration. For example:
-
-
-![template-back-in-stock](https://user-images.githubusercontent.com/67270558/131547198-a4eb3f0e-5a20-4e63-9f1f-d3bb312fa621.gif)
+| Setting field | Description |  
+|---------- |-------------|
+| `Verify Availability`   | Runs a shipping simulation to verify that the item can be shipped to the shopper before sending a notificaiton. | 
+| `Marketplace to Notify` | Allows a seller account to specify a comma separated list of marketplace account names to notify of inventory updates.   |  
 
 
-Now you set up the template according to your necessities. Check out more details about it in the next section, [Customizing the Back in stock template](#customizing-the-back-in-stock-template).
+After making the desired settings in the app, set up its template according to your necessities. Check out more details about it in the next section, [Customizing the Back in stock template](#customizing-the-back-in-stock-template).
 
 ## Customizing the Back in stock template
-Once you have installed the app, you can customize the email template to send to the shoppers who asked to be notified. You find the email template, named **BACK IN STOCK**, in your store's Admin in **Customer** > **Message center** > **Templates**.
+Once you have installed the app, you can customize the email template to send to the shoppers who asked to be notified. 
 
-![customize-template](https://user-images.githubusercontent.com/67270558/132258032-456a7d21-2f86-4445-98e1-ee727dadb967.png)
+1. Find the email template, named **BACK IN STOCK**, in your store's Admin in **Customer** > **Message center** > **Templates**.
+2. Search for the `availability-notify` component template, named **BACK IN STOCK** and click on it.
+3. After, you will see the email template and its configuration. For example:
+
+![template-back-in-stock](https://user-images.githubusercontent.com/67270558/131547198-a4eb3f0e-5a20-4e63-9f1f-d3bb312fa621.gif)
 
 To edit the email template's field, check the documentation on [How to create and edit transactional email templates](https://help.vtex.com/en/tracks/transactional-emails--6IkJwttMw5T84mlY9RifRP/335JZKUYgvYlGOJgvJYxRO), and you will notice the **JSON Data** field, which is responsible for adding variables that allow you to dynamically add data to the email. These variables are JSON properties, and you can see more details about them in [Get SKU and context](https://developers.vtex.com/vtex-rest-api/reference/catalog-api-sku#catalog-api-get-sku-context) and in [Including order variables in email template](https://help.vtex.com/en/tracks/transactional-emails--6IkJwttMw5T84mlY9RifRP/fLMUCPArCYB9vcTZEZ6bi).
 
