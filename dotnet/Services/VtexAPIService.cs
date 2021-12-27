@@ -46,36 +46,6 @@ namespace AvailabilityNotify.Services
             this.CreateDefaultTemplate();
         }
 
-        //public async Task GetShopperToNotifyBySku(string sku)
-        //{
-        //    try
-        //    {
-        //        var request = new HttpRequestMessage
-        //        {
-        //            Method = HttpMethod.Get,
-        //            RequestUri = new Uri($"http://{this._httpContextAccessor.HttpContext.Request.Headers[Constants.VTEX_ACCOUNT_HEADER_NAME]}.{Constants.ENVIRONMENT}.com.br/api/dataentities/{Constants.DATA_ENTITY}/search?skuId={sku}")
-        //        };
-
-        //        request.Headers.Add(Constants.USE_HTTPS_HEADER_NAME, "true");
-        //        string authToken = this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_CREDENTIAL];
-        //        if (authToken != null)
-        //        {
-        //            request.Headers.Add(Constants.AUTHORIZATION_HEADER_NAME, authToken);
-        //            request.Headers.Add(Constants.VTEX_ID_HEADER_NAME, authToken);
-        //            request.Headers.Add(Constants.PROXY_AUTHORIZATION_HEADER_NAME, authToken);
-        //        }
-
-        //        var client = _clientFactory.CreateClient();
-        //        var response = await client.SendAsync(request);
-        //        string responseContent = await response.Content.ReadAsStringAsync();
-
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _context.Vtex.Logger.Error("GetShopperToNotifyBySku", null, $"Error getting shoppers for sku '{sku}'", ex);
-        //    }
-        //}
-
         public async Task<InventoryBySku> ListInventoryBySku(string sku, RequestContext requestContext)
         {
             // GET https://{accountName}.{environment}.com.br/api/logistics/pvt/inventory/skus/skuId
@@ -155,7 +125,7 @@ namespace AvailabilityNotify.Services
             long totalAvailable = 0;
             ListAllWarehousesResponse[] listAllWarehouses = await this.ListAllWarehouses();
             InventoryBySku inventoryBySku = await this.ListInventoryBySku(sku, requestContext);
-            if(inventoryBySku != null && inventoryBySku.Balance != null)
+            if (inventoryBySku != null && inventoryBySku.Balance != null)
             {
                 try
                 {
@@ -165,15 +135,59 @@ namespace AvailabilityNotify.Services
                     totalAvailable = totalQuantity - totalReseved;
                     _context.Vtex.Logger.Debug("GetTotalAvailableForSku", null, $"Sku '{sku}' {totalQuantity} - {totalReseved} = {totalAvailable}");
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     _context.Vtex.Logger.Error("GetTotalAvailableForSku", null, $"Error calculating total available for sku '{sku}' '{JsonConvert.SerializeObject(inventoryBySku)}'", ex);
                 }
             }
 
+            // if marketplace inventory is zero, check seller inventory
+            if (totalAvailable == 0)
+            {
+                GetSkuContextResponse skuContextResponse = await GetSkuContext(sku, requestContext);
+                if (skuContextResponse != null && skuContextResponse.SkuSellers != null)
+                {
+                    CartSimulationRequest cartSimulationRequest = new CartSimulationRequest
+                    {
+                        Items = new List<CartItem>(),
+                        PostalCode = string.Empty,
+                        Country = string.Empty
+                    };
+
+                    foreach (SkuSeller skuSeller in skuContextResponse.SkuSellers)
+                    {
+                        cartSimulationRequest.Items.Add(
+                            new CartItem
+                            {
+                                Id = skuSeller.SellerStockKeepingUnitId,
+                                Quantity = 1,
+                                Seller = skuSeller.SellerId
+                            }
+                        );
+                    }
+
+                    try
+                    {
+                        CartSimulationResponse cartSimulationResponse = await this.CartSimulation(cartSimulationRequest, requestContext);
+                        if (cartSimulationResponse != null)
+                        {
+                            var availabilityItems = cartSimulationResponse.Items.Where(i => i.Availability.Equals(Constants.Availability.Available));
+                            if (availabilityItems != null)
+                            {
+                                totalAvailable += availabilityItems.Sum(i => i.Quantity);
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _context.Vtex.Logger.Error("GetTotalAvailableForSku", null, $"Error calculating total available for sku '{sku}' from seller(s)", ex);
+                    }
+                }
+            }
+
             return totalAvailable;
         }
-
+        
         public async Task<bool> CreateOrUpdateTemplate(string jsonSerializedTemplate)
         {
             // POST: "http://hostname/api/template-render/pvt/templates"
@@ -306,6 +320,7 @@ namespace AvailabilityNotify.Services
                 else
                 {
                     EmailTemplate emailTemplate = JsonConvert.DeserializeObject<EmailTemplate>(templateBody);
+                    emailTemplate.Templates.Email.Message = emailTemplate.Templates.Email.Message.Replace(@"\r", string.Empty);
                     emailTemplate.Templates.Email.Message = emailTemplate.Templates.Email.Message.Replace(@"\n", "\n");
                     templateExists = await this.CreateOrUpdateTemplate(emailTemplate);
                 }
@@ -476,15 +491,27 @@ namespace AvailabilityNotify.Services
             string skuId = notification.IdSku;
             _context.Vtex.Logger.Debug("ProcessNotification", "BroadcastNotification", $"Sku:{skuId} Active?{isActive} Inventory Changed?{inventoryUpdated}");
             success = await this.ProcessNotification(requestContext, isActive, inventoryUpdated, skuId);
+            if (isActive && inventoryUpdated)
+            {
+                MerchantSettings merchantSettings = await _availabilityRepository.GetMerchantSettings();
+                if (!string.IsNullOrEmpty(merchantSettings.NotifyMarketplace))
+                {
+                    string[] marketplaces = merchantSettings.NotifyMarketplace.Split(',');
+                    foreach (string marketplace in marketplaces)
+                    {
+                        success &= await this.ForwardNotification(notification, marketplace, requestContext);
+                    }
+                }
+            }
 
             return success;
         }
 
-        public async Task<ShopperRecord> GetShopperByEmail(string email)
+        public async Task<ShopperRecord[]> GetShopperByEmail(string email)
         {
             // GET https://{accountName}.{environment}.com.br/api/dataentities/CL/search?email=
 
-            ShopperRecord shopperRecord = null;
+            ShopperRecord[] shopperRecord = null;
 
             try
             {
@@ -508,7 +535,8 @@ namespace AvailabilityNotify.Services
                 string responseContent = await response.Content.ReadAsStringAsync();
                 if(response.IsSuccessStatusCode)
                 {
-                    shopperRecord = JsonConvert.DeserializeObject<ShopperRecord>(responseContent);
+                    _context.Vtex.Logger.Debug("GetShopperByEmail", null, $"Shopper '{email}'\n[{response.StatusCode}] '{responseContent}'");
+                    shopperRecord = JsonConvert.DeserializeObject<ShopperRecord[]>(responseContent);
                 }
                 else
                 {
@@ -722,10 +750,10 @@ namespace AvailabilityNotify.Services
         public async Task<bool> CanShipToShopper(NotifyRequest requestToNotify, RequestContext requestContext)
         {
             bool sendMail = false;
-            ShopperRecord shopperRecord = await this.GetShopperByEmail(requestToNotify.Email);
+            ShopperRecord[] shopperRecord = await this.GetShopperByEmail(requestToNotify.Email);
             if (shopperRecord != null)
             {
-                ShopperAddress[] shopperAddresses = await this.GetShopperAddressById(shopperRecord.Id);
+                ShopperAddress[] shopperAddresses = await this.GetShopperAddressById(shopperRecord.FirstOrDefault().Id);
                 if (shopperAddresses != null)
                 {
                     string sellerId = string.Empty;
@@ -810,6 +838,64 @@ namespace AvailabilityNotify.Services
             }
 
             return cartSimulationResponse;
+        }
+
+        public async Task<bool> ForwardNotification(BroadcastNotification notification, string accountName, RequestContext requestContext)
+        {
+            bool success = false;
+            AffiliateNotification affiliateNotification = new AffiliateNotification
+            {
+                An = notification.An,
+                HasStockKeepingUnitRemovedFromAffiliate = notification.HasStockKeepingUnitRemovedFromAffiliate,
+                IdAffiliate = notification.IdAffiliate,
+                IsActive = notification.IsActive,
+                DateModified = notification.DateModified,
+                HasStockKeepingUnitModified = notification.HasStockKeepingUnitModified,
+                IdSku = notification.IdSku,
+                PriceModified = notification.PriceModified,
+                ProductId = notification.ProductId,
+                StockModified = notification.StockModified,
+                Version = notification.Version
+            };
+
+            string jsonSerializedData = JsonConvert.SerializeObject(affiliateNotification);
+
+            try
+            {
+                var request = new HttpRequestMessage
+                {
+                    Method = HttpMethod.Post,
+                    RequestUri = new Uri($"http://{accountName}.{Constants.ENVIRONMENT}.com.br/_v/availability-notify/notify"),
+                    Content = new StringContent(jsonSerializedData, Encoding.UTF8, Constants.APPLICATION_JSON)
+                };
+
+                request.Headers.Add(Constants.USE_HTTPS_HEADER_NAME, "true");
+                string authToken = requestContext.AuthToken;
+                if (authToken != null)
+                {
+                    request.Headers.Add(Constants.AUTHORIZATION_HEADER_NAME, authToken);
+                    request.Headers.Add(Constants.VTEX_ID_HEADER_NAME, authToken);
+                    request.Headers.Add(Constants.PROXY_AUTHORIZATION_HEADER_NAME, authToken);
+                }
+
+                var client = _clientFactory.CreateClient();
+                var response = await client.SendAsync(request);
+                string responseContent = await response.Content.ReadAsStringAsync();
+                if (response.IsSuccessStatusCode)
+                {
+                    success = true;
+                }
+                else
+                {
+                    _context.Vtex.Logger.Warn("ForwardNotification", null, $"[{response.StatusCode}] '{responseContent}'\n{jsonSerializedData}");
+                }
+            }
+            catch (Exception ex)
+            {
+                _context.Vtex.Logger.Error("ForwardNotification", null, $"Error forwarding request to '{accountName}'\n'{jsonSerializedData}'", ex);
+            }
+
+            return success;
         }
     }
 }

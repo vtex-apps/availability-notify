@@ -6,6 +6,31 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [1.3.7] - 2021-12-17
+
+### Fixed
+- Fix ForwardNotification deserialization
+- Add log for notification email
+
+## [1.3.2] - 2021-12-08
+
+### Added
+
+- Crowdin configuration file
+
+## [1.3.1] - 2021-12-02
+
+### Changed
+
+- Check seller inventory when getting availability
+
+## [1.3.0] - 2021-11-22
+
+### Changed
+
+- Updated default template and dependecy version
+- Added option to forward notifications to another account
+
 ## [1.2.1] - 2021-10-22
 
 ### Added
