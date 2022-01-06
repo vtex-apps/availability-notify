@@ -8,35 +8,100 @@
 
 # Availability Notify
 
-## Description
+The Availability Notify component is responsible for showing a subscription form when a product SKU is not available. The form lets customers subscribe to get notified when that item gets restocked. 
 
-`AvailabilityNotfier` is a VTEX Component that shows the availability notify form that is shown when the product isn't available.
-The app will record the request for notification and monitor inventory updates.  When the requested sku is back in stock, the app
-will send an email to the shopper that requested to be notified.
 
-## Usage
+![store-notifier](https://user-images.githubusercontent.com/67270558/132012045-06c65073-2692-4827-b08a-7be5730b6422.png)
 
-To use this app, you need to import it in your store theme peer dependencies on manifest.json.
+
+The app records the notification request and monitors inventory updates. This way, once the requested SKU gets back in stock, the app will email the shoppers who asked to be notified.
+
+## Configuration
+
+1. [Install](https://developers.vtex.com/vtex-developer-docs/docs/vtex-io-documentation-installing-an-app) the Availability Notify app in the desired VTEX account by running `vtex install vtex.availability-notify` in your terminal.
+
+2. Open your store’s Store Theme app directory in your code editor.
+
+3. Open your app's `manifest.json file` and add the Availability Notify app under the `peerDependencies` field.
+>⚠️ Warning
+>
+> Due to changes in its peer dependencies you will need to release a new major version. Check the documentation on [How to migrate CMS settings after a theme major update](https://developers.vtex.com/vtex-developer-docs/docs/vtex-io-documentation-migrating-cms-settings-after-major-update).
+
 ```json
   "peerDependencies": {
     "vtex.availability-notify": "1.x"
   }
 ```
-Then, you can add the `availability-notify` component block to your PDP in your store theme.
+4. Add the `availability-notify` component block to your PDP in your store theme (`store.product`). For example:
 
-The email template that will be used is `back-in-stock`
+```json
+{
+ "store.product": {
+    "children": [
+      "availability-notify"
+    ]
+  },
 
-*NOTE: notification email is only triggered when on the `master` workspace*
+```
 
-## Configuration
+5. Once you have added the `availability-notify` component, access your store's Admin.
+6. Go to **ACCOUNT SETTINGS** > **Apps** > **My apps**, search for `Availability Notify` and click on it.
+7. Then, you will see the app's settings:
 
-![image](https://user-images.githubusercontent.com/47258865/144638028-32f060ee-9b73-4588-aa00-731afb862b1e.png)
+![app-setting](https://user-images.githubusercontent.com/47258865/144638028-32f060ee-9b73-4588-aa00-731afb862b1e.png)
+
+| Setting field | Description |  
+|---------- |-------------|
+| `Verify Availability`   | Runs a shipping simulation to verify that the item can be shipped to the shopper before sending a notificaiton. | 
+| `Marketplace to Notify` | Allows a seller account to specify a comma separated list of marketplace account names to notify of inventory updates.   |  
 
 
-`Verify Availability` runs a shipping simulation to verify that the item can be shipped to the shopper before sending a notificaiton.
-`Marketplace to Notify` allows a seller account to specify a comma separated list of marketplace account names to notify of inventory updates.
+After making the desired settings in the app, set up its template according to your necessities. Check out more details about it in the next section, [Customizing the Back in stock template](#customizing-the-back-in-stock-template).
 
-<!-- DOCS-IGNORE:start -->
+## Customizing the Back in stock template
+Once you have installed the app, you can customize the email template to send to the shoppers who asked to be notified. 
+
+1. Find the email template, named **BACK IN STOCK**, in your store's Admin in **Customer** > **Message center** > **Templates**.
+2. Search for the `availability-notify` component template, named **BACK IN STOCK** and click on it.
+3. After, you will see the email template and its configuration. For example:
+
+![template-back-in-stock](https://user-images.githubusercontent.com/67270558/131547198-a4eb3f0e-5a20-4e63-9f1f-d3bb312fa621.gif)
+
+To edit the email template's field, check the documentation on [How to create and edit transactional email templates](https://help.vtex.com/en/tracks/transactional-emails--6IkJwttMw5T84mlY9RifRP/335JZKUYgvYlGOJgvJYxRO), and you will notice the **JSON Data** field, which is responsible for adding variables that allow you to dynamically add data to the email. These variables are JSON properties, and you can see more details about them in [Get SKU and context](https://developers.vtex.com/vtex-rest-api/reference/catalog-api-sku#catalog-api-get-sku-context) and in [Including order variables in email template](https://help.vtex.com/en/tracks/transactional-emails--6IkJwttMw5T84mlY9RifRP/fLMUCPArCYB9vcTZEZ6bi).
+
+>⚠️ *JSON Data examples will only appear in templates when you complete the desired action in your store. If you have not transacted an order, recurrence or any other action, JSON Data will appear blank.*
+
+## Searching and Processing Availability Notify data
+This app uses [Master Data V2](https://developers.vtex.com/vtex-rest-api/reference/master-data-api-v2-overview), to search for stored data you should use Master Data API - v2 endpoints with the variables `data_entity_name` and `schema` with the value `notify`. 
+
+If you want to run the services manually you can use the two endpoints below:
+
+- To process Unsent Requests:
+`https://{{accountName}}.myvtex.com/availability-notify/process-unsent-requests`
+
+- To process All Requests:
+`https://{{accountName}}.myvtex.com/availability-notify/process-all-requests`
+
+Check out the [Open API Schemas repository](https://github.com/vtex/openapi-schemas) containing several VTEX Postman Collections including Master Data API - v2.
+
+
+## Customization
+
+In order to apply CSS customizations to this and other blocks, follow the instructions given in the recipe on [Using CSS Handles for store customization](https://vtex.io/docs/recipes/style/using-css-handles-for-store-customization).
+
+| CSS Handles             |
+| ----------------------- |
+| `notiferContainer`|
+| `title`       |
+| `notifyLabel`|
+| `form`      |
+| `content`   |
+| `input`     |
+| `inputName` |
+| `inputEmail`|
+| `submit`  |
+| `sucess`  |
+| `error`   |
 
 ## Contributors ✨
 
