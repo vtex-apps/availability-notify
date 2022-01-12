@@ -10,32 +10,30 @@ on:
       - fix/*
       - chore/*
   pull_request:
-    types: [opened, synchronize, reopened]
+    branches:
+      - master
+      - main
 
 jobs:
-  Lint:
+  lint:
     name: Lint
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+      - uses: actions/checkout@master
+      - uses: actions/setup-node@master
         with:
-          fetch-depth: 0
-
-      - name: Cache for node_modules
-        uses: actions/cache@v2
+          node-version: 16.x
+        env:
+          RUNNER_TEMP: /tmp
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: 'echo "::set-output name=dir::$(yarn cache dir)"'
+      - uses: actions/cache@v1
+        id: yarn-cache
         with:
-          path: '**/node_modules'
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
-
-      - name: Install base packages
-        run: yarn install --frozen-lockfile
-        if: steps.cache-node-modules.outputs.cache-hit != 'true'
-
-      - name: Install react packages
-        run: yarn install --frozen-lockfile
-        working-directory: ./react
-        if: steps.cache-node-modules.outputs.cache-hit != 'true'
-
-      - name: Lint
-        run: yarn lint
+          path: '${{ steps.yarn-cache-dir-path.outputs.dir }}'
+          key: "${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}"
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+      - name: Lint project
+        uses: vtex/action-lint@master
