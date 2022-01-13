@@ -6,11 +6,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added
+
+- Quality Engineering Actions (SonarCloud for TS and C# plus Lint for TS)
+
 ## [1.4.0] - 2022-01-06
 
 ## [1.3.7] - 2021-12-17
 
 ### Fixed
+
 - Fix ForwardNotification deserialization
 - Add log for notification email
 
@@ -36,13 +41,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [1.2.1] - 2021-10-22
 
 ### Added
-- filter out inactive warehouses 
+
+- filter out inactive warehouses
 - Add new model ListAllWarehouses
 - Add new Request ListAllWarehouses
 
 ## [1.2.0] - 2021-10-15
 
 ### Added
+
 - Updated README to let developers know that the broadcaster doesn't triger the email on dev workspaces
 
 ## [1.1.1] - 2021-10-04
