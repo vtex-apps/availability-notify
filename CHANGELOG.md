@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Fixed
+- Change type for PriceValidUntil
+- Added outbound access to the availability-notify endpoint
+
 ## [1.4.2] - 2022-01-20
 
 ### Fixed

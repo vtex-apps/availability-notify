@@ -94,6 +94,13 @@
     {
       "name": "outbound-access",
       "attrs": {
+        "host": "{{account}}.vtexcommercestable.com.br",
+        "path": "/_v/availability-notify/notify"
+      }
+    },
+    {
+      "name": "outbound-access",
+      "attrs": {
         "host": "raw.githubusercontent.com",
         "path": "/vtex-apps/availability-notify/*"
       }

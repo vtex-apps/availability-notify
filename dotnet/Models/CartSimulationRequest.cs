@@ -38,7 +38,7 @@ namespace AvailabilityNotify.Models
         public long Tax { get; set; }
 
         [JsonProperty("priceValidUntil")]
-        public DateTimeOffset PriceValidUntil { get; set; }
+        public string PriceValidUntil { get; set; }
 
         [JsonProperty("price")]
         public long Price { get; set; }
