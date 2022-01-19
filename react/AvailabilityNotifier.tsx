@@ -26,7 +26,7 @@ interface Props {
   skuId?: string
 }
 
-interface SellerObj {
+export interface SellerObj {
   sellerId: string | undefined
   sellerName: string | undefined
   addToCartLink: string | undefined
