@@ -27,10 +27,10 @@ interface Props {
 }
 
 interface SellerObj {
-  sellerId: string
-  sellerName: string
-  addToCartLink: string
-  sellerDefault: boolean
+  sellerId: string | undefined
+  sellerName: string | undefined
+  addToCartLink: string | undefined
+  sellerDefault: boolean | undefined
 }
 
 const isAvailable = (commertialOffer?: any['commertialOffer']) => {
@@ -60,18 +60,20 @@ function AvailabilityNotifier(props: Props) {
 
   const intl = useIntl()
 
-  const seller = getDefaultSeller(productContext.selectedItem?.sellers) as any
+  const seller = getDefaultSeller(productContext.selectedItem?.sellers) as
+    | any
+    | null
 
   const available = props.available ?? isAvailable(seller?.commertialOffer)
-  const skuId = props.skuId ?? productContext.selectedItem?.itemId
+  const skuId = props.skuId ?? productContext?.selectedItem?.itemId
   const { locale } = useRuntime().culture
   // console.log('Seller =>', seller)
   // const sellerObj = seller as SellerObj
   const sellerObj = {
-    sellerName: seller.sellerName,
-    sellerId: seller.sellerId,
-    addToCartLink: seller.addToCartLink,
-    sellerDefault: seller.sellerDefault,
+    sellerName: seller?.sellerName,
+    sellerId: seller?.sellerId,
+    addToCartLink: seller?.addToCartLink,
+    sellerDefault: seller?.sellerDefault,
   }
 
   // Render component only if the product is out of stock
@@ -118,7 +120,8 @@ function AvailabilityNotifier(props: Props) {
   }
 
   const validateEmail = (newEmail: string) => {
-    const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    const emailRegex =
+      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
     setEmailError(!emailRegex.test(newEmail.toLowerCase()))
   }

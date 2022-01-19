@@ -1,8 +1,12 @@
-import { Seller } from 'vtex.product-context'
+import type { Seller as SellerFromContext } from 'vtex.product-context'
 
-export function getDefaultSeller(sellers?: Seller[]) {
+import type { SellerObj } from '../AvailabilityNotifier'
+
+export type Seller = SellerFromContext & SellerObj
+
+export function getDefaultSeller(sellers?: SellerFromContext[]) {
   if (!sellers || sellers.length === 0) {
-    return
+    return null
   }
 
   const defaultSeller = sellers.find(seller => seller.sellerDefault)

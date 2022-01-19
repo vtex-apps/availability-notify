@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Fixed
+- fix property when receiving and undefined value
+
 ### Added
 
 - Quality Engineering Actions (SonarCloud for TS and C# plus Lint for TS)
