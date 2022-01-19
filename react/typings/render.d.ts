@@ -1,6 +1,6 @@
 /* Typings for `render-runtime` */
 declare module 'vtex.render-runtime' {
-  import { Component, ReactElement } from 'react'
+  import type { Component, ReactElement } from 'react'
 
   export interface NavigationOptions {
     page: string
@@ -19,16 +19,22 @@ declare module 'vtex.render-runtime' {
   export const NoSSR: ReactElement
   export const RenderContextConsumer: ReactElement
   export const canUseDOM: boolean
+  // eslint-disable-next-line @typescript-eslint/ban-types
   export const withRuntimeContext: <TOriginalProps extends {}>(
     Component: ComponentType<TOriginalProps & RenderContextProps>
   ) => ComponentType<TOriginalProps>
 
-  export const buildCacheLocator = (app: string, type: string, cacheId: string) => string
+  export const buildCacheLocator = (
+    app: string,
+    type: string,
+    cacheId: string
+  ) => string
 
+  // eslint-disable-next-line @typescript-eslint/ban-types
   interface RenderComponent<P = {}, S = {}> extends Component<P, S> {
     getCustomMessages?: (locale: string) => any
     schema: ComponentSchema
-    getSchema?: (a: any, b: any?) => ComponentSchema
+    getSchema?: (a: any, b: ?any) => ComponentSchema
     uiSchema: UISchema
   }
 

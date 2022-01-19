@@ -4,12 +4,13 @@ import { useIntl } from 'react-intl'
 import { useMutation } from 'react-apollo'
 import { Button, Input } from 'vtex.styleguide'
 import { useProduct } from 'vtex.product-context'
-// import type { Seller } from 'vtex.product-context'
 import { useRuntime } from 'vtex.render-runtime'
 
+import type { Seller } from './utils/sellers'
 import ADD_TO_AVAILABILITY_SUBSCRIBER_MUTATION from './graphql/addToAvailabilityNotifierMutation.gql'
 import styles from './AvailabilityNotifier.css'
 import { getDefaultSeller } from './utils/sellers'
+// import type { Seller } from 'vtex.product-context'
 
 interface MutationVariables {
   skuId: string
@@ -26,11 +27,11 @@ interface Props {
   skuId?: string
 }
 
-interface SellerObj {
-  sellerId: string
-  sellerName: string
-  addToCartLink: string
-  sellerDefault: boolean
+export interface SellerObj {
+  sellerId: string | undefined
+  sellerName: string | undefined
+  addToCartLink: string | undefined
+  sellerDefault: boolean | undefined
 }
 
 const isAvailable = (commertialOffer?: any['commertialOffer']) => {
@@ -60,18 +61,20 @@ function AvailabilityNotifier(props: Props) {
 
   const intl = useIntl()
 
-  const seller = getDefaultSeller(productContext.selectedItem?.sellers) as any
+  const seller = getDefaultSeller(
+    productContext.selectedItem?.sellers
+  ) as Seller | null
 
   const available = props.available ?? isAvailable(seller?.commertialOffer)
-  const skuId = props.skuId ?? productContext.selectedItem?.itemId
+  const skuId = props.skuId ?? productContext?.selectedItem?.itemId
   const { locale } = useRuntime().culture
   // console.log('Seller =>', seller)
   // const sellerObj = seller as SellerObj
   const sellerObj = {
-    sellerName: seller.sellerName,
-    sellerId: seller.sellerId,
-    addToCartLink: seller.addToCartLink,
-    sellerDefault: seller.sellerDefault,
+    sellerName: seller?.sellerName,
+    sellerId: seller?.sellerId,
+    addToCartLink: seller?.addToCartLink,
+    sellerDefault: seller?.sellerDefault,
   }
 
   // Render component only if the product is out of stock
@@ -118,7 +121,8 @@ function AvailabilityNotifier(props: Props) {
   }
 
   const validateEmail = (newEmail: string) => {
-    const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    const emailRegex =
+      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
     setEmailError(!emailRegex.test(newEmail.toLowerCase()))
   }
