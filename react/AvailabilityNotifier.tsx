@@ -60,9 +60,9 @@ function AvailabilityNotifier(props: Props) {
 
   const intl = useIntl()
 
-  const seller = getDefaultSeller(productContext.selectedItem?.sellers) as
-    | any
-    | null
+  const seller = getDefaultSeller(
+    productContext.selectedItem?.sellers
+  ) as Seller | null
 
   const available = props.available ?? isAvailable(seller?.commertialOffer)
   const skuId = props.skuId ?? productContext?.selectedItem?.itemId
