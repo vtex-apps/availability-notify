@@ -4,12 +4,13 @@ import { useIntl } from 'react-intl'
 import { useMutation } from 'react-apollo'
 import { Button, Input } from 'vtex.styleguide'
 import { useProduct } from 'vtex.product-context'
-// import type { Seller } from 'vtex.product-context'
 import { useRuntime } from 'vtex.render-runtime'
 
+import type { Seller } from './utils/sellers'
 import ADD_TO_AVAILABILITY_SUBSCRIBER_MUTATION from './graphql/addToAvailabilityNotifierMutation.gql'
 import styles from './AvailabilityNotifier.css'
 import { getDefaultSeller } from './utils/sellers'
+// import type { Seller } from 'vtex.product-context'
 
 interface MutationVariables {
   skuId: string
