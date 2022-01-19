@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Fixed
+
+- Block broke when trying to access properties from `undefined` sellers while product query was still running
+
 ## [0.1.2] - 2021-09-01
 
 ### Added
