@@ -21,13 +21,13 @@
     ]
   },
   "devDependencies": {
-    "@vtex/prettier-config": "0.1.4",
-    "eslint": "7.12.1",
-    "eslint-config-vtex": "12.3.2",
-    "eslint-config-vtex-react": "6.3.2",
-    "husky": "4.2.3",
-    "lint-staged": "10.1.1",
-    "prettier": "2.0.2",
+    "@vtex/prettier-config": "^1.0.0",
+    "eslint": "^7.4.0",
+    "eslint-config-vtex": "^14.1.2",
+    "eslint-config-vtex-react": "^8.2.1",
+    "husky": "^7.0.4",
+    "lint-staged": "^12.2.1",
+    "prettier": "^2.5.1",
     "typescript": "3.8.3"
   }
 }

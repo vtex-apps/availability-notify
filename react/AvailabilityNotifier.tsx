@@ -156,7 +156,7 @@ function AvailabilityNotifier(props: Props) {
           id: 'store/availability-notify.notify-label',
         })}
       </div>
-      <form className={`${styles.form} mb4`} onSubmit={e => handleSubmit(e)}>
+      <form className={`${styles.form} mb4`} onSubmit={(e) => handleSubmit(e)}>
         <div className={`${styles.content} flex-ns justify-between mt4 mw6`}>
           <div className={`${styles.input} ${styles.inputName} w-100 mr5 mb4`}>
             <Input

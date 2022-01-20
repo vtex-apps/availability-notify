@@ -6,9 +6,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Fixed
+
+- Tooling and linting
+
 ## [1.4.1] - 2022-01-19
 
 ### Fixed
+
 - fix property when receiving and undefined value
 
 ### Added
