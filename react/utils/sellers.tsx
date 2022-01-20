@@ -9,7 +9,7 @@ export function getDefaultSeller(sellers?: SellerFromContext[]) {
     return null
   }
 
-  const defaultSeller = sellers.find(seller => seller.sellerDefault)
+  const defaultSeller = sellers.find((seller) => seller.sellerDefault)
 
   if (defaultSeller) {
     return defaultSeller
