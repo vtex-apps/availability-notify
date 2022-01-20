@@ -1,6 +1,4 @@
 declare module 'vtex.styleguide' {
-  import { ReactElement } from 'react'
-
   export const Alert
   export const Checkbox
   export const Badge
