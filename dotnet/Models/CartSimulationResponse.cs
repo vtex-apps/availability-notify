@@ -326,7 +326,7 @@ namespace AvailabilityNotify.Models
         public Installment[] SellerMerchantInstallments { get; set; }
 
         [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
-        public long? Id { get; set; }
+        public string? Id { get; set; }
     }
 
     public class PaymentSystem
