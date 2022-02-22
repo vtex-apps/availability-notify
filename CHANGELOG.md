@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added
+- Added info back to README (this app works on master workspace)
+
 ## [1.4.4] - 2022-02-07
 
 ### Fixed
