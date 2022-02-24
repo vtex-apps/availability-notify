@@ -1,6 +1,7 @@
 {
   "stack": "dotnet",
   "memory": 512,
+  "ttl": 60,
   "minReplicas": 10,
   "maxReplicas": 100,
   "runtimeArgs": [],
@@ -32,7 +33,7 @@
     },
     "OnAppInstalled": {
       "sender": "apps",
-      "keys": [ "setup" ]
+      "keys": ["setup"]
     }
   }
 }

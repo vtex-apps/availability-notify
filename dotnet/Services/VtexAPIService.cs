@@ -865,7 +865,7 @@ namespace AvailabilityNotify.Services
                 var request = new HttpRequestMessage
                 {
                     Method = HttpMethod.Post,
-                    RequestUri = new Uri($"http://{accountName}.{Constants.ENVIRONMENT}.com.br/_v/availability-notify/notify"),
+                    RequestUri = new Uri($"http://app.io.vtex.com/vtex.availbility-notify-worker/v0/{accountName}/master/forward-notification"),
                     Content = new StringContent(jsonSerializedData, Encoding.UTF8, Constants.APPLICATION_JSON)
                 };
 

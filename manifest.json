@@ -41,7 +41,8 @@
     "vtex.store-image": "0.x",
     "vtex.store-resources": "0.x",
     "vtex.styleguide": "9.x",
-    "vtex.broadcaster": "0.x"
+    "vtex.broadcaster": "0.x",
+    "vtex.availability-notify-worker": "0.x"
   },
   "settingsSchema": {
     "title": "Availability Notifier",
@@ -120,7 +121,17 @@
       }
     },
     {
+      "name": "outbound-access",
+      "attrs": {
+        "host": "app.io.vtex.com",
+        "path": "/vtex.availability-notify-worker/*"
+      }
+    },
+    {
       "name": "vbase-read-write"
+    },
+    {
+      "name": "vtex.availability-notify-worker:forward-notification"
     }
   ],
   "billingOptions": {
@@ -130,9 +141,7 @@
     },
     "free": true,
     "type": "free",
-    "availableCountries": [
-      "*"
-    ]
+    "availableCountries": ["*"]
   },
   "$schema": "https://raw.githubusercontent.com/vtex/node-vtex-api/master/gen/manifest.schema"
 }
