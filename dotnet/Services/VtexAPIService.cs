@@ -843,6 +843,7 @@ namespace AvailabilityNotify.Services
         public async Task<bool> ForwardNotification(BroadcastNotification notification, string accountName, RequestContext requestContext)
         {
             bool success = false;
+            MerchantSettings merchantSettings = await _availabilityRepository.GetMerchantSettings();
             AffiliateNotification affiliateNotification = new AffiliateNotification
             {
                 An = notification.An,
@@ -865,11 +866,20 @@ namespace AvailabilityNotify.Services
                 var request = new HttpRequestMessage
                 {
                     Method = HttpMethod.Post,
-                    RequestUri = new Uri($"http://app.io.vtex.com/vtex.availbility-notify-worker/v0/{accountName}/master/forward-notification"),
+                    RequestUri = new Uri($"http://{accountName}.{Constants.ENVIRONMENT}.com.br/_v/availability-notify/notify"),
                     Content = new StringContent(jsonSerializedData, Encoding.UTF8, Constants.APPLICATION_JSON)
                 };
 
                 request.Headers.Add(Constants.USE_HTTPS_HEADER_NAME, "true");
+                if(!string.IsNullOrEmpty(merchantSettings.AppKey) && !string.IsNullOrEmpty(merchantSettings.AppToken)) 
+                {
+                    _context.Vtex.Logger.Info("App Key and Token Present");
+                    request.Headers.Add(Constants.AppToken, merchantSettings.AppToken);
+                    request.Headers.Add(Constants.AppKey, merchantSettings.AppKey);
+                }
+
+                _context.Vtex.Logger.Info("App Key and Token Not Present");
+
                 string authToken = requestContext.AuthToken;
                 if (authToken != null)
                 {

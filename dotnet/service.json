@@ -8,7 +8,15 @@
   "routes": {
     "processNotification": {
       "path": "/_v/availability-notify/notify",
-      "public": true
+      "public": true,
+      "access": "authorized",
+      "policies": [
+        {
+          "effect": "allow",
+          "actions": ["post"],
+          "principals": ["vrn:apps:*:vtex:*:app/vtex.availability-notify@0.*"]
+        }
+      ]
     },
     "initialize": {
       "path": "/_v/availability-notify/initialize",
