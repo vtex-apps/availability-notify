@@ -7,7 +7,7 @@ namespace AvailabilityNotify.Models
 {
     public class Lock
     {
-        [JsonProperty("import_started")]
-        public DateTime ImportStarted { get; set; }
+        [JsonProperty("processing_started")]
+        public DateTime ProcessingStarted { get; set; }
     }
 }

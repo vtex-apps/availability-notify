@@ -334,12 +334,12 @@ namespace AvailabilityNotify.Services
 
         public async Task SetImportLock(DateTime importStartTime)
         {
-            var importLock = new Lock
+            var processingLock = new Lock
             {
-                ImportStarted = importStartTime,
+                ProcessingStarted = importStartTime,
             };
 
-            var jsonSerializedLock = JsonConvert.SerializeObject(importLock);
+            var jsonSerializedLock = JsonConvert.SerializeObject(processingLock);
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Put,
@@ -386,19 +386,19 @@ namespace AvailabilityNotify.Services
                 return new DateTime();
             }
 
-            Lock importLock = JsonConvert.DeserializeObject<Lock>(responseContent);
+            Lock processingLock = JsonConvert.DeserializeObject<Lock>(responseContent);
 
-            return importLock.ImportStarted;
+            return processingLock.ProcessingStarted;
         }
 
         public async Task ClearImportLock()
         {
-            var importLock = new Lock
+            var processingLock = new Lock
             {
-                ImportStarted = new DateTime(),
+                ProcessingStarted = new DateTime(),
             };
 
-            var jsonSerializedLock = JsonConvert.SerializeObject(importLock);
+            var jsonSerializedLock = JsonConvert.SerializeObject(processingLock);
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Put,
