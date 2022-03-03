@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Vtex.Api.Context;
+using System.Net;
 
 namespace AvailabilityNotify.Services
 {
@@ -329,6 +330,93 @@ namespace AvailabilityNotify.Services
             }
 
             return notifyRequests;
+        }
+
+        public async Task SetImportLock(DateTime importStartTime)
+        {
+            var importLock = new Lock
+            {
+                ImportStarted = importStartTime,
+            };
+
+            var jsonSerializedLock = JsonConvert.SerializeObject(importLock);
+            var request = new HttpRequestMessage
+            {
+                Method = HttpMethod.Put,
+                RequestUri = new Uri($"http://infra.io.vtex.com/vbase/v2/{this._httpContextAccessor.HttpContext.Request.Headers[Constants.VTEX_ACCOUNT_HEADER_NAME]}/{this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_WORKSPACE]}/buckets/{this._applicationName}/{Constants.BUCKET}/files/{Constants.LOCK}"),
+                Content = new StringContent(jsonSerializedLock, Encoding.UTF8, Constants.APPLICATION_JSON)
+            };
+
+            string authToken = this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_CREDENTIAL];
+            if (authToken != null)
+            {
+                request.Headers.Add(Constants.AUTHORIZATION_HEADER_NAME, authToken);
+                request.Headers.Add(Constants.VTEX_ID_HEADER_NAME, authToken);
+            }
+
+            var client = _clientFactory.CreateClient();
+            var response = await client.SendAsync(request);
+
+            response.EnsureSuccessStatusCode();
+        }
+
+        public async Task<DateTime> CheckImportLock()
+        {
+            var request = new HttpRequestMessage
+            {
+                Method = HttpMethod.Get,
+                RequestUri = new Uri($"http://infra.io.vtex.com/vbase/v2/{this._httpContextAccessor.HttpContext.Request.Headers[Constants.VTEX_ACCOUNT_HEADER_NAME]}/{this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_WORKSPACE]}/buckets/{this._applicationName}/{Constants.BUCKET}/files/{Constants.LOCK}")
+            };
+
+            string authToken = this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_CREDENTIAL];
+            if (authToken != null)
+            {
+                request.Headers.Add(Constants.AUTHORIZATION_HEADER_NAME, authToken);
+                request.Headers.Add(Constants.VTEX_ID_HEADER_NAME, authToken);
+            }
+
+            request.Headers.Add("Cache-Control", "no-cache");
+
+            var client = _clientFactory.CreateClient();
+            var response = await client.SendAsync(request);
+            string responseContent = await response.Content.ReadAsStringAsync();
+
+            if (response.StatusCode == HttpStatusCode.NotFound)
+            {
+                return new DateTime();
+            }
+
+            Lock importLock = JsonConvert.DeserializeObject<Lock>(responseContent);
+
+            return importLock.ImportStarted;
+        }
+
+        public async Task ClearImportLock()
+        {
+            var importLock = new Lock
+            {
+                ImportStarted = new DateTime(),
+            };
+
+            var jsonSerializedLock = JsonConvert.SerializeObject(importLock);
+            var request = new HttpRequestMessage
+            {
+                Method = HttpMethod.Put,
+                RequestUri = new Uri($"http://infra.io.vtex.com/vbase/v2/{this._httpContextAccessor.HttpContext.Request.Headers[Constants.VTEX_ACCOUNT_HEADER_NAME]}/{this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_WORKSPACE]}/buckets/{this._applicationName}/{Constants.BUCKET}/files/{Constants.LOCK}"),
+                Content = new StringContent(jsonSerializedLock, Encoding.UTF8, Constants.APPLICATION_JSON)
+            };
+
+            request.Headers.Add("Cache-Control", "no-cache");
+
+            string authToken = this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_CREDENTIAL];
+            if (authToken != null)
+            {
+                request.Headers.Add(Constants.AUTHORIZATION_HEADER_NAME, authToken);
+                request.Headers.Add(Constants.VTEX_ID_HEADER_NAME, authToken);
+            }
+
+            var client = _clientFactory.CreateClient();
+            await client.SendAsync(request);
         }
     }
 }

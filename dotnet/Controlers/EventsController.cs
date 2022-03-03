@@ -13,21 +13,32 @@ namespace service.Controllers
     {
         private readonly IVtexAPIService _vtexAPIService;
         private readonly IIOServiceContext _context;
+        private readonly IAvailabilityRepository _availabilityRepository;
 
-        public EventsController(IVtexAPIService vtexAPIService, IIOServiceContext context)
+        public EventsController(IVtexAPIService vtexAPIService, IIOServiceContext context, IAvailabilityRepository availabilityRepository)
         {
             this._vtexAPIService = vtexAPIService ?? throw new ArgumentNullException(nameof(vtexAPIService));
             this._context = context ?? throw new ArgumentNullException(nameof(context));
+            this._availabilityRepository = availabilityRepository ?? throw new ArgumentNullException(nameof(availabilityRepository));
         }
 
         public void BroadcasterNotification(string account, string workspace)
         {
+            DateTime processingStarted = _availabilityRepository.CheckImportLock().Result;
+            TimeSpan elapsedTime = DateTime.Now - processingStarted;
+            if (elapsedTime.TotalMinutes < 1)
+            {
+                _context.Vtex.Logger.Warn("BroadcasterNotification", null, $"Blocked by lock.  Processing started: {processingStarted}");
+                throw new Exception("Blocked by lock.");
+            }
+
+            _availabilityRepository.SetImportLock(DateTime.Now);
+
             BroadcastNotification notification = null;
             string bodyAsText = string.Empty;
             try
             {
                 bodyAsText = new System.IO.StreamReader(HttpContext.Request.Body).ReadToEndAsync().Result;
-                //_context.Vtex.Logger.Info("BroadcasterNotification", null, $"Notification: {bodyAsText}");
                 notification = JsonConvert.DeserializeObject<BroadcastNotification>(bodyAsText);
             }
             catch(Exception ex)
@@ -37,6 +48,8 @@ namespace service.Controllers
 
             bool processed = _vtexAPIService.ProcessNotification(notification).Result;
             _context.Vtex.Logger.Info("BroadcasterNotification", null, $"Processed Notification? {processed} : {bodyAsText}");
+
+            _availabilityRepository.ClearImportLock();
         }
 
         public async Task OnAppInstalled([FromBody] AppInstalledEvent @event)

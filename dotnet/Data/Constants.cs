@@ -32,6 +32,7 @@ namespace AvailabilityNotify.Data
         public const string API_VERSION_HEADER = "'x-api-version";
 
         public const string BUCKET = "availability-notify";
+        public const string LOCK = "availability-notify-lock";
 
         public const string DATA_ENTITY = "notify";
         public const string SCHEMA = "notify";
