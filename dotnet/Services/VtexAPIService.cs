@@ -870,6 +870,7 @@ namespace AvailabilityNotify.Services
                 };
 
                 request.Headers.Add(Constants.USE_HTTPS_HEADER_NAME, "true");
+
                 string authToken = requestContext.AuthToken;
                 if (authToken != null)
                 {

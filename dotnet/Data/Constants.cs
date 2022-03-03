@@ -6,8 +6,8 @@ namespace AvailabilityNotify.Data
 {
     public class Constants
     {
-        public const string AppToken = "X-Vtex-Api-AppToken";
-        public const string AppKey = "X-Vtex-Api-AppKey";
+        public const string AppToken = "X-VTEX-API-AppToken";
+        public const string AppKey = "X-VTEX-API-AppKey";
         public const string EndPointKey = "availability-notify";
         public const string AppName = "availability-notify";
 
