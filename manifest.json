@@ -56,16 +56,6 @@
         "title": "Marketplace to Notify",
         "description": "Account name of Marketplace to notify.",
         "type": "string"
-      },
-      "appKey": {
-        "title": "App Key",
-        "description": "Markeplace App Key",
-        "type": "string"
-      },
-      "appToken": {
-        "title": "App Token",
-        "description": "Markeplace App Token",
-        "type": "string"
       }
     }
   },
