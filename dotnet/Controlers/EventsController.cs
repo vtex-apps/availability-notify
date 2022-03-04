@@ -1,6 +1,7 @@
 namespace service.Controllers
 {
   using System;
+  using System.Net;
   using System.Threading.Tasks;
   using AvailabilityNotify.Data;
   using AvailabilityNotify.Models;
@@ -29,7 +30,7 @@ namespace service.Controllers
             if (elapsedTime.TotalMinutes < 1)
             {
                 _context.Vtex.Logger.Warn("BroadcasterNotification", null, $"Blocked by lock.  Processing started: {processingStarted}");
-                throw new Exception("Blocked by lock.");
+                throw new System.Web.Http.HttpResponseException((HttpStatusCode)429);
             }
 
             _availabilityRepository.SetImportLock(DateTime.Now);
