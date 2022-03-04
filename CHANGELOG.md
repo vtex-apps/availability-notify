@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [1.6.0] - 2022-03-04
+
 ### Added
 
 - (NOTIFIER-24) Added lock file to block notifications during processing
