@@ -1,0 +1,10 @@
+{
+  "store/availability-notify.title": "Dette produktet er ikke tilgjengelig nå",
+  "store/availability-notify.notify-label": "Jeg ønsker å få beskjed når dette produktet blir tilgjengelig",
+  "store/availability-notify.email-placeholder": "E-post",
+  "store/availability-notify.name-placeholder": "Navn",
+  "store/availability-notify.send-label": "Send",
+  "store/availability-notify.invalid-email": "Ugyldig e-post",
+  "store/availability-notify.added-message": "E-postadressen ble registrert",
+  "store/availability-notify.error-message": "Mislyktes, prøv igjen"
+}

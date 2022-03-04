@@ -10,6 +10,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - (NOTIFIER-24) Added lock file to block notifications during processing
 
+## [1.5.0] - 2022-03-04
+
+### Added
+
+- Arabic, Norwegian and Norwegian variant translation.
+
 ## [1.4.6] - 2022-03-03
 
 ## [1.4.5] - 2022-02-25
