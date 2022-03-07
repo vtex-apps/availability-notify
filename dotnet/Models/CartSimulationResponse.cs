@@ -68,22 +68,22 @@ namespace AvailabilityNotify.Models
         public string[] SellerChain { get; set; }
 
         [JsonProperty("tax")]
-        public long Tax { get; set; }
+        public string Tax { get; set; }
 
         [JsonProperty("priceValidUntil")]
         public string PriceValidUntil { get; set; }
 
         [JsonProperty("price")]
-        public long Price { get; set; }
+        public string Price { get; set; }
 
         [JsonProperty("listPrice")]
-        public long ListPrice { get; set; }
+        public string ListPrice { get; set; }
 
         [JsonProperty("rewardValue")]
-        public long RewardValue { get; set; }
+        public string RewardValue { get; set; }
 
         [JsonProperty("sellingPrice")]
-        public long SellingPrice { get; set; }
+        public string SellingPrice { get; set; }
 
         [JsonProperty("offerings")]
         public object[] Offerings { get; set; }
@@ -95,7 +95,7 @@ namespace AvailabilityNotify.Models
         public string MeasurementUnit { get; set; }
 
         [JsonProperty("unitMultiplier")]
-        public long UnitMultiplier { get; set; }
+        public string UnitMultiplier { get; set; }
 
         [JsonProperty("parentItemIndex")]
         public object ParentItemIndex { get; set; }
@@ -116,10 +116,10 @@ namespace AvailabilityNotify.Models
     public class PriceDefinition
     {
         [JsonProperty("calculatedSellingPrice")]
-        public long CalculatedSellingPrice { get; set; }
+        public string CalculatedSellingPrice { get; set; }
 
         [JsonProperty("total")]
-        public long Total { get; set; }
+        public string Total { get; set; }
 
         [JsonProperty("sellingPrices")]
         public SellingPrice[] SellingPrices { get; set; }
@@ -128,10 +128,10 @@ namespace AvailabilityNotify.Models
     public class SellingPrice
     {
         [JsonProperty("value")]
-        public long Value { get; set; }
+        public string Value { get; set; }
 
         [JsonProperty("quantity")]
-        public long Quantity { get; set; }
+        public string Quantity { get; set; }
     }
 
     public class LogisticsInfo
@@ -197,13 +197,13 @@ namespace AvailabilityNotify.Models
         public object DeliveryWindow { get; set; }
 
         [JsonProperty("price")]
-        public long Price { get; set; }
+        public string Price { get; set; }
 
         [JsonProperty("listPrice")]
-        public long ListPrice { get; set; }
+        public string ListPrice { get; set; }
 
         [JsonProperty("tax")]
-        public long Tax { get; set; }
+        public string Tax { get; set; }
 
         [JsonProperty("pickupStoreInfo")]
         public PickupStoreInfo PickupStoreInfo { get; set; }
@@ -389,10 +389,10 @@ namespace AvailabilityNotify.Models
         public Sla[] Slas { get; set; }
 
         [JsonProperty("price")]
-        public long Price { get; set; }
+        public string Price { get; set; }
 
         [JsonProperty("listPrice")]
-        public long ListPrice { get; set; }
+        public string ListPrice { get; set; }
     }
 
     public class RatesAndBenefitsData
