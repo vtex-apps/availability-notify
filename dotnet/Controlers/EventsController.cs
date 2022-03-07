@@ -25,32 +25,40 @@ namespace service.Controllers
 
         public void BroadcasterNotification(string account, string workspace)
         {
-            DateTime processingStarted = _availabilityRepository.CheckImportLock().Result;
-            TimeSpan elapsedTime = DateTime.Now - processingStarted;
-            if (elapsedTime.TotalMinutes < 1)
-            {
-                _context.Vtex.Logger.Warn("BroadcasterNotification", null, $"Blocked by lock.  Processing started: {processingStarted}");
-                throw new System.Web.Http.HttpResponseException((HttpStatusCode)429);
-            }
-
-            _availabilityRepository.SetImportLock(DateTime.Now);
-
-            BroadcastNotification notification = null;
-            string bodyAsText = string.Empty;
             try
             {
-                bodyAsText = new System.IO.StreamReader(HttpContext.Request.Body).ReadToEndAsync().Result;
-                notification = JsonConvert.DeserializeObject<BroadcastNotification>(bodyAsText);
+                DateTime processingStarted = _availabilityRepository.CheckImportLock().Result;
+                TimeSpan elapsedTime = DateTime.Now - processingStarted;
+                if (elapsedTime.TotalMinutes < 1)
+                {
+                    _context.Vtex.Logger.Warn("BroadcasterNotification", null, $"Blocked by lock.  Processing started: {processingStarted}");
+                    throw new System.Web.Http.HttpResponseException((HttpStatusCode)429);
+                }
+
+                _availabilityRepository.SetImportLock(DateTime.Now);
+
+                BroadcastNotification notification = null;
+                string bodyAsText = string.Empty;
+                try
+                {
+                    bodyAsText = new System.IO.StreamReader(HttpContext.Request.Body).ReadToEndAsync().Result;
+                    notification = JsonConvert.DeserializeObject<BroadcastNotification>(bodyAsText);
+                }
+                catch (Exception ex)
+                {
+                    _context.Vtex.Logger.Error("BroadcasterNotification", null, "Error reading Notification", ex);
+                }
+
+                bool processed = _vtexAPIService.ProcessNotification(notification).Result;
+                _context.Vtex.Logger.Info("BroadcasterNotification", null, $"Processed Notification? {processed} : {bodyAsText}");
+
+                _availabilityRepository.ClearImportLock();
             }
             catch(Exception ex)
             {
-                _context.Vtex.Logger.Error("BroadcasterNotification", null, "Error reading Notification", ex);
+                _context.Vtex.Logger.Error("BroadcasterNotification", null, "Error processing Notification", ex);
+                throw;
             }
-
-            bool processed = _vtexAPIService.ProcessNotification(notification).Result;
-            _context.Vtex.Logger.Info("BroadcasterNotification", null, $"Processed Notification? {processed} : {bodyAsText}");
-
-            _availabilityRepository.ClearImportLock();
         }
 
         public async Task OnAppInstalled([FromBody] AppInstalledEvent @event)
