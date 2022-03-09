@@ -23,7 +23,7 @@ namespace service.Controllers
             this._availabilityRepository = availabilityRepository ?? throw new ArgumentNullException(nameof(availabilityRepository));
         }
 
-        public void BroadcasterNotification(string account, string workspace)
+        public async Task<IActionResult> BroadcasterNotification(string account, string workspace)
         {
             try
             {
@@ -32,7 +32,7 @@ namespace service.Controllers
                 if (elapsedTime.TotalMinutes < 1)
                 {
                     _context.Vtex.Logger.Warn("BroadcasterNotification", null, $"Blocked by lock.  Processing started: {processingStarted}");
-                    throw new System.Web.Http.HttpResponseException((HttpStatusCode)429);
+                    return StatusCode(423); // 423 Locked - maybe 425 Too Early or 429 Too Many Requests?
                 }
 
                 _availabilityRepository.SetImportLock(DateTime.Now);
@@ -59,6 +59,8 @@ namespace service.Controllers
                 _context.Vtex.Logger.Error("BroadcasterNotification", null, "Error processing Notification", ex);
                 throw;
             }
+
+            return Ok();
         }
 
         public async Task OnAppInstalled([FromBody] AppInstalledEvent @event)
