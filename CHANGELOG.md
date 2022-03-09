@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Changed
+
+- (NOTIFIER-26) Changed lock error response type
+
 ## [1.6.2] - 2022-03-07
 
 ### Added
