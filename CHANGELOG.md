@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [1.6.4] - 2022-03-11
+
 ### Fix
 - Added validation and request to get sku from marketplace
 
