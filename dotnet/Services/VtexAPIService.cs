@@ -159,7 +159,7 @@ namespace AvailabilityNotify.Services
                         cartSimulationRequest.Items.Add(
                             new CartItem
                             {
-                                Id = skuSeller.SellerStockKeepingUnitId,
+                                Id = sku,
                                 Quantity = 1,
                                 Seller = skuSeller.SellerId
                             }
@@ -329,6 +329,49 @@ namespace AvailabilityNotify.Services
             return templateExists;
         }
 
+        public async Task<GetSkuSellerResponse> GetSkuSeller(string sellerId, string skuId, RequestContext requestContext)
+        {
+            // GET https://{accountName}.{environment}.com.br/api/catalog_system/pvt/skuseller/{sellerId}/{sellerSkuId}
+
+            GetSkuSellerResponse skuSellerResponse = null;
+
+            try
+            {
+                var request = new HttpRequestMessage
+                {
+                    Method = HttpMethod.Get,
+                    RequestUri = new Uri($"http://{requestContext.Account}.{Constants.ENVIRONMENT}.com.br/api/catalog_system/pvt/skuseller/{sellerId}/{skuId}")
+                };
+
+                request.Headers.Add(Constants.USE_HTTPS_HEADER_NAME, "true");
+                string authToken = requestContext.AuthToken;
+                if (authToken != null)
+                {
+                    request.Headers.Add(Constants.AUTHORIZATION_HEADER_NAME, authToken);
+                    request.Headers.Add(Constants.VTEX_ID_HEADER_NAME, authToken);
+                    request.Headers.Add(Constants.PROXY_AUTHORIZATION_HEADER_NAME, authToken);
+                }
+
+                var client = _clientFactory.CreateClient();
+                var response = await client.SendAsync(request);
+                string responseContent = await response.Content.ReadAsStringAsync();
+                if (response.IsSuccessStatusCode)
+                {
+                    skuSellerResponse = JsonConvert.DeserializeObject<GetSkuSellerResponse>(responseContent);
+                }
+                else
+                {
+                    _context.Vtex.Logger.Warn("GetSkuSeller", null, $"Could not get sku for id '{skuId}' [{response.StatusCode}]");
+                }
+            }
+            catch (Exception ex)
+            {
+                _context.Vtex.Logger.Error("GetSkuSeller", null, $"Error getting sku for id '{skuId}'", ex);
+            }
+
+            return skuSellerResponse;
+        }
+
         public async Task<GetSkuContextResponse> GetSkuContext(string skuId, RequestContext requestContext)
         {
             // GET https://{accountName}.{environment}.com.br/api/catalog_system/pvt/sku/stockkeepingunitbyid/skuId
@@ -467,6 +510,21 @@ namespace AvailabilityNotify.Services
                 Account = _context.Vtex.Account,
                 AuthToken = _context.Vtex.AuthToken
             };
+
+
+            if (!notification.An.Equals(requestContext.Account))
+            {
+
+                GetSkuSellerResponse getSkuSellerResponse = await GetSkuSeller(notification.An, notification.IdSku, requestContext);
+                if (getSkuSellerResponse != null)
+                {
+                    notification.IdSku = getSkuSellerResponse.StockKeepingUnitId.ToString();
+                }
+                else
+                {
+                    _context.Vtex.Logger.Warn("ProcessNotification", "AffiliateNotification", "SKU NOT FOUND");
+                }
+            }
 
             bool isActive = notification.IsActive;
             bool inventoryUpdated = notification.StockModified;
