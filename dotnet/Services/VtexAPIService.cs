@@ -526,7 +526,7 @@ namespace AvailabilityNotify.Services
                 }
                 else
                 {
-                    _context.Vtex.Logger.Error("ProcessNotification", "AffiliateNotification", $"SKU NOT FOUND");
+                    _context.Vtex.Logger.Warn("ProcessNotification", "AffiliateNotification", "SKU NOT FOUND");
                 }
             }
 
