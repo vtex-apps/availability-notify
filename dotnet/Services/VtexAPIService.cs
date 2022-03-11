@@ -166,8 +166,6 @@ namespace AvailabilityNotify.Services
                         );
                     }
 
-                    Console.WriteLine(JsonConvert.SerializeObject(cartSimulationRequest));
-
                     try
                     {
                         CartSimulationResponse cartSimulationResponse = await this.CartSimulation(cartSimulationRequest, requestContext);
