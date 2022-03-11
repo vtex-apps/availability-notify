@@ -166,6 +166,10 @@ namespace AvailabilityNotify.Services
                         );
                     }
 
+                    string marketplaceSku = cartSimulationRequest.Items[0].Id;
+                    cartSimulationRequest.Items.RemoveAt(0);
+                    cartSimulationRequest.Items[0].Id = marketplaceSku;
+
                     try
                     {
                         CartSimulationResponse cartSimulationResponse = await this.CartSimulation(cartSimulationRequest, requestContext);
@@ -516,8 +520,6 @@ namespace AvailabilityNotify.Services
             {
 
                 GetSkuSellerResponse getSkuSellerResponse = await GetSkuSeller(notification.An, notification.IdSku, requestContext);
-                Console.WriteLine($"Seller Response: {JsonConvert.SerializeObject(getSkuSellerResponse)}");
-
                 if (getSkuSellerResponse != null)
                 {
                     notification.IdSku = getSkuSellerResponse.StockKeepingUnitId.ToString();
@@ -528,7 +530,6 @@ namespace AvailabilityNotify.Services
                 }
             }
 
-            Console.WriteLine($"Notification SKU ID: {notification.IdSku}");
             bool isActive = notification.IsActive;
             bool inventoryUpdated = notification.StockModified;
             string skuId = notification.IdSku;
