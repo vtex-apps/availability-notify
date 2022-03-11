@@ -159,16 +159,14 @@ namespace AvailabilityNotify.Services
                         cartSimulationRequest.Items.Add(
                             new CartItem
                             {
-                                Id = skuSeller.SellerStockKeepingUnitId,
+                                Id = sku,
                                 Quantity = 1,
                                 Seller = skuSeller.SellerId
                             }
                         );
                     }
 
-                    string marketplaceSku = cartSimulationRequest.Items[0].Id;
-                    cartSimulationRequest.Items.RemoveAt(0);
-                    cartSimulationRequest.Items[0].Id = marketplaceSku;
+                    Console.WriteLine(JsonConvert.SerializeObject(cartSimulationRequest));
 
                     try
                     {
