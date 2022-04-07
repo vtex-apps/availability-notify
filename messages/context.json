@@ -6,5 +6,6 @@
   "store/availability-notify.send-label": "availability-notify.send-label",
   "store/availability-notify.invalid-email": "availability-notify.invalid-email",
   "store/availability-notify.added-message": "availability-notify.added-message",
+  "store/availability-notify.error-register": "availability-notify.error-register",
   "store/availability-notify.error-message": "availability-notify.error-message"
 }

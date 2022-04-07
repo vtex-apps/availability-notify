@@ -6,5 +6,6 @@
   "store/availability-notify.send-label": "Send",
   "store/availability-notify.invalid-email": "Ugyldig e-post",
   "store/availability-notify.added-message": "E-postadressen ble registrert",
+  "store/availability-notify.error-register": "E-post allerede registrert",
   "store/availability-notify.error-message": "Mislyktes, prøv igjen"
 }

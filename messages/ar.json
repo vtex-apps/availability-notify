@@ -6,5 +6,6 @@
   "store/availability-notify.send-label": "إرسال",
   "store/availability-notify.invalid-email": "عنوان بريد إلكترني غير صالح",
   "store/availability-notify.added-message": "تم تسجيل البريد الإلكتروني بنجاح",
+  "store/availability-notify.error-register": "البريد الإلكتروني مسجل مسبقا",
   "store/availability-notify.error-message": "محاولة فاشلة، الرجاء المحاولة مرة أخرى"
 }
