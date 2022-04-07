@@ -6,5 +6,6 @@
   "store/availability-notify.send-label": "Enviar",
   "store/availability-notify.invalid-email": "E-mail inválido",
   "store/availability-notify.added-message": "E-mail registrado con éxito",
+  "store/availability-notify.error-register": "E-mail registrado ya existe",
   "store/availability-notify.error-message": "No se pudo registrar, inténtelo de nuevo"
 }

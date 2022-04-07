@@ -29,5 +29,8 @@
     "lint-staged": "^12.2.1",
     "prettier": "^2.5.1",
     "typescript": "3.8.3"
+  },
+  "dependencies": {
+    "lint": "^0.7.0"
   }
 }

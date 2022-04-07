@@ -52,6 +52,7 @@ function AvailabilityNotifier(props: Props) {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [emailError, setEmailError] = useState(false)
+  const [emailValidation, setEmailValidation] = useState(false)
   const [didBlurEmail, setDidBlurEmail] = useState(false)
 
   const [signUp, { loading, error, data }] = useMutation<
@@ -99,16 +100,16 @@ function AvailabilityNotifier(props: Props) {
     }
 
     // console.log(variables)
-    const signUpMutationResult = await signUp({
+    const signUpMutationResult = (await signUp({
       variables,
-    })
+    })) as any
 
     if (!signUpMutationResult.errors) {
       setName('')
       setEmail('')
     }
 
-    const event = new CustomEvent('message:success', {
+    const successEvent = new CustomEvent('message:success', {
       detail: {
         success: true,
         message: intl.formatMessage({
@@ -117,7 +118,25 @@ function AvailabilityNotifier(props: Props) {
       },
     })
 
-    document.dispatchEvent(event)
+    const errorEvent = new CustomEvent('message:success', {
+      detail: {
+        success: false,
+        message: intl.formatMessage({
+          id: 'store/availability-notify.error-register',
+        }),
+      },
+    })
+
+    if (
+      typeof signUpMutationResult === 'object' &&
+      signUpMutationResult.data.availabilitySubscribe === true
+    ) {
+      setEmailValidation(false)
+      document.dispatchEvent(successEvent)
+    } else {
+      setEmailValidation(true)
+      document.dispatchEvent(errorEvent)
+    }
   }
 
   const validateEmail = (newEmail: string) => {
@@ -197,10 +216,17 @@ function AvailabilityNotifier(props: Props) {
             </Button>
           </div>
         </div>
-        {!error && data && (
+        {!error && !emailValidation && data && (
           <div className={`${styles.success} t-body c-success`}>
             {intl.formatMessage({
               id: 'store/availability-notify.added-message',
+            })}
+          </div>
+        )}
+        {emailValidation && (
+          <div className={`${styles.success} t-body c-danger`}>
+            {intl.formatMessage({
+              id: 'store/availability-notify.error-register',
             })}
           </div>
         )}

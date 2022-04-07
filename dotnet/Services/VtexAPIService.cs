@@ -477,6 +477,7 @@ namespace AvailabilityNotify.Services
 
         public async Task<bool> AvailabilitySubscribe(string email, string sku, string name, string locale, SellerObj seller)
         {
+
             bool success = false;
             RequestContext requestContext = new RequestContext
             {
@@ -486,6 +487,12 @@ namespace AvailabilityNotify.Services
 
             //await _availabilityRepository.VerifySchema();
 
+            NotifyRequest[] requestsToNotify = await _availabilityRepository.ListRequestsForSkuId(sku, requestContext);
+            if (requestsToNotify.Any(x => x.Email.Equals(email)))
+            {
+                return success;
+            } 
+                
             NotifyRequest notifyRequest = new NotifyRequest
             {
                 RequestedAt = DateTime.Now.ToUniversalTime().ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'"),
@@ -660,7 +667,8 @@ namespace AvailabilityNotify.Services
             {
                 MerchantSettings merchantSettings = await _availabilityRepository.GetMerchantSettings();
                 NotifyRequest[] requestsToNotify = await _availabilityRepository.ListRequestsForSkuId(skuId, requestContext);
-                if (requestsToNotify != null && requestsToNotify.Length > 0)
+                var distinct = requestsToNotify.GroupBy(x => x.Email).Select(x => x.First()).ToList();
+                if (distinct != null && distinct.Any())
                 {
                     long available = await GetTotalAvailableForSku(skuId, requestContext);
                     if (available > 0)
@@ -668,7 +676,7 @@ namespace AvailabilityNotify.Services
                         GetSkuContextResponse skuContextResponse = await GetSkuContext(skuId, requestContext);
                         if (skuContextResponse != null)
                         {
-                            foreach (NotifyRequest requestToNotify in requestsToNotify)
+                            foreach (NotifyRequest requestToNotify in distinct)
                             {
                                 bool sendMail = true;
                                 if(merchantSettings.DoShippingSim)
