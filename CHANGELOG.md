@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Fix
+- Added validation and avoid subscribing more than once for the same sku
+
 ## [1.6.4] - 2022-03-11
 
 ### Fix
