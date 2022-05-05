@@ -994,12 +994,12 @@ namespace AvailabilityNotify.Services
                     }
                     else
                     {
-                        _context.Vtex.Logger.Warn("ForwardNotification", null, $"[{response.StatusCode}] '{responseContent}' ", new[] { ("url", $"http://{accountName}.{Constants.ENVIRONMENT}.com.br/_v/availability-notify/notify"), ("Notification", jsonSerializedData) });
+                        _context.Vtex.Logger.Warn("ForwardNotification", null, $"[{response.StatusCode}] '{responseContent}' ", new[] { ("url", $"{accountName}.{Constants.ENVIRONMENT}.com.br/_v/availability-notify/notify"), ("Notification", jsonSerializedData) });
                     }
                 }
                 catch (Exception ex)
                 {
-                    _context.Vtex.Logger.Error("ForwardNotification", null, $"Error forwarding request to '{accountName}' ", ex, new[] { ("url", $"http://{accountName}.{Constants.ENVIRONMENT}.com.br/_v/availability-notify/notify"), ("Notification", jsonSerializedData) });
+                    _context.Vtex.Logger.Error("ForwardNotification", null, $"Error forwarding request to '{accountName}' ", ex, new[] { ("url", $"{accountName}.{Constants.ENVIRONMENT}.com.br/_v/availability-notify/notify"), ("Notification", jsonSerializedData) });
                 }
             }
             else
