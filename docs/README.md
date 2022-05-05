@@ -57,6 +57,14 @@ The app records the notification request and monitors inventory updates. This wa
 
 After making the desired settings in the app, set up its template according to your necessities. Check out more details about it in the next section, [Customizing the Back in stock template](#customizing-the-back-in-stock-template).
 
+## Seller Configuration
+
+This app needs to also be installed on the seller account
+
+1. [Install](https://developers.vtex.com/vtex-developer-docs/docs/vtex-io-documentation-installing-an-app) the Availability Notify app in the desired VTEX SELLER account through the app store
+2. In the app configuration enter the name of the marketplace to notify when there are any inventory changes
+
+This will forward the inventory change to the MARKETPLACE and then trigger the `Back In Stock` email to the subscribed users of that product. 
 ## Customizing the Back in stock template
 
 Once you have installed the app, you can customize the email template to send to the shoppers who asked to be notified.
