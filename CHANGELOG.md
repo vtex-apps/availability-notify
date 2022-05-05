@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [1.6.6] - 2022-05-05
+
 ### Changed
 
 - (NOTIFIER-31) Trim account name when forwarding notification.
