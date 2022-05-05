@@ -538,6 +538,38 @@ namespace AvailabilityNotify.Services
             string skuId = notification.IdSku;
             _context.Vtex.Logger.Debug("ProcessNotification", "AffiliateNotification", $"Sku:{skuId} Active?{isActive} Inventory Changed?{inventoryUpdated}");
             success = await this.ProcessNotification(requestContext, isActive, inventoryUpdated, skuId);
+            if (isActive && inventoryUpdated)
+            {
+                MerchantSettings merchantSettings = await _availabilityRepository.GetMerchantSettings();
+                if (!string.IsNullOrEmpty(merchantSettings.NotifyMarketplace))
+                {
+                    StringBuilder sb = new StringBuilder();
+                    BroadcastNotification broadcastNotification = new BroadcastNotification
+                    {
+                        An = notification.An,
+                        HasStockKeepingUnitRemovedFromAffiliate = notification.HasStockKeepingUnitRemovedFromAffiliate,
+                        IdAffiliate = notification.IdAffiliate,
+                        IsActive = notification.IsActive,
+                        DateModified = notification.DateModified,
+                        HasStockKeepingUnitModified = notification.HasStockKeepingUnitModified,
+                        IdSku = notification.IdSku,
+                        PriceModified = notification.PriceModified,
+                        ProductId = notification.ProductId,
+                        StockModified = notification.StockModified,
+                        Version = notification.Version
+                    };
+
+                    string[] marketplaces = merchantSettings.NotifyMarketplace.Split(',');
+                    foreach (string marketplace in marketplaces)
+                    {
+                        bool successThis = await this.ForwardNotification(broadcastNotification, marketplace, requestContext);
+                        sb.AppendLine($"'{marketplace}' {successThis}");
+                        success &= successThis;
+                    }
+
+                    _context.Vtex.Logger.Info("ProcessNotification", "ForwardNotification", $"Sku:{skuId}", new[] { ("accounts", sb.ToString()) });
+                }
+            }
 
             return success;
         }
@@ -561,11 +593,16 @@ namespace AvailabilityNotify.Services
                 MerchantSettings merchantSettings = await _availabilityRepository.GetMerchantSettings();
                 if (!string.IsNullOrEmpty(merchantSettings.NotifyMarketplace))
                 {
+                    StringBuilder sb = new StringBuilder();
                     string[] marketplaces = merchantSettings.NotifyMarketplace.Split(',');
                     foreach (string marketplace in marketplaces)
                     {
-                        success &= await this.ForwardNotification(notification, marketplace, requestContext);
+                        bool successThis = await this.ForwardNotification(notification, marketplace, requestContext);
+                        sb.AppendLine($"'{marketplace}' {successThis}");
+                        success &= successThis;
                     }
+
+                    _context.Vtex.Logger.Info("ProcessNotification", "ForwardNotification", $"Sku:{skuId}", new[] { ("accounts", sb.ToString()) });
                 }
             }
 
@@ -909,57 +946,65 @@ namespace AvailabilityNotify.Services
         public async Task<bool> ForwardNotification(BroadcastNotification notification, string accountName, RequestContext requestContext)
         {
             bool success = false;
-            AffiliateNotification affiliateNotification = new AffiliateNotification
+            if (!string.IsNullOrEmpty(accountName))
             {
-                An = notification.An,
-                HasStockKeepingUnitRemovedFromAffiliate = notification.HasStockKeepingUnitRemovedFromAffiliate,
-                IdAffiliate = notification.IdAffiliate,
-                IsActive = notification.IsActive,
-                DateModified = notification.DateModified,
-                HasStockKeepingUnitModified = notification.HasStockKeepingUnitModified,
-                IdSku = notification.IdSku,
-                PriceModified = notification.PriceModified,
-                ProductId = notification.ProductId,
-                StockModified = notification.StockModified,
-                Version = notification.Version
-            };
-
-            string jsonSerializedData = JsonConvert.SerializeObject(affiliateNotification);
-
-            try
-            {
-                var request = new HttpRequestMessage
+                accountName = accountName.Trim();
+                AffiliateNotification affiliateNotification = new AffiliateNotification
                 {
-                    Method = HttpMethod.Post,
-                    RequestUri = new Uri($"http://{accountName}.{Constants.ENVIRONMENT}.com.br/_v/availability-notify/notify"),
-                    Content = new StringContent(jsonSerializedData, Encoding.UTF8, Constants.APPLICATION_JSON)
+                    An = notification.An,
+                    HasStockKeepingUnitRemovedFromAffiliate = notification.HasStockKeepingUnitRemovedFromAffiliate,
+                    IdAffiliate = notification.IdAffiliate,
+                    IsActive = notification.IsActive,
+                    DateModified = notification.DateModified,
+                    HasStockKeepingUnitModified = notification.HasStockKeepingUnitModified,
+                    IdSku = notification.IdSku,
+                    PriceModified = notification.PriceModified,
+                    ProductId = notification.ProductId,
+                    StockModified = notification.StockModified,
+                    Version = notification.Version
                 };
 
-                request.Headers.Add(Constants.USE_HTTPS_HEADER_NAME, "true");
+                string jsonSerializedData = JsonConvert.SerializeObject(affiliateNotification);
 
-                string authToken = requestContext.AuthToken;
-                if (authToken != null)
+                try
                 {
-                    request.Headers.Add(Constants.AUTHORIZATION_HEADER_NAME, authToken);
-                    request.Headers.Add(Constants.VTEX_ID_HEADER_NAME, authToken);
-                    request.Headers.Add(Constants.PROXY_AUTHORIZATION_HEADER_NAME, authToken);
-                }
+                    var request = new HttpRequestMessage
+                    {
+                        Method = HttpMethod.Post,
+                        RequestUri = new Uri($"http://{accountName}.{Constants.ENVIRONMENT}.com.br/_v/availability-notify/notify"),
+                        Content = new StringContent(jsonSerializedData, Encoding.UTF8, Constants.APPLICATION_JSON)
+                    };
 
-                var client = _clientFactory.CreateClient();
-                var response = await client.SendAsync(request);
-                string responseContent = await response.Content.ReadAsStringAsync();
-                if (response.IsSuccessStatusCode)
-                {
-                    success = true;
+                    request.Headers.Add(Constants.USE_HTTPS_HEADER_NAME, "true");
+
+                    string authToken = requestContext.AuthToken;
+                    if (authToken != null)
+                    {
+                        request.Headers.Add(Constants.AUTHORIZATION_HEADER_NAME, authToken);
+                        request.Headers.Add(Constants.VTEX_ID_HEADER_NAME, authToken);
+                        request.Headers.Add(Constants.PROXY_AUTHORIZATION_HEADER_NAME, authToken);
+                    }
+
+                    var client = _clientFactory.CreateClient();
+                    var response = await client.SendAsync(request);
+                    string responseContent = await response.Content.ReadAsStringAsync();
+                    if (response.IsSuccessStatusCode)
+                    {
+                        success = true;
+                    }
+                    else
+                    {
+                        _context.Vtex.Logger.Warn("ForwardNotification", null, $"[{response.StatusCode}] '{responseContent}' ", new[] { ("url", $"http://{accountName}.{Constants.ENVIRONMENT}.com.br/_v/availability-notify/notify"), ("Notification", jsonSerializedData) });
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    _context.Vtex.Logger.Warn("ForwardNotification", null, $"[{response.StatusCode}] '{responseContent}'\n{jsonSerializedData}");
+                    _context.Vtex.Logger.Error("ForwardNotification", null, $"Error forwarding request to '{accountName}' ", ex, new[] { ("url", $"http://{accountName}.{Constants.ENVIRONMENT}.com.br/_v/availability-notify/notify"), ("Notification", jsonSerializedData) });
                 }
             }
-            catch (Exception ex)
+            else
             {
-                _context.Vtex.Logger.Error("ForwardNotification", null, $"Error forwarding request to '{accountName}'\n'{jsonSerializedData}'", ex);
+                _context.Vtex.Logger.Error("ForwardNotification", null, "Account name is empty.");
             }
 
             return success;
