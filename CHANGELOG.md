@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [1.6.7] - 2022-05-06
+
 ### Changed
 
 - Updated readme - added the configuration for sellers
