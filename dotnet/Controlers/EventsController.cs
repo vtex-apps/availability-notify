@@ -71,5 +71,13 @@ namespace service.Controllers
                 await _vtexAPIService.CreateDefaultTemplate();
             }
         }
+
+        public void AllStates(string account, string workspace)
+        {
+            string bodyAsText = new System.IO.StreamReader(HttpContext.Request.Body).ReadToEndAsync().Result;
+            AllStatesNotification allStatesNotification = JsonConvert.DeserializeObject<AllStatesNotification>(bodyAsText);
+            //_context.Vtex.Logger.Debug("Order Broadcast", null, $"Notification {bodyAsText}");
+            _vtexAPIService.ProcessNotification(allStatesNotification);
+        }
     }
 }

@@ -15,6 +15,8 @@ namespace AvailabilityNotify.Services
         Task SetImportLock(DateTime importStartTime);
         Task<DateTime> CheckImportLock();
         Task ClearImportLock();
+        Task<DateTime> GetLastUnsentCheck();
+        Task SetLastUnsentCheck(DateTime lastCheck);
 
         Task<bool> SaveNotifyRequest(NotifyRequest notifyRequest, RequestContext requestContext);
         Task<bool> DeleteNotifyRequest(string documentId);
