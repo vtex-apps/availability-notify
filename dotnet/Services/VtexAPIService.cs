@@ -609,6 +609,16 @@ namespace AvailabilityNotify.Services
             return success;
         }
 
+        public async Task ProcessNotification(AllStatesNotification notification)
+        {
+            switch (notification.CurrentState)
+            {
+                case Constants.VtexOrderStatus.StartHanding:    // What state to trigger on?
+                    await this.CheckUnsentNotifications();
+                    break;
+            }
+        }
+
         public async Task<ShopperRecord[]> GetShopperByEmail(string email)
         {
             // GET https://{accountName}.{environment}.com.br/api/dataentities/CL/search?email=
@@ -1008,6 +1018,19 @@ namespace AvailabilityNotify.Services
             }
 
             return success;
+        }
+
+        public async Task CheckUnsentNotifications()
+        {
+            int windowInMinutes = 100;
+            DateTime lastCheck = await _availabilityRepository.GetLastUnsentCheck();
+            if (lastCheck.AddMinutes(windowInMinutes) < DateTime.Now)
+            {
+                List<string> results = await this.ProcessUnsentRequests();
+                _context.Vtex.Logger.Info("CheckUnsentNotifications", null, string.Join(", ", results));
+
+                await _availabilityRepository.SetLastUnsentCheck(DateTime.Now);
+            }
         }
     }
 }

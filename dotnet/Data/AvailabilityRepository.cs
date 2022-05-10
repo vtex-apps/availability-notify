@@ -438,5 +438,64 @@ namespace AvailabilityNotify.Services
                 _context.Vtex.Logger.Error("ClearImportLock", null, null, ex);
             }
         }
+
+        public async Task<DateTime> GetLastUnsentCheck()
+        {
+            DateTime lastCheck = DateTime.Now;
+            var request = new HttpRequestMessage
+            {
+                Method = HttpMethod.Get,
+                RequestUri = new Uri($"http://vbase.{this._environmentVariableProvider.Region}.vtex.io/{this._httpContextAccessor.HttpContext.Request.Headers[Constants.VTEX_ACCOUNT_HEADER_NAME]}/{this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_WORKSPACE]}/buckets/{this._applicationName}/{Constants.BUCKET}/files/{Constants.UNSENT_CHECK}"),
+            };
+
+            string authToken = this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_CREDENTIAL];
+            if (authToken != null)
+            {
+                request.Headers.Add(Constants.AUTHORIZATION_HEADER_NAME, authToken);
+            }
+
+            var client = _clientFactory.CreateClient();
+            var response = await client.SendAsync(request);
+            if (response.IsSuccessStatusCode)
+            {
+                string responseContent = await response.Content.ReadAsStringAsync();
+                if (!string.IsNullOrEmpty(responseContent))
+                {
+                    lastCheck = JsonConvert.DeserializeObject<DateTime>(responseContent);
+                }
+                else
+                {
+                    await this.SetLastUnsentCheck(lastCheck);
+                }
+            }
+            else
+            {
+                await this.SetLastUnsentCheck(lastCheck.AddDays(-7));
+            }
+
+            return lastCheck;
+        }
+
+        public async Task SetLastUnsentCheck(DateTime lastCheck)
+        {
+            var jsonSerializedStoreList = JsonConvert.SerializeObject(lastCheck);
+            var request = new HttpRequestMessage
+            {
+                Method = HttpMethod.Put,
+                RequestUri = new Uri($"http://vbase.{this._environmentVariableProvider.Region}.vtex.io/{this._httpContextAccessor.HttpContext.Request.Headers[Constants.VTEX_ACCOUNT_HEADER_NAME]}/{this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_WORKSPACE]}/buckets/{this._applicationName}/{Constants.BUCKET}/files/{Constants.UNSENT_CHECK}"),
+                Content = new StringContent(jsonSerializedStoreList, Encoding.UTF8, Constants.APPLICATION_JSON)
+            };
+
+            string authToken = this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_CREDENTIAL];
+            if (authToken != null)
+            {
+                request.Headers.Add(Constants.AUTHORIZATION_HEADER_NAME, authToken);
+            }
+
+            var client = _clientFactory.CreateClient();
+            var response = await client.SendAsync(request);
+
+            response.EnsureSuccessStatusCode();
+        }
     }
 }

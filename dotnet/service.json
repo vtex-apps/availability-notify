@@ -32,16 +32,16 @@
     }
   },
   "events": {
-    "onAppsLinked": {
-      "sender": "apps",
-      "keys": ["linked"]
-    },
     "broadcasterNotification": {
       "keys": ["broadcaster.notification"]
     },
     "OnAppInstalled": {
       "sender": "apps",
       "keys": ["setup"]
+    },
+    "allStates": {
+      "sender": "vtex.orders-broadcast",
+      "topics": ["order-status-updated"]
     }
   }
 }
