@@ -14,7 +14,7 @@
         {
           "effect": "allow",
           "actions": ["post"],
-          "principals": ["vrn:apps:*:*:*:app/vtex.availability-notify@0.*"]
+          "principals": ["vrn:apps:*:*:*:app/vtex.availability-notify@1.*"]
         }
       ]
     },
