@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [1.7.1] - 2022-05-12
+
 ### Changed
 
 - (NOTIFIER-31) Updated app version in access policy.
