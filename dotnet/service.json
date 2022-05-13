@@ -9,7 +9,7 @@
     "processNotification": {
       "path": "/_v/availability-notify/notify",
       "public": true,
-      "access": "authorized",
+      "access": "public",
       "policies": [
         {
           "effect": "allow",
