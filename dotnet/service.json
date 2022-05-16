@@ -8,7 +8,7 @@
   "routes": {
     "processNotification": {
       "path": "/_v/availability-notify/notify",
-      "public": true,
+      "public": false,
       "access": "public",
       "policies": [
         {
