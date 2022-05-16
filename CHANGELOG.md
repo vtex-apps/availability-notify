@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [1.7.3] - 2022-05-16
+
 (NOTIFIER-31) Changed forwarding address
 
 ## [1.7.2] - 2022-05-13
