@@ -981,7 +981,8 @@ namespace AvailabilityNotify.Services
                     var request = new HttpRequestMessage
                     {
                         Method = HttpMethod.Post,
-                        RequestUri = new Uri($"http://{accountName}.{Constants.ENVIRONMENT}.com.br/_v/availability-notify/notify"),
+                        //RequestUri = new Uri($"http://{accountName}.{Constants.ENVIRONMENT}.com.br/_v/availability-notify/notify"),
+                        RequestUri = new Uri($"http://app.io.vtex.com/vtex.availability-notify/v{_context.Vtex.App.Major}/{accountName}/master/_v/availability-notify/notify"),
                         Content = new StringContent(jsonSerializedData, Encoding.UTF8, Constants.APPLICATION_JSON)
                     };
 
@@ -1004,12 +1005,12 @@ namespace AvailabilityNotify.Services
                     }
                     else
                     {
-                        _context.Vtex.Logger.Warn("ForwardNotification", null, $"[{response.StatusCode}] '{responseContent}' ", new[] { ("url", $"{accountName}.{Constants.ENVIRONMENT}.com.br/_v/availability-notify/notify"), ("Notification", jsonSerializedData) });
+                        _context.Vtex.Logger.Warn("ForwardNotification", null, $"[{response.StatusCode}] '{responseContent}' ", new[] { ("url", request.RequestUri.ToString()), ("Notification", jsonSerializedData) });
                     }
                 }
                 catch (Exception ex)
                 {
-                    _context.Vtex.Logger.Error("ForwardNotification", null, $"Error forwarding request to '{accountName}' ", ex, new[] { ("url", $"{accountName}.{Constants.ENVIRONMENT}.com.br/_v/availability-notify/notify"), ("Notification", jsonSerializedData) });
+                    _context.Vtex.Logger.Error("ForwardNotification", null, $"Error forwarding request to '{accountName}' ", ex, new[] { ("url", $"http://app.io.vtex.com/vtex.availability-notify/v{_context.Vtex.App.Major}/{accountName}/master/_v/availability-notify/notify"), ("Notification", jsonSerializedData) });
                 }
             }
             else
