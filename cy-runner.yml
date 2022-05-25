@@ -48,11 +48,17 @@ workspace:
   name: random
   prefix: availabilitynotify
   linkApp:
-    enabled: false
+    enabled: true
     logOutput:
       enabled: false
-  installApps: []
-  removeApps: []
+  installApps: 
+    # wish-list theme will work only when its peer dependency wish-list is added in the workspace
+    # So, installing wish-list@0.x version
+    - vtex.availability-notify@1.x
+    # Published a new theme for store-theme E2E test
+    - vtex.availability-notify-qa-theme@0.0.1
+  removeApps: 
+   - vtex.bitcot-qa-theme
   wipe:
     enabled: false
     stopOnFail: false
