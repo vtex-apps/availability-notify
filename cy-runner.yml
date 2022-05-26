@@ -4,7 +4,7 @@ base:
     enabled: true
     name: VTEX_QE
   vtex:
-    account: sandboxusdev
+    account: productusqa
     id: 2001459804
     domain: myvtex.com
     vtexIdUrl: https://vtexid.vtex.com.br/api/vtexid/pub/authenticate/default
