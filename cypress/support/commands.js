@@ -1,5 +1,6 @@
 import selectors from './common/selectors'
 import { generateAddtoCartCardSelector } from './common/utils'
+const availabilityJson = '.availability.json'
 
 Cypress.Commands.add('gotoProductDetailPage', () => {
   cy.get(selectors.ProductAnchorElement)
@@ -50,4 +51,16 @@ Cypress.Commands.add('openProduct', (product, detailPage = false) => {
   } else {
     cy.log('Visiting detail page is disabled')
   }
+})
+
+Cypress.Commands.add('setavailabilitySubscribeId', (availabilityValue) => {
+  cy.readFile(availabilityJson).then(items => {
+    cy.writeFile(availabilityJson, availabilityValue)
+  })
+})
+
+Cypress.Commands.add('setDeleteId', () => {
+  cy.readFile(availabilityJson).then(items => {
+    return items.listRequests
+  })
 })
