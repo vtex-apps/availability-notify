@@ -1,3 +1,4 @@
+import availabilityNotifySelectors from './availability-notify.selectors'
 import selectors from './common/selectors'
 import { generateAddtoCartCardSelector } from './common/utils'
 
@@ -62,4 +63,13 @@ Cypress.Commands.add('setDeleteId', () => {
   cy.readFile(availabilityJson).then((items) => {
     return items.listRequests
   })
+})
+
+Cypress.Commands.add('subscribeToProduct', (data) => {
+  cy.get(availabilityNotifySelectors.InputName).type(data.name)
+  cy.get(availabilityNotifySelectors.InputEmail).type(data.email)
+  cy.get(availabilityNotifySelectors.AvailabilityNotifySubmitButton)
+    .should('not.be.disabled')
+    .click()
+  // operationName: "AvailabilitySubscribe"
 })

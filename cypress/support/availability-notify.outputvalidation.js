@@ -12,4 +12,12 @@ export default {
     name: 'Shashi',
     email: 'shashi@bitcot.com',
   },
+  testCase1: {
+    data1: {
+      skuId: '880210',
+      warehouseId: '1_1',
+    },
+    name: 'sumanraj',
+    email: 'sumanrajravi@bitcot.com',
+  },
 }
