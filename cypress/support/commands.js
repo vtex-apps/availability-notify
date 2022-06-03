@@ -39,24 +39,12 @@ Cypress.Commands.add('openProduct', (product, detailPage = false) => {
   }
 })
 
-Cypress.Commands.add('openProduct', (product, detailPage = false) => {
-  // Search product in search bar
-  cy.get(selectors.Search).should('be.not.disabled').should('be.visible')
-
-  cy.get(selectors.Search).type(`${product}{enter}`)
-  // Page should load successfully now Filter should be visible
-  cy.get(selectors.searchResult).should('have.text', product.toLowerCase())
-  cy.get(selectors.FilterHeading, { timeout: 30000 }).should('be.visible')
-
-  if (detailPage) {
-    cy.gotoProductDetailPage()
-  } else {
-    cy.log('Visiting detail page is disabled')
-  }
-})
-
 Cypress.Commands.add('setavailabilitySubscribeId', (availabilityValue) => {
   cy.writeFile(availabilityJson, availabilityValue)
+})
+
+Cypress.Commands.add('getGmailItems', () => {
+  return cy.wrap(Cypress.env().base.gmail, { log: false })
 })
 
 Cypress.Commands.add('setDeleteId', () => {

@@ -6,7 +6,7 @@ import { updateProductStatus } from '../support/availability-notify.apis'
 
 const { data1, name, email } = testCase1
 
-describe('Updating product as available', () => {
+describe('Testing', () => {
   // Load test setup
   testSetup(false)
 
@@ -25,18 +25,6 @@ describe('Updating product as available', () => {
       cy.get(availabilityNotifySelectors.AvailabilityNotifyAlert).should(
         'have.text',
         availabilityNotifyConstants.EmailRegistered
-      )
-    }
-  )
-
-  it(
-    'Verify with same email address and check if we are getting error',
-    updateRetry(3),
-    () => {
-      cy.subscribeToProduct({ email, name })
-      cy.get(availabilityNotifySelectors.AvailabilityNotifyAlert).should(
-        'have.text',
-        availabilityNotifyConstants.EmailAlreadyExist
       )
     }
   )
