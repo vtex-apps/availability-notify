@@ -1,7 +1,5 @@
 import {
   notifySearch,
-  processAllRequest,
-  processUnsentRequest,
   updateProductStatus,
 } from '../support/availability-notify.apis'
 import { testSetup } from '../support/common/support'

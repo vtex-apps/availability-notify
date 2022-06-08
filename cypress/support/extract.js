@@ -35,7 +35,7 @@ export async function getEmailContent(
       return content
     }
 
-    if (currentContent !== currentContent) {
+    if (currentContent) {
       return content
     }
 

@@ -1,7 +1,6 @@
 import availabilityNotifySelectors from './availability-notify.selectors'
 import selectors from './common/selectors'
 import { generateAddtoCartCardSelector } from './common/utils'
-const availabilityJson = '.availability.json'
 
 const availabilityJson = '.availability.json'
 
@@ -64,13 +63,13 @@ Cypress.Commands.add('subscribeToProduct', (data) => {
 })
 
 Cypress.Commands.add('setavailabilitySubscribeId', (availabilityValue) => {
-  cy.readFile(availabilityJson).then(items => {
+  cy.readFile(availabilityJson).then(() => {
     cy.writeFile(availabilityJson, availabilityValue)
   })
 })
 
 Cypress.Commands.add('setDeleteId', () => {
-  cy.readFile(availabilityJson).then(items => {
+  cy.readFile(availabilityJson).then((items) => {
     return items.listRequests
   })
 })

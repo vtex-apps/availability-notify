@@ -21,7 +21,7 @@ export default {
     email: 'sumanrajravi@bitcot.com',
   },
   appDetails: {
-    app: "vtex.availability-notify",
-    version: "1.7.3"
-  }
+    app: 'vtex.availability-notify',
+    version: '1.7.3',
+  },
 }
