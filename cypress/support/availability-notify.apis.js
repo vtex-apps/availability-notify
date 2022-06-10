@@ -7,6 +7,8 @@ const config = Cypress.env()
 
 // Constants
 const { account } = config.base.vtex
+const WIPE_ENV = 'wipe'
+const { name } = config.workspace
 
 export function processUnsentRequest() {
   it('verify the unsend request', updateRetry(3), () => {
@@ -64,7 +66,7 @@ export function notifySearch() {
     cy.getVtexItems().then((vtex) => {
       cy.request({
         method: 'GET',
-        url: 'https://sandboxusdev.myvtex.com/api/dataentities/notify/search?_schema=reviewsSchema&_fields=email,skuId,name,createdAt',
+        url: 'https://productusqa.myvtex.com/api/dataentities/notify/search?_schema=reviewsSchema&_fields=email,skuId,name,createdAt',
         headers: VTEX_AUTH_HEADER(vtex.apiKey, vtex.apiToken),
         ...FAIL_ON_STATUS_CODE,
       }).then((response) => {
@@ -76,12 +78,12 @@ export function notifySearch() {
 
 export function configureTargetWorkspace(app, version, doShippingSim = false) {
   it(`Configuring target workspace in ${app}`, updateRetry(2), () => {
-    cy.getVtexItems().then(() => {
+    cy.getVtexItems().then((vtex) => {
       // Define constants
       const APP_NAME = 'vtex.apps-graphql'
       const APP_VERSION = '3.x'
       const APP = `${APP_NAME}@${APP_VERSION}`
-      const CUSTOM_URL = `https://${account}.myvtex.com/_v/private/admin-graphql-ide/v0/${APP}`
+      const CUSTOM_URL = `${vtex.baseUrl}/_v/private/admin-graphql-ide/v0/${APP}`
 
       const GRAPHQL_MUTATION =
         'mutation' +
@@ -91,7 +93,7 @@ export function configureTargetWorkspace(app, version, doShippingSim = false) {
       const QUERY_VARIABLES = {
         app,
         version,
-        settings: `{\"doShippingSim\":${doShippingSim},\"notifyMarketplace\":\"sandboxusdevseller\"}`,
+        settings: `{\"doShippingSim\":${doShippingSim},\"notifyMarketplace\":\"productusqaseller\"}`,
       }
       // Mutating it to the new workspace
       cy.request({
@@ -105,4 +107,48 @@ export function configureTargetWorkspace(app, version, doShippingSim = false) {
       }).its('body.data.saveAppSettings.message', { timeout: 10000 })
     })
   })
+}
+
+export function configureBroadcasterAdapter(app, version, workspace = name) {
+  it(
+    `Configuring target workspace as ${workspace} in ${app}`,
+    updateRetry(2),
+    () => {
+      cy.getOrderItems().then((order) => {
+        if (order[WIPE_ENV]) {
+          // Define constants
+          const APP_NAME = 'vtex.apps-graphql'
+          const APP_VERSION = '3.x'
+          const APP = `${APP_NAME}@${APP_VERSION}`
+          const CUSTOM_URL = `${order.baseUrl}.myvtex.com/_v/private/admin-graphql-ide/v0/${APP}`
+
+          const GRAPHQL_MUTATION =
+            'mutation' +
+            '($app:String,$version:String,$settings:String)' +
+            '{saveAppSettings(app:$app,version:$version,settings:$settings){message}}'
+
+          const QUERY_VARIABLES = {
+            app,
+            version,
+            settings: `{"targetWorkspace":"${workspace}"}`,
+          }
+
+          // Mutating it to the new workspace
+          cy.request({
+            method: 'POST',
+            url: CUSTOM_URL,
+            ...FAIL_ON_STATUS_CODE,
+            body: {
+              query: GRAPHQL_MUTATION,
+              variables: QUERY_VARIABLES,
+            },
+          })
+            .its('body.data.saveAppSettings.message', { timeout: 10000 })
+            .should('contain', workspace)
+        } else {
+          cy.log('Tax configuration is configured with another workspace')
+        }
+      })
+    }
+  )
 }
