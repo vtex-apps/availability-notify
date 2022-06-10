@@ -1,6 +1,12 @@
+/* eslint-disable */
 import { updateProductStatusAPI } from './product.api'
 import { VTEX_AUTH_HEADER, FAIL_ON_STATUS_CODE } from './common/constants'
 import { updateRetry } from './common/support'
+
+const config = Cypress.env()
+
+// Constants
+const { account } = config.base.vtex
 
 export function processUnsentRequest() {
   it('verify the unsend request', updateRetry(3), () => {
@@ -64,6 +70,39 @@ export function notifySearch() {
       }).then((response) => {
         expect(response.status).to.equal(200)
       })
+    })
+  })
+}
+
+export function configureTargetWorkspace(app, version, doShippingSim = false) {
+  it(`Configuring target workspace in ${app}`, updateRetry(2), () => {
+    cy.getVtexItems().then(() => {
+      // Define constants
+      const APP_NAME = 'vtex.apps-graphql'
+      const APP_VERSION = '3.x'
+      const APP = `${APP_NAME}@${APP_VERSION}`
+      const CUSTOM_URL = `https://${account}.myvtex.com/_v/private/admin-graphql-ide/v0/${APP}`
+
+      const GRAPHQL_MUTATION =
+        'mutation' +
+        '($app:String,$version:String,$settings:String)' +
+        '{saveAppSettings(app:$app,version:$version,settings:$settings){message}}'
+
+      const QUERY_VARIABLES = {
+        app,
+        version,
+        settings: `{\"doShippingSim\":${doShippingSim},\"notifyMarketplace\":\"sandboxusdevseller\"}`,
+      }
+      // Mutating it to the new workspace
+      cy.request({
+        method: 'POST',
+        url: CUSTOM_URL,
+        ...FAIL_ON_STATUS_CODE,
+        body: {
+          query: GRAPHQL_MUTATION,
+          variables: QUERY_VARIABLES,
+        },
+      }).its('body.data.saveAppSettings.message', { timeout: 10000 })
     })
   })
 }

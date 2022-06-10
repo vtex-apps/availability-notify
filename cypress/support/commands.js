@@ -61,3 +61,15 @@ Cypress.Commands.add('subscribeToProduct', (data) => {
     .click()
   // operationName: "AvailabilitySubscribe"
 })
+
+Cypress.Commands.add('setavailabilitySubscribeId', (availabilityValue) => {
+  cy.readFile(availabilityJson).then(() => {
+    cy.writeFile(availabilityJson, availabilityValue)
+  })
+})
+
+Cypress.Commands.add('setDeleteId', () => {
+  cy.readFile(availabilityJson).then((items) => {
+    return items.listRequests
+  })
+})

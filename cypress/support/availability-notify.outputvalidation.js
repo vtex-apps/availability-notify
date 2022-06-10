@@ -20,4 +20,8 @@ export default {
     name: 'sumanraj',
     email: 'sumanrajravi@bitcot.com',
   },
+  appDetails: {
+    app: 'vtex.availability-notify',
+    version: '1.7.3',
+  },
 }
