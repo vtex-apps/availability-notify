@@ -13,7 +13,7 @@ describe('Update product as available and validate', () => {
 
   triggerBroadCaster(data1.skuId)
 
-  verifyEmail()
+  verifyEmail(data1.email)
 
   preserveCookie()
 })
