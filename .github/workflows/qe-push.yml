@@ -20,7 +20,7 @@ jobs:
     uses: vtex-apps/usqa/.github/workflows/quality-engineering.yml@main
     with:
       nodeLint: true
-      nodeTest: true
+      nodeTest: false
       nodeSonar: true
       nodeSonarProjectKey: vtex-apps_availability-notify-ts
       nodeSonarOrganization: vtex-apps

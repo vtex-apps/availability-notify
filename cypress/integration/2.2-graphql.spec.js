@@ -29,7 +29,7 @@ describe('Graphql queries', () => {
   it('List Requests', () => {
     graphql(listRequests(), (response) => {
       validateListRequestResponse(response)
-      cy.setavailabilitySubscribeId(response.body.data.listRequests[0])
+      cy.setavailabilitySubscribeId(response.body.data.listRequests)
     })
   })
 

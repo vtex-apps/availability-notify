@@ -17,8 +17,8 @@ export default {
       skuId: '880210',
       warehouseId: '1_1',
     },
-    name: 'sumanraj',
-    email: 'sumanrajravi@bitcot.com',
+    name: 'saravanan',
+    email: 'saravananvenkatesan@bitcot.com',
   },
   appDetails: {
     app: 'vtex.availability-notify',

@@ -16,6 +16,7 @@ import {
 } from '../support/availability-notify.apis'
 import availabilityNotifySelectors from '../support/availability-notify.selectors'
 import availabilityNotifyConstants from '../support/availability-notify.constants'
+import availbalityNotifyProducts from '../support/availability-notify.products'
 import {
   graphql,
   validateDeleteRequestResponse,
@@ -26,6 +27,7 @@ import {
 
 const { data1, name, email } = testCase1
 const { app, version } = appDetails
+
 describe('Testing', () => {
   // Load test setup
   testSetup()
@@ -45,16 +47,12 @@ describe('Testing', () => {
     })
   })
 
-  configureBroadcasterAdapter(app, version)
-  configureTargetWorkspace(app, version, true)
-
+  configureTargetWorkspace('vtex.availability-notify', '1.7.3', true)
   updateProductStatus(data1, false)
-
   it('Open product', updateRetry(3), () => {
     cy.openStoreFront()
-    cy.openProduct('weber spirit', true)
+    cy.openProduct(availbalityNotifyProducts.Lenovo.name, true)
   })
-
   it('Enable marketplace to notify and validate', updateRetry(3), () => {
     cy.subscribeToProduct({ email, name })
     cy.get(availabilityNotifySelectors.AvailabilityNotifyAlert).should(
@@ -62,13 +60,10 @@ describe('Testing', () => {
       availabilityNotifyConstants.EmailRegistered
     )
   })
-
+  configureBroadcasterAdapter(app, version)
   configureTargetWorkspace('vtex.availability-notify', '1.7.3', false)
   updateProductStatus(data1, true)
-
   triggerBroadCaster(data1.skuId)
-
   verifyEmail()
-
   preserveCookie()
 })
