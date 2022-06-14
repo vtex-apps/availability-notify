@@ -50,12 +50,12 @@ class GmailAPI {
   async searchGmail(searchItem) {
     const secondsSinceEpoch = (date) => Math.floor(date.getTime() / 1000)
     const after = new Date()
-    const before = new Date(new Date().getTime() - 15 * 60000)
+    const before = new Date(new Date().getTime() - 5000 * 60000)
     const config1 = {
       method: 'get',
-      url: `https://www.googleapis.com/gmail/v1/users/me/messages?q=${searchItem}&after=${secondsSinceEpoch(
+      url: `https://www.googleapis.com/gmail/v1/users/me/messages?q=${searchItem} after=${secondsSinceEpoch(
         after
-      )}&before=${secondsSinceEpoch(before)}`,
+      )} before=${secondsSinceEpoch(before)}`,
       ...(await getHeaders(this.accessToken)),
     }
 

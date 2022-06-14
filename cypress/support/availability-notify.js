@@ -25,9 +25,12 @@ export function verifyEmail(email) {
         refreshToken: gmail.refreshToken,
       }
 
-      const accessToken = await getEmailContent('shashi@bitcot.com', gmailCreds)
+      const emailContent = await getEmailContent(
+        'shashi@bitcot.com',
+        gmailCreds
+      )
 
-      cy.log(accessToken)
+      expect(emailContent).to.equal(1)
     })
   })
 }
