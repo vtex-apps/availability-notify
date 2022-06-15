@@ -25,9 +25,14 @@ export function verifyEmail(email) {
         refreshToken: gmail.refreshToken,
       }
 
+      const after = new Date().getTime()
+      const before = new Date(after - 15000 * 60).getTime()
       const emailContent = await getEmailContent(
         'shashi@bitcot.com',
-        gmailCreds
+        gmailCreds,
+        after,
+        before,
+        4
       )
 
       expect(emailContent).to.equal(1)

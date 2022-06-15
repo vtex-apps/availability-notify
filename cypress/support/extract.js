@@ -13,6 +13,8 @@ function extractContent(message) {
 export async function getEmailContent(
   email,
   gmailCreds,
+  after,
+  before,
   currentContent = null
 ) {
   const gmail = new GmailAPI(gmailCreds)
@@ -26,7 +28,7 @@ export async function getEmailContent(
     content = extractContent(
       await gmail.readInboxContent(
         new URLSearchParams(
-          `from:noreply@vtexcommerce.com.br+to:${ToEmail}`
+          `from:noreply@vtexcommerce.com.br+to:${ToEmail}+after:${after}+before:${before}`
         ).toString(),
         gmailCreds
       )
