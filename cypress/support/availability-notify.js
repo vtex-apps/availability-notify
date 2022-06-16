@@ -26,7 +26,7 @@ export function verifyEmail(email) {
       }
 
       const after = new Date().toISOString().slice(0, 10)
-      const before = new Date(new Date() - 15000 * 60)
+      const before = new Date(new Date().getTime() + 60 * 60 * 24 * 1000)
         .toISOString()
         .slice(0, 10)
 
@@ -37,7 +37,7 @@ export function verifyEmail(email) {
         before
       )
       cy.log(emailContent)
-      expect(emailContent).to.not.equal(0)
+      expect(emailContent).to.not.equal('0')
     })
   })
 }
