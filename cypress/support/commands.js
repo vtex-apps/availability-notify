@@ -1,6 +1,7 @@
 import availabilityNotifySelectors from './availability-notify.selectors'
 import selectors from './common/selectors'
 import { generateAddtoCartCardSelector } from './common/utils'
+
 const availabilityJson = '.availability.json'
 
 Cypress.Commands.add('gotoProductDetailPage', () => {
@@ -19,6 +20,7 @@ Cypress.Commands.add('openStoreFront', (login = false) => {
       .should('be.visible')
       .should('have.contain', `Hello,`)
   }
+
   cy.wait('@events')
 })
 
@@ -42,6 +44,7 @@ Cypress.Commands.add('setavailabilitySubscribeId', (availabilityValue) => {
   const data = availabilityValue.filter(
     (a) => a.email === 'saravananvenkatesan@bitcot.com'
   )
+
   cy.writeFile(availabilityJson, data)
 })
 
@@ -61,7 +64,6 @@ Cypress.Commands.add('subscribeToProduct', (data) => {
   cy.get(availabilityNotifySelectors.AvailabilityNotifySubmitButton)
     .should('not.be.disabled')
     .click()
-  // operationName: "AvailabilitySubscribe"
 })
 
 Cypress.Commands.add('setDeleteId', () => {

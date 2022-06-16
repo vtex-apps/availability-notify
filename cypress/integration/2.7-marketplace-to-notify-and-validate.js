@@ -26,13 +26,14 @@ import {
 
 const { data1, name, email } = testCase1
 const { app, version } = appDetails
-describe('Testing', () => {
+
+describe('Testing market place to notify', () => {
   // Load test setup
   testSetup()
 
   it('List Requests', () => {
     graphql(listRequests(), (response) => {
-      validateListRequestResponse
+      validateListRequestResponse()
       cy.setavailabilitySubscribeId(response.body.data.listRequests)
     })
   })
