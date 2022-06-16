@@ -16,5 +16,6 @@ namespace AvailabilityNotify.Services
         Task<List<string>> ProcessUnsentRequests();
         Task CheckUnsentNotifications();
         Task<CartSimulationResponse> CartSimulation(CartSimulationRequest cartSimulationRequest, RequestContext requestContext);
+        Task<bool> CanShipToShopper(NotifyRequest requestToNotify, RequestContext requestContext);
     }
 }

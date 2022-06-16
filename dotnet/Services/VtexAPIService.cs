@@ -111,7 +111,6 @@ namespace AvailabilityNotify.Services
             var client = _clientFactory.CreateClient();
             var response = await client.SendAsync(request);
             string responseContent = await response.Content.ReadAsStringAsync();
-            Console.WriteLine($"ListAllWarehouses [{response.StatusCode}] {responseContent}");
             if (response.IsSuccessStatusCode)
             {
                 listAllWarehousesResponse = JsonConvert.DeserializeObject<ListAllWarehousesResponse[]>(responseContent);
@@ -881,7 +880,7 @@ namespace AvailabilityNotify.Services
                         {
                             new CartItem
                             {
-                                Id = requestToNotify.Id,
+                                Id = requestToNotify.SkuId,
                                 Quantity = 1,
                                 Seller = sellerId
                             }
@@ -893,14 +892,16 @@ namespace AvailabilityNotify.Services
                     var addressList = shopperAddresses.Distinct();
                     foreach (ShopperAddress shopperAddress in addressList)
                     {
+                        cartSimulationRequest.PostalCode = shopperAddress.PostalCode;
+                        cartSimulationRequest.Country = shopperAddress.Country;
                         CartSimulationResponse cartSimulationResponse = await this.CartSimulation(cartSimulationRequest, requestContext);
-                        if (cartSimulationResponse != null)
+                        if (cartSimulationResponse != null 
+                            && cartSimulationResponse.Items != null 
+                            && cartSimulationResponse.Items.Length > 0 
+                            && cartSimulationResponse.Items[0].Availability.Equals(Constants.Availability.Available))
                         {
-                            if (cartSimulationResponse.Items[0].Availability.Equals(Constants.Availability.Available))
-                            {
-                                sendMail = true;
-                                break;
-                            }
+                            sendMail = true;
+                            break;
                         }
                     }
                 }
@@ -935,7 +936,6 @@ namespace AvailabilityNotify.Services
                 var client = _clientFactory.CreateClient();
                 var response = await client.SendAsync(request);
                 string responseContent = await response.Content.ReadAsStringAsync();
-                Console.WriteLine($"CartSimulation {cartSimulationRequest.PostalCode},{cartSimulationRequest.Country} : [{response.StatusCode}] ");
                 if(response.IsSuccessStatusCode)
                 {
                     cartSimulationResponse = JsonConvert.DeserializeObject<CartSimulationResponse>(responseContent);
