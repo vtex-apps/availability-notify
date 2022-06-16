@@ -4,7 +4,9 @@ const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
 function extractContent(message) {
   if (message) {
-    return message.includes('The wait is over') ? message : '0'
+    return message.includes('Weber 45010001 Spirit II E-310 3-Burner')
+      ? message
+      : '0'
   }
 
   return '0'
@@ -28,9 +30,8 @@ export async function getEmailContent(
     content = extractContent(
       await gmail.readInboxContent(
         new URLSearchParams(
-          `from:noreply@vtexcommerce.com.br+to:${ToEmail}+after:${after}+before:${before}`
-        ).toString(),
-        gmailCreds
+          `after:${after} before:${before} from:noreply@vtexcommerce.com.br to:${ToEmail}`
+        ).toString()
       )
     )
     if (currentContent === null) {

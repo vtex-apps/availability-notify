@@ -17,7 +17,7 @@ export default {
       skuId: '880210',
       warehouseId: '1_1',
     },
-    name: 'shashi',
+    name: 'Shashi',
     email: 'shashi@bitcot.com',
   },
   appDetails: {

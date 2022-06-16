@@ -17,7 +17,7 @@ export function verifyEmail(email) {
       expect(request[0].notificationSent).to.be(true)
     })
     /* eslint-disable cypress/no-unnecessary-waiting */
-    cy.wait(15000)
+    // cy.wait(15000)
     cy.getGmailItems().then(async (gmail) => {
       const gmailCreds = {
         clientId: gmail.clientId,
@@ -25,8 +25,11 @@ export function verifyEmail(email) {
         refreshToken: gmail.refreshToken,
       }
 
-      const after = new Date().getTime()
-      const before = new Date(after - 15000 * 60).getTime()
+      const after = new Date().toISOString().slice(0, 10)
+      const before = new Date(new Date() - 15000 * 60)
+        .toISOString()
+        .slice(0, 10)
+
       const emailContent = await getEmailContent(
         'shashi@bitcot.com',
         gmailCreds,
@@ -34,8 +37,8 @@ export function verifyEmail(email) {
         before,
         4
       )
-
-      expect(emailContent).to.equal(1)
+      cy.log(emailContent)
+      expect(emailContent).to.not.equal(0)
     })
   })
 }
