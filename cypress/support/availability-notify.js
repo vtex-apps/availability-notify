@@ -31,11 +31,10 @@ export function verifyEmail(email) {
         .slice(0, 10)
 
       const emailContent = await getEmailContent(
-        'shashi@bitcot.com',
+        gmail.id,
         gmailCreds,
         after,
-        before,
-        4
+        before
       )
       cy.log(emailContent)
       expect(emailContent).to.not.equal(0)
