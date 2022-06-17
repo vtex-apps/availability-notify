@@ -20,7 +20,6 @@ export function triggerBroadCaster(skuid) {
         },
         ...FAIL_ON_STATUS_CODE,
       }).then((response) => {
-        cy.log(response)
         expect(response.status).to.equal(200)
       })
     })

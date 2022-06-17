@@ -30,13 +30,13 @@ export function verifyEmail(email) {
         .toISOString()
         .slice(0, 10)
 
-      const emailContent = await getEmailContent(
-        gmail.id,
+      const emailContent = await getEmailContent({
+        email: gmail.id,
         gmailCreds,
         after,
-        before
-      )
-      cy.log(emailContent)
+        before,
+      })
+
       expect(emailContent).to.not.equal('0')
     })
   })

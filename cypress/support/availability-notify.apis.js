@@ -22,7 +22,6 @@ export function processUnsentRequest() {
       },
       ...FAIL_ON_STATUS_CODE,
     }).then((response) => {
-      cy.log(response)
       expect(response.status).to.equal(200)
     })
   })
@@ -36,7 +35,6 @@ export function processAllRequest() {
       url: 'https://sandboxusdev.myvtex.com/availability-notify/process-all-requests',
       ...FAIL_ON_STATUS_CODE,
     }).then((response) => {
-      cy.log(response)
       expect(response.status).to.equal(200)
     })
   })

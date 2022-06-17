@@ -1,6 +1,6 @@
 const GmailAPI = require('./gmail')
 
-const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+// const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
 function extractContent(message) {
   if (message) {
@@ -12,36 +12,25 @@ function extractContent(message) {
   return '0'
 }
 
-export async function getEmailContent(
-  email,
-  gmailCreds,
-  after,
-  before,
-  currentContent = null
-) {
+export async function getEmailContent({ email, gmailCreds, after, before }) {
   const gmail = new GmailAPI(gmailCreds)
   const ToEmail = email.replace('+', '%2B')
 
   let content
-  const totalRetry = !currentContent ? 0 : 8
+  const totalRetry = 4
 
-  /* eslint-disable no-await-in-loop */
   for (let currentRetry = 0; currentRetry <= totalRetry; currentRetry++) {
     content = extractContent(
+      // eslint-disable-next-line no-await-in-loop
       await gmail.readInboxContent(
         new URLSearchParams(
           `after:${after} before:${before} from:noreply@vtexcommerce.com.br to:${ToEmail}`
         ).toString()
       )
     )
-    if (currentContent === null) {
-      return content
-    }
 
-    if (currentContent) {
-      return content
-    }
+    return content
 
-    await delay(5000)
+    // await delay(5000)
   }
 }
