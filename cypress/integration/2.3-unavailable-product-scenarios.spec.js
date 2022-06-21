@@ -2,13 +2,17 @@ import availabilityNotifySelectors from '../support/availability-notify.selector
 import { testSetup, updateRetry } from '../support/common/support'
 import { testCase1 } from '../support/availability-notify.outputvalidation'
 import availabilityNotifyConstants from '../support/availability-notify.constants'
-import { updateProductStatus } from '../support/availability-notify.apis'
+import {
+  generateEmailId,
+  updateProductStatus,
+} from '../support/availability-notify.apis'
 
-const { data1, name, email } = testCase1
+const { data1, name } = testCase1
 
-describe('Updating product as available', () => {
+describe('Updating product as unavailable', () => {
   // Load test setup
   testSetup(false)
+  const email = generateEmailId()
 
   updateProductStatus(data1, false)
 

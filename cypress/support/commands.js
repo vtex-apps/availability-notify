@@ -3,6 +3,7 @@ import selectors from './common/selectors'
 import { generateAddtoCartCardSelector } from './common/utils'
 
 const availabilityJson = '.availability.json'
+const emailsJson = '.emails.json'
 
 Cypress.Commands.add('gotoProductDetailPage', () => {
   cy.get(selectors.ProductAnchorElement)
@@ -48,8 +49,18 @@ Cypress.Commands.add('setavailabilitySubscribeId', (availabilityValue) => {
   cy.writeFile(availabilityJson, data)
 })
 
+Cypress.Commands.add('saveEmailId', (email) => {
+  cy.writeFile(emailsJson, { email })
+})
+
 Cypress.Commands.add('getGmailItems', () => {
   return cy.wrap(Cypress.env().base.gmail, { log: false })
+})
+
+Cypress.Commands.add('getEmailItems', () => {
+  cy.readFile(emailsJson).then((email) => {
+    return email
+  })
 })
 
 Cypress.Commands.add('setDeleteId', () => {
@@ -59,6 +70,7 @@ Cypress.Commands.add('setDeleteId', () => {
 })
 
 Cypress.Commands.add('subscribeToProduct', (data) => {
+  cy.saveEmailId(data.email)
   cy.get(availabilityNotifySelectors.name).type(data.name)
   cy.get(availabilityNotifySelectors.email).type(data.email)
   cy.get(availabilityNotifySelectors.AvailabilityNotifySubmitButton)

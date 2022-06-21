@@ -26,7 +26,7 @@ base:
     devMode: true
     runHeaded: false
     enabled: false
-    projectId: xyz
+    projectId: wnpzgv
     getCookies: true
     maxJobs: 3
     quiet: true
@@ -43,7 +43,7 @@ base:
     pageLoadTimeout: 45000
     browser: chrome
     chromeWebSecurity: false
-  stateFiles: ['.orders.json']
+  stateFiles: ['.orders.json', '.emails.json']
 workspace:
   name: random
   prefix: availabilitynotify
@@ -56,7 +56,7 @@ workspace:
     # So, installing wish-list@0.x version
     - vtex.availability-notify@1.x
     # Published a new theme for store-theme E2E test
-    - vtex.availability-notify-qa-theme@0.0.1
+    - vtex.availability-notify-qa-theme@0.0.2
   removeApps:
     - vtex.bitcot-qa-theme
   wipe:

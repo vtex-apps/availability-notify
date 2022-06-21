@@ -153,3 +153,8 @@ export function configureBroadcasterAdapter(app, version, workspace = name) {
     }
   )
 }
+
+
+export function generateEmailId() {
+  return `shashi+${(Math.random() + 1).toString(36).substring(7)}@bitcot.com`
+}

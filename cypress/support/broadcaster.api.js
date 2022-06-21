@@ -4,7 +4,7 @@ import { updateRetry } from './common/support'
 export function triggerBroadCaster(skuid) {
   it('Triggering broadcatser api', updateRetry(3), () => {
     cy.addDelayBetweenRetries(2000)
-    cy.getVtexItems((vtex) => {
+    cy.getVtexItems().then((vtex) => {
       cy.request({
         method: 'POST',
         url: `http://app.io.vtex.com/vtex.broadcaster/v0/${vtex.account}/${
