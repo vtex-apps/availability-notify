@@ -966,6 +966,12 @@ namespace AvailabilityNotify.Services
             if (!string.IsNullOrEmpty(accountName))
             {
                 accountName = accountName.Trim();
+                if (_context.Vtex.Account.Equals(accountName, StringComparison.OrdinalIgnoreCase))
+                {
+                    _context.Vtex.Logger.Warn("ForwardNotification", null, $"Skipping self reference.  Please remove account from app settings.");
+                    return true;
+                }
+                
                 AffiliateNotification affiliateNotification = new AffiliateNotification
                 {
                     An = notification.An,
