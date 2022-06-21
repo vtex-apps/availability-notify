@@ -43,7 +43,7 @@ base:
     pageLoadTimeout: 45000
     browser: chrome
     chromeWebSecurity: false
-  stateFiles: []
+  stateFiles: ['.orders.json']
 workspace:
   name: random
   prefix: availabilitynotify
@@ -51,199 +51,64 @@ workspace:
     enabled: true
     logOutput:
       enabled: false
-  installApps: 
+  installApps:
     # wish-list theme will work only when its peer dependency wish-list is added in the workspace
     # So, installing wish-list@0.x version
     - vtex.availability-notify@1.x
     # Published a new theme for store-theme E2E test
     - vtex.availability-notify-qa-theme@0.0.1
-  removeApps: 
-   - vtex.bitcot-qa-theme
+  removeApps:
+    - vtex.bitcot-qa-theme
   wipe:
     enabled: false
     stopOnFail: false
-    specs: 
-    - cypress/integration/wipe.spec.js
+    specs:
+      - cypress/integration/wipe.spec.js
   teardown:
     enabled: true
 strategy:
   # Clear reviews before testcase
-  wipe:
-    enabled: false
-    sendDashboard: false
-    hardTries: 1
-    stopOnFail: false
-    parallel: false
-    runInOrder: true
-    specs:
-      - cypress/integration/wipe.spec.js
-  # Enable Anonymous review with no admin approval
-  anonymous_user1:
-    enabled: true
-    sendDashboard: false
-    hardTries: 1
-    stopOnFail: false
-    parallel: false
-    runInOrder: true
-    specs:
-      - cypress/integration/2.1.1-*
-    dependency:
-      - cypress/integration/wipe.spec.js
-  signed_in_user1:
-    enabled: true
-    sendDashboard: false
-    hardTries: 1
-    stopOnFail: false
-    parallel: false
-    runInOrder: true
-    specs:
-      - cypress/integration/2.1.2-*
-      - cypress/integration/2.1.3-*
-    dependency:
-      - cypress/integration/2.1.1-*
-  order_the_product:
-    enabled: true
-    sendDashboard: false
-    hardTries: 1
-    stopOnFail: false
-    parallel: false
-    runInOrder: true
-    specs:
-      - cypress/integration/2.2.1-*
-    dependency:
-      - cypress/integration/wipe.spec.js
-  # Disable Anonymous review with no admin approval
-  anonymous_user2:
-    enabled: true
-    sendDashboard: false
-    hardTries: 1
-    stopOnFail: false
-    parallel: false
-    runInOrder: true
-    specs:
-      - cypress/integration/2.2.2-*
-    dependency:
-      - cypress/integration/2.1.2-*
-      - cypress/integration/2.1.3-*
-      - cypress/integration/2.2.1-*
-  signed_in_user_2:
-    enabled: true
-    sendDashboard: false
-    hardTries: 1
-    stopOnFail: false
-    parallel: false
-    runInOrder: true
-    specs:
-      - cypress/integration/2.2.3-*
-      - cypress/integration/2.2.4-*
-    dependency:
-      - cypress/integration/2.1.2-*
-      - cypress/integration/2.1.3-*
-      - cypress/integration/2.2.1-*
-  # Enable Anonymous review with admin approval
-  anonymous_user3:
-    enabled: true
-    sendDashboard: false
-    hardTries: 1
-    stopOnFail: false
-    parallel: false
-    runInOrder: true
-    specs:
-      - cypress/integration/2.3.1-*
-    dependency:
-      - cypress/integration/2.1.2-*
-      - cypress/integration/2.1.3-*
-      - cypress/integration/2.2.1-*
-  signed_in_user_3:
-    enabled: true
-    sendDashboard: false
-    hardTries: 1
-    stopOnFail: false
-    parallel: false
-    runInOrder: true
-    specs:
-      - cypress/integration/2.3.2-*
-    dependency:
-      - cypress/integration/2.1.2-*
-      - cypress/integration/2.1.3-*
-      - cypress/integration/2.2.1-*
-  # Disable Anonymous review with admin approval
-  anonymous_user4:
-    enabled: true
-    sendDashboard: false
-    hardTries: 1
-    stopOnFail: false
-    parallel: false
-    runInOrder: true
-    specs:
-      - cypress/integration/2.4.1-*
-    dependency:
-      - cypress/integration/2.3.2-*
-  signed_in_user_4:
-    enabled: true
-    sendDashboard: false
-    hardTries: 1
-    stopOnFail: false
-    parallel: false
-    runInOrder: true
-    specs:
-      - cypress/integration/2.4.2-*
-    dependency:
-      - cypress/integration/2.4.1-*
   rest_api_testcase:
     enabled: true
     sendDashboard: false
     hardTries: 3
     stopOnFail: false
     parallel: false
-    runInOrder: true
     specs:
-      - cypress/integration/2.5-*
+      - cypress/integration/2.1-*
   graphql_api_testcase:
     enabled: true
     sendDashboard: false
-    hardTries: 5
+    hardTries: 3
     stopOnFail: false
     parallel: false
-    runInOrder: true
     specs:
+      - cypress/integration/2.2-*
+  basictest:
+    enabled: true
+    sendDashboard: true
+    hardTries: 1
+    stopOnFail: false
+    runInOrder: true
+    parallel: false
+    specs:
+      - cypress/integration/2.3-*
+      - cypress/integration/2.4-*
+      - cypress/integration/2.5-*
       - cypress/integration/2.6-*
-    dependency:
-      - cypress/integration/2.1.2-*
-      - cypress/integration/2.1.3-*
-  display_settings_anonymous_user:
+  marketplace_to_notify_testcase:
     enabled: true
-    sendDashboard: false
+    sendDashboard: true
     hardTries: 1
     stopOnFail: false
-    parallel: false
-    runInOrder: true
+    parallel: true
     specs:
-      - cypress/integration/2.7.1-*
-  display_settings_disabled_anonymous_user:
+      - cypress/integration/2.7-*
+  availability_notify_testcase:
     enabled: true
-    sendDashboard: false
+    sendDashboard: true
     hardTries: 1
     stopOnFail: false
-    parallel: false
-    runInOrder: true
+    parallel: true
     specs:
-      - cypress/integration/2.7.2-*
-  display_settings_signed_in_user:
-    enabled: true
-    sendDashboard: false
-    hardTries: 1
-    stopOnFail: false
-    parallel: false
-    runInOrder: true
-    specs:
-      - cypress/integration/2.7.3-*
-  display_settings_disabled_signed_in_user:
-    enabled: true
-    sendDashboard: false
-    hardTries: 1
-    stopOnFail: false
-    parallel: false
-    runInOrder: true
-    specs:
-      - cypress/integration/2.7.4-*
+      - cypress/integration/2.8-*
