@@ -28,7 +28,7 @@ import {
 const { data1, name, email } = testCase1
 const { app, version } = appDetails
 
-describe('Testing', () => {
+describe('Test availability notify scenarios', () => {
   // Load test setup
   testSetup()
 

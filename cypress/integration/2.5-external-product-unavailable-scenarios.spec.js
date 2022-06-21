@@ -6,7 +6,7 @@ import { updateProductStatus } from '../support/availability-notify.apis'
 
 const { data1, name, email } = testCase1
 
-describe('Testing', () => {
+describe('Test external product unavailable scenarios', () => {
   // Load test setup
   testSetup(false)
 
