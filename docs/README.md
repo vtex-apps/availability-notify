@@ -84,13 +84,13 @@ To edit the email template's field, check the documentation on [How to create an
 
 This app uses [Master Data V2](https://developers.vtex.com/vtex-rest-api/reference/master-data-api-v2-overview), to search for stored data you should use Master Data API - v2 endpoints with the variables `data_entity_name` and `schema` with the value `notify`.
 
-If you want to run the services manually you can use the two endpoints below:
+If you want to run the services manually you can use the two endpoints below: (An authentication token is required)
 
 - To process Unsent Requests:
-`https://{{accountName}}.myvtex.com/availability-notify/process-unsent-requests`
+`https://app.io.vtex.com/vtex.availability-notify/v1/{{accountName}}/master/_v/availability-notify/process-unsent-requests`
 
 - To process All Requests:
-`https://{{accountName}}.myvtex.com/availability-notify/process-all-requests`
+`https://app.io.vtex.com/vtex.availability-notify/v1/{{accountName}}/master/_v/availability-notify/process-all-requests`
 
 Check out the [Open API Schemas repository](https://github.com/vtex/openapi-schemas) containing several VTEX Postman Collections including Master Data API - v2.
 

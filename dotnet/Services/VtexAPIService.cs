@@ -111,7 +111,6 @@ namespace AvailabilityNotify.Services
             var client = _clientFactory.CreateClient();
             var response = await client.SendAsync(request);
             string responseContent = await response.Content.ReadAsStringAsync();
-            Console.WriteLine($"ListAllWarehouses [{response.StatusCode}] {responseContent}");
             if (response.IsSuccessStatusCode)
             {
                 listAllWarehousesResponse = JsonConvert.DeserializeObject<ListAllWarehousesResponse[]>(responseContent);
@@ -714,57 +713,64 @@ namespace AvailabilityNotify.Services
             {
                 MerchantSettings merchantSettings = await _availabilityRepository.GetMerchantSettings();
                 NotifyRequest[] requestsToNotify = await _availabilityRepository.ListRequestsForSkuId(skuId, requestContext);
-                var distinct = requestsToNotify.GroupBy(x => x.Email).Select(x => x.First()).ToList();
-                if (distinct != null && distinct.Any())
+                if (requestsToNotify != null)
                 {
-                    long available = await GetTotalAvailableForSku(skuId, requestContext);
-                    if (available > 0)
+                    var distinct = requestsToNotify.GroupBy(x => x.Email).Select(x => x.First()).ToList();
+                    if (distinct != null && distinct.Any())
                     {
-                        GetSkuContextResponse skuContextResponse = await GetSkuContext(skuId, requestContext);
-                        if (skuContextResponse != null)
+                        long available = await GetTotalAvailableForSku(skuId, requestContext);
+                        if (available > 0)
                         {
-                            foreach (NotifyRequest requestToNotify in distinct)
+                            GetSkuContextResponse skuContextResponse = await GetSkuContext(skuId, requestContext);
+                            if (skuContextResponse != null)
                             {
-                                bool sendMail = true;
-                                if(merchantSettings.DoShippingSim)
+                                foreach (NotifyRequest requestToNotify in distinct)
                                 {
-                                    sendMail = await this.CanShipToShopper(requestToNotify, requestContext);
-                                }
-
-                                if (sendMail)
-                                {
-                                    bool mailSent = await SendEmail(requestToNotify, skuContextResponse, requestContext);
-                                    if (mailSent)
+                                    bool sendMail = true;
+                                    if (merchantSettings.DoShippingSim)
                                     {
-                                        requestToNotify.NotificationSent = "true";
-                                        requestToNotify.NotificationSentAt = DateTime.Now.ToUniversalTime().ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'");
-                                        bool updatedRequest = await _availabilityRepository.SaveNotifyRequest(requestToNotify, requestContext);
-                                        success = updatedRequest;
-                                        if (!updatedRequest)
+                                        sendMail = await this.CanShipToShopper(requestToNotify, requestContext);
+                                    }
+
+                                    if (sendMail)
+                                    {
+                                        bool mailSent = await SendEmail(requestToNotify, skuContextResponse, requestContext);
+                                        if (mailSent)
                                         {
-                                            _context.Vtex.Logger.Error("ProcessNotification", null, $"Mail was sent but failed to update record {JsonConvert.SerializeObject(requestToNotify)}");
+                                            requestToNotify.NotificationSent = "true";
+                                            requestToNotify.NotificationSentAt = DateTime.Now.ToUniversalTime().ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'");
+                                            bool updatedRequest = await _availabilityRepository.SaveNotifyRequest(requestToNotify, requestContext);
+                                            success = updatedRequest;
+                                            if (!updatedRequest)
+                                            {
+                                                _context.Vtex.Logger.Error("ProcessNotification", null, $"Mail was sent but failed to update record {JsonConvert.SerializeObject(requestToNotify)}");
+                                            }
                                         }
                                     }
+                                    else
+                                    {
+                                        _context.Vtex.Logger.Debug("ProcessNotification", null, $"SkuId '{skuId}' can not be shipped to '{requestToNotify.Email}' ");
+                                    }
                                 }
-                                else
-                                {
-                                    _context.Vtex.Logger.Debug("ProcessNotification", null, $"SkuId '{skuId}' can not be shipped to '{requestToNotify.Email}' ");
-                                }
+                            }
+                            else
+                            {
+                                _context.Vtex.Logger.Warn("ProcessNotification", null, $"Null SkuContext for skuId {skuId}");
                             }
                         }
                         else
                         {
-                            _context.Vtex.Logger.Warn("ProcessNotification", null, $"Null SkuContext for skuId {skuId}");
+                            _context.Vtex.Logger.Debug("ProcessNotification", null, $"SkuId '{skuId}' {available} available");
                         }
                     }
                     else
                     {
-                        _context.Vtex.Logger.Debug("ProcessNotification", null, $"SkuId '{skuId}' {available} available");
+                        _context.Vtex.Logger.Debug("ProcessNotification", null, $"No requests to be notified for {skuId}");
                     }
                 }
                 else
                 {
-                    _context.Vtex.Logger.Debug("ProcessNotification", null, $"No requests to be notified for {skuId}");
+                    _context.Vtex.Logger.Debug("ProcessNotification", null, $"Reuest returned NULL for {skuId}");
                 }
             }
 
@@ -881,7 +887,7 @@ namespace AvailabilityNotify.Services
                         {
                             new CartItem
                             {
-                                Id = requestToNotify.Id,
+                                Id = requestToNotify.SkuId,
                                 Quantity = 1,
                                 Seller = sellerId
                             }
@@ -893,14 +899,16 @@ namespace AvailabilityNotify.Services
                     var addressList = shopperAddresses.Distinct();
                     foreach (ShopperAddress shopperAddress in addressList)
                     {
+                        cartSimulationRequest.PostalCode = shopperAddress.PostalCode;
+                        cartSimulationRequest.Country = shopperAddress.Country;
                         CartSimulationResponse cartSimulationResponse = await this.CartSimulation(cartSimulationRequest, requestContext);
-                        if (cartSimulationResponse != null)
+                        if (cartSimulationResponse != null 
+                            && cartSimulationResponse.Items != null 
+                            && cartSimulationResponse.Items.Length > 0 
+                            && cartSimulationResponse.Items[0].Availability.Equals(Constants.Availability.Available))
                         {
-                            if (cartSimulationResponse.Items[0].Availability.Equals(Constants.Availability.Available))
-                            {
-                                sendMail = true;
-                                break;
-                            }
+                            sendMail = true;
+                            break;
                         }
                     }
                 }
@@ -935,7 +943,6 @@ namespace AvailabilityNotify.Services
                 var client = _clientFactory.CreateClient();
                 var response = await client.SendAsync(request);
                 string responseContent = await response.Content.ReadAsStringAsync();
-                Console.WriteLine($"CartSimulation {cartSimulationRequest.PostalCode},{cartSimulationRequest.Country} : [{response.StatusCode}] ");
                 if(response.IsSuccessStatusCode)
                 {
                     cartSimulationResponse = JsonConvert.DeserializeObject<CartSimulationResponse>(responseContent);
