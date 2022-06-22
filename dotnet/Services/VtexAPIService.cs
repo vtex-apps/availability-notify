@@ -207,9 +207,6 @@ namespace AvailabilityNotify.Services
             }
 
             request.Headers.Add(Constants.USE_HTTPS_HEADER_NAME, "true");
-            //MerchantSettings merchantSettings = await _availabilityRepository.GetMerchantSettings();
-            //request.Headers.Add(Constants.AppKey, merchantSettings.AppKey);
-            //request.Headers.Add(Constants.AppToken, merchantSettings.AppToken);
 
             var client = _clientFactory.CreateClient();
             var response = await client.SendAsync(request);
@@ -242,7 +239,6 @@ namespace AvailabilityNotify.Services
                 RequestUri = new Uri($"http://{this._httpContextAccessor.HttpContext.Request.Headers[Constants.VTEX_ACCOUNT_HEADER_NAME]}.myvtex.com/api/template-render/pvt/templates/{templateName}")
             };
 
-            //request.Headers.Add(Constants.USE_HTTPS_HEADER_NAME, "true");
             string authToken = this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_CREDENTIAL];
             if (authToken != null)
             {
@@ -250,15 +246,8 @@ namespace AvailabilityNotify.Services
                 request.Headers.Add(Constants.VTEX_ID_HEADER_NAME, authToken);
             }
 
-            //MerchantSettings merchantSettings = await _availabilityRepository.GetMerchantSettings();
-            //string appKey = merchantSettings.AppKey;
-            //string appToken = merchantSettings.AppToken;
-            //request.Headers.Add(Constants.AppKey, appKey);
-            //request.Headers.Add(Constants.AppToken, appToken);
-
             var client = _clientFactory.CreateClient();
             var response = await client.SendAsync(request);
-            string responseContent = await response.Content.ReadAsStringAsync();
 
             return (int)response.StatusCode == StatusCodes.Status200OK;
         }
@@ -277,8 +266,6 @@ namespace AvailabilityNotify.Services
             if (authToken != null)
             {
                 request.Headers.Add(Constants.AUTHORIZATION_HEADER_NAME, authToken);
-                //request.Headers.Add(Constants.PROXY_AUTHORIZATION_HEADER_NAME, authToken);
-                //request.Headers.Add(Constants.VTEX_ID_HEADER_NAME, authToken);
             }
 
             var client = _clientFactory.CreateClient();
@@ -306,7 +293,6 @@ namespace AvailabilityNotify.Services
         {
             bool templateExists = false;
             string templateName = Constants.DEFAULT_TEMPLATE_NAME;
-            string subjectText = string.Empty;
 
             templateExists = await this.TemplateExists(templateName);
             if (!templateExists)
@@ -417,8 +403,6 @@ namespace AvailabilityNotify.Services
         public async Task<bool> SendEmail(NotifyRequest notifyRequest, GetSkuContextResponse skuContext, RequestContext requestContext)
         {
             bool success = false;
-
-            string responseText = string.Empty;
             string templateName = Constants.DEFAULT_TEMPLATE_NAME;
             
             EmailMessage emailMessage = new EmailMessage
@@ -456,7 +440,6 @@ namespace AvailabilityNotify.Services
             {
                 HttpResponseMessage responseMessage = await client.SendAsync(request);
                 string responseContent = await responseMessage.Content.ReadAsStringAsync();
-                //responseText = $"[-] SendEmail [{responseMessage.StatusCode}] {responseContent}";
                 _context.Vtex.Logger.Debug("SendEmail", null, $"{message}\n[{responseMessage.StatusCode}]\n{responseContent}");
                 success = responseMessage.IsSuccessStatusCode;
                 if (responseMessage.StatusCode.Equals(HttpStatusCode.NotFound))
@@ -466,7 +449,6 @@ namespace AvailabilityNotify.Services
             }
             catch (Exception ex)
             {
-                //responseText = $"[-] SendEmail Failure [{ex.Message}]";
                 _context.Vtex.Logger.Error("SendEmail", null, $"Failure sending {message}", ex);
                 success = false;  //jic
             }
@@ -474,7 +456,7 @@ namespace AvailabilityNotify.Services
             return success;
         }
 
-        public async Task<bool> AvailabilitySubscribe(string email, string sku, string name, string locale, SellerObj seller)
+        public async Task<bool> AvailabilitySubscribe(string email, string sku, string name, string locale, SellerObj sellerObj)
         {
 
             bool success = false;
@@ -483,8 +465,6 @@ namespace AvailabilityNotify.Services
                 Account = _context.Vtex.Account,
                 AuthToken = _context.Vtex.AuthToken
             };
-
-            //await _availabilityRepository.VerifySchema();
 
             NotifyRequest[] requestsToNotify = await _availabilityRepository.ListRequestsForSkuId(sku, requestContext);
             if (requestsToNotify.Any(x => x.Email.Equals(email)))
@@ -500,7 +480,7 @@ namespace AvailabilityNotify.Services
                 Name = name,
                 NotificationSent = "false",
                 Locale = locale,
-                Seller = seller
+                Seller = sellerObj
             };
 
             success = await _availabilityRepository.SaveNotifyRequest(notifyRequest, requestContext);
@@ -803,13 +783,23 @@ namespace AvailabilityNotify.Services
                         long available = await GetTotalAvailableForSku(skuId, requestContext);
                         if(available > 0)
                         {
-                            GetSkuContextResponse skuContextResponse = await GetSkuContext(skuId, requestContext);
-                            sendMail = await SendEmail(requestToNotify, skuContextResponse, requestContext);
-                            if(sendMail)
+                            bool canSend = true;
+                            MerchantSettings merchantSettings = await _availabilityRepository.GetMerchantSettings();
+                            if(merchantSettings.DoShippingSim)
                             {
-                                requestToNotify.NotificationSent = "true";
-                                requestToNotify.NotificationSentAt = DateTime.Now.ToUniversalTime().ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'");
-                                updatedRecord = await _availabilityRepository.SaveNotifyRequest(requestToNotify, requestContext);
+                                canSend = await this.CanShipToShopper(requestToNotify, requestContext);
+                            }
+                            
+                            if (canSend)
+                            {
+                                GetSkuContextResponse skuContextResponse = await GetSkuContext(skuId, requestContext);
+                                sendMail = await SendEmail(requestToNotify, skuContextResponse, requestContext);
+                                if (sendMail)
+                                {
+                                    requestToNotify.NotificationSent = "true";
+                                    requestToNotify.NotificationSentAt = DateTime.Now.ToUniversalTime().ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'");
+                                    updatedRecord = await _availabilityRepository.SaveNotifyRequest(requestToNotify, requestContext);
+                                }
                             }
                         }
 
@@ -845,13 +835,23 @@ namespace AvailabilityNotify.Services
                     long available = await GetTotalAvailableForSku(skuId, requestContext);
                     if(available > 0)
                     {
-                        GetSkuContextResponse skuContextResponse = await GetSkuContext(skuId, requestContext);
-                        sendMail = await SendEmail(requestToNotify, skuContextResponse, requestContext);
-                        if(sendMail)
+                        bool canSend = true;
+                        MerchantSettings merchantSettings = await _availabilityRepository.GetMerchantSettings();
+                        if (merchantSettings.DoShippingSim)
                         {
-                            requestToNotify.NotificationSent = "true";
-                            requestToNotify.NotificationSentAt = DateTime.Now.ToUniversalTime().ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'");
-                            updatedRecord = await _availabilityRepository.SaveNotifyRequest(requestToNotify, requestContext);
+                            canSend = await this.CanShipToShopper(requestToNotify, requestContext);
+                        }
+
+                        if (canSend)
+                        {
+                            GetSkuContextResponse skuContextResponse = await GetSkuContext(skuId, requestContext);
+                            sendMail = await SendEmail(requestToNotify, skuContextResponse, requestContext);
+                            if (sendMail)
+                            {
+                                requestToNotify.NotificationSent = "true";
+                                requestToNotify.NotificationSentAt = DateTime.Now.ToUniversalTime().ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'");
+                                updatedRecord = await _availabilityRepository.SaveNotifyRequest(requestToNotify, requestContext);
+                            }
                         }
                     }
 
@@ -870,10 +870,10 @@ namespace AvailabilityNotify.Services
         {
             bool sendMail = false;
             ShopperRecord[] shopperRecord = await this.GetShopperByEmail(requestToNotify.Email);
-            if (shopperRecord != null)
+            if (shopperRecord != null && shopperRecord.Length > 0)
             {
-                ShopperAddress[] shopperAddresses = await this.GetShopperAddressById(shopperRecord.FirstOrDefault().Id);
-                if (shopperAddresses != null)
+                ShopperAddress[] shopperAddresses = await this.GetShopperAddressById(shopperRecord.Where(sr => sr.AccountName.Equals(_context.Vtex.Account)).Select(sr => sr.Id).FirstOrDefault());
+                if (shopperAddresses != null && shopperAddresses.Length > 0)
                 {
                     string sellerId = string.Empty;
                     if (requestToNotify.Seller != null && requestToNotify.Seller.sellerId != null)
