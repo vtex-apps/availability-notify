@@ -321,12 +321,23 @@ namespace AvailabilityNotify.Services
                 request.Headers.Add(Constants.PROXY_AUTHORIZATION_HEADER_NAME, authToken);
             }
 
-            var client = _clientFactory.CreateClient();
-            var response = await client.SendAsync(request);
-            string responseContent = await response.Content.ReadAsStringAsync();
-            if(response.IsSuccessStatusCode)
+            try
             {
-                notifyRequests = JsonConvert.DeserializeObject<NotifyRequest[]>(responseContent);
+                var client = _clientFactory.CreateClient();
+                var response = await client.SendAsync(request);
+                string responseContent = await response.Content.ReadAsStringAsync();
+                if (response.IsSuccessStatusCode)
+                {
+                    notifyRequests = JsonConvert.DeserializeObject<NotifyRequest[]>(responseContent);
+                }
+                else
+                {
+                    _context.Vtex.Logger.Debug("ListRequestsForSkuId", null, $"Sku '{skuId}' returned [{response.StatusCode}] '{responseContent}'");
+                }
+            }
+            catch(Exception ex)
+            {
+                _context.Vtex.Logger.Error("ListRequestsForSkuId", null, $"Sku '{skuId}' ", ex);
             }
 
             return notifyRequests;
