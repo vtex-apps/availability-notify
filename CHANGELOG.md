@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [1.7.6] - 2022-06-22
+
+### Fixed
+- (NOTIFIER-39) Fixed Cart Simulation logic when verifying that a sku can ship to a shopper
+
 ## [1.7.5] - 2022-06-21
 
 - When forwarding a request, do not forward to self.

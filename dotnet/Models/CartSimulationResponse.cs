@@ -212,7 +212,7 @@ namespace AvailabilityNotify.Models
         public object PickupPointId { get; set; }
 
         [JsonProperty("pickupDistance")]
-        public long PickupDistance { get; set; }
+        public string PickupDistance { get; set; }
 
         [JsonProperty("polygonName")]
         public object PolygonName { get; set; }
