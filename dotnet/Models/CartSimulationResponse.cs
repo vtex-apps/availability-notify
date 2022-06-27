@@ -56,7 +56,7 @@ namespace AvailabilityNotify.Models
         public string Id { get; set; }
 
         [JsonProperty("requestIndex")]
-        public long RequestIndex { get; set; }
+        public string RequestIndex { get; set; }
 
         [JsonProperty("quantity")]
         public long Quantity { get; set; }
@@ -311,7 +311,7 @@ namespace AvailabilityNotify.Models
         public long Count { get; set; }
 
         [JsonProperty("hasInterestRate")]
-        public bool HasInterestRate { get; set; }
+        public bool? HasInterestRate { get; set; }
 
         [JsonProperty("interestRate")]
         public long InterestRate { get; set; }
