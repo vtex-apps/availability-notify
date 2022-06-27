@@ -3,10 +3,7 @@ import {
   updateRetry,
   preserveCookie,
 } from '../support/common/support'
-import {
-  testCase1,
-  appDetails,
-} from '../support/availability-notify.outputvalidation'
+import { testCase1 } from '../support/availability-notify.outputvalidation'
 import { triggerBroadCaster } from '../support/broadcaster.api'
 import { verifyEmail } from '../support/availability-notify'
 import {
@@ -25,7 +22,7 @@ import {
 } from '../support/availability.graphql'
 
 const { data1, name, email } = testCase1
-const { app, version } = appDetails
+const workspace = Cypress.env().workspace.name
 
 describe('Testing market place to notify', () => {
   // Load test setup
@@ -46,8 +43,8 @@ describe('Testing market place to notify', () => {
     })
   })
 
-  configureBroadcasterAdapter(app, version)
-  configureTargetWorkspace(app, version, true)
+  configureBroadcasterAdapter(workspace)
+  configureTargetWorkspace(true)
 
   updateProductStatus(data1, false)
 

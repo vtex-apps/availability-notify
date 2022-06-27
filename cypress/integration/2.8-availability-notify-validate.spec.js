@@ -3,10 +3,7 @@ import {
   updateRetry,
   preserveCookie,
 } from '../support/common/support'
-import {
-  testCase1,
-  appDetails,
-} from '../support/availability-notify.outputvalidation'
+import { testCase1 } from '../support/availability-notify.outputvalidation'
 import { triggerBroadCaster } from '../support/broadcaster.api'
 import { verifyEmail } from '../support/availability-notify'
 import {
@@ -26,7 +23,7 @@ import {
 } from '../support/availability.graphql'
 
 const { data1, name, email } = testCase1
-const { app, version } = appDetails
+const workspace = Cypress.env().workspace.name
 
 describe('Test availability notify scenarios', () => {
   // Load test setup
@@ -60,8 +57,8 @@ describe('Test availability notify scenarios', () => {
       availabilityNotifyConstants.EmailRegistered
     )
   })
-  configureBroadcasterAdapter(app, version)
-  configureTargetWorkspace('vtex.availability-notify', '1.7.3', false)
+  configureBroadcasterAdapter(workspace)
+  configureTargetWorkspace(false)
   updateProductStatus(data1, true)
   triggerBroadCaster(data1.skuId)
   verifyEmail()
