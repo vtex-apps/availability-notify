@@ -29,7 +29,11 @@ Cypress.Commands.add('openProduct', (product, detailPage = false) => {
   // Search product in search bar
   cy.get(selectors.Search).should('be.not.disabled').should('be.visible')
 
-  cy.get(selectors.Search).type(`${product}{enter}`)
+  cy.get(selectors.Search)
+    .should('be.visible')
+    .clear()
+    .type(product)
+    .type('{enter}')
   // Page should load successfully now Filter should be visible
   cy.get(selectors.searchResult).should('have.text', product.toLowerCase())
   cy.get(selectors.FilterHeading, { timeout: 30000 }).should('be.visible')

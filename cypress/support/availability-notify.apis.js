@@ -110,50 +110,46 @@ export function configureTargetWorkspace(app, version, doShippingSim = false) {
   })
 }
 
-export function configureBroadcasterAdapter(app, version, workspace = name) {
+export function configureBroadcasterAdapter(workspace = 'master') {
+  const BROADCASTER_APP = 'vtex.broadcaster'
   it(
-    `Configuring target workspace as ${workspace} in ${app}`,
+    `Register target workspace as ${workspace} in ${BROADCASTER_APP}`,
     updateRetry(2),
     () => {
-      cy.getOrderItems().then((order) => {
-        if (order[WIPE_ENV]) {
-          // Define constants
-          const APP_NAME = 'vtex.apps-graphql'
-          const APP_VERSION = '3.x'
-          const APP = `${APP_NAME}@${APP_VERSION}`
-          const CUSTOM_URL = `${order.baseUrl}.myvtex.com/_v/private/admin-graphql-ide/v0/${APP}`
+      cy.getVtexItems().then((vtex) => {
+        // Define constants
+        const APP_NAME = 'vtex.apps-graphql'
+        const APP_VERSION = '3.x'
+        const APP = `${APP_NAME}@${APP_VERSION}`
+        const CUSTOM_URL = `${vtex.baseUrl}/_v/private/admin-graphql-ide/v0/${APP}`
 
-          const GRAPHQL_MUTATION =
-            'mutation' +
-            '($app:String,$version:String,$settings:String)' +
-            '{saveAppSettings(app:$app,version:$version,settings:$settings){message}}'
+        const GRAPHQL_MUTATION =
+          'mutation' +
+          '($app:String,$version:String,$settings:String)' +
+          '{saveAppSettings(app:$app,version:$version,settings:$settings){message}}'
 
-          const QUERY_VARIABLES = {
-            app,
-            version,
-            settings: `{"targetWorkspace":"${workspace}"}`,
-          }
-
-          // Mutating it to the new workspace
-          cy.request({
-            method: 'POST',
-            url: CUSTOM_URL,
-            ...FAIL_ON_STATUS_CODE,
-            body: {
-              query: GRAPHQL_MUTATION,
-              variables: QUERY_VARIABLES,
-            },
-          })
-            .its('body.data.saveAppSettings.message', { timeout: 10000 })
-            .should('contain', workspace)
-        } else {
-          cy.log('Tax configuration is configured with another workspace')
+        const QUERY_VARIABLES = {
+          app: BROADCASTER_APP,
+          version: '0.x',
+          settings: `{"targetWorkspace":"${workspace}"}`,
         }
+
+        // Mutating it to the new workspace
+        cy.request({
+          method: 'POST',
+          url: CUSTOM_URL,
+          ...FAIL_ON_STATUS_CODE,
+          body: {
+            query: GRAPHQL_MUTATION,
+            variables: QUERY_VARIABLES,
+          },
+        })
+          .its('body.data.saveAppSettings.message', { timeout: 10000 })
+          .should('contain', workspace)
       })
     }
   )
 }
-
 
 export function generateEmailId() {
   return `shashi+${(Math.random() + 1).toString(36).substring(7)}@bitcot.com`

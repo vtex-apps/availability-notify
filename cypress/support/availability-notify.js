@@ -8,9 +8,7 @@ import { getEmailContent } from './extract'
 
 export function verifyEmail() {
   it(`Verifying email`, updateRetry(5), () => {
-    /* eslint-disable cypress/no-unnecessary-waiting */
-    // cy.wait(15000)
-    cy.addDelayBetweenRetries(2000)
+    cy.addDelayBetweenRetries(30000)
     cy.getEmailItems().then((e) => {
       graphql(listRequests(), (response) => {
         validateListRequestResponse(response)
