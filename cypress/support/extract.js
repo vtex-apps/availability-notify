@@ -1,7 +1,5 @@
 const GmailAPI = require('./gmail')
 
-// const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
-
 function extractContent(message) {
   if (message) {
     return message.includes('Weber 45010001 Spirit II E-310 3-Burner')

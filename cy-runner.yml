@@ -68,27 +68,20 @@ workspace:
     enabled: true
 strategy:
   # Clear reviews before testcase
-  rest_api_testcase:
-    enabled: true
-    sendDashboard: false
-    hardTries: 3
-    stopOnFail: false
-    parallel: false
-    specs:
-      - cypress/integration/2.1-*
-  graphql_api_testcase:
-    enabled: true
-    sendDashboard: false
-    hardTries: 3
-    stopOnFail: false
-    parallel: false
-    specs:
-      - cypress/integration/2.2-*
-  basictest:
+  api_testcase:
     enabled: true
     sendDashboard: true
     hardTries: 1
     stopOnFail: false
+    parallel: true
+    specs:
+      - cypress/integration/2.1-*
+      - cypress/integration/2.2-*
+  ui_testcase:
+    enabled: true
+    sendDashboard: true
+    hardTries: 1
+    stopOnFail: true
     runInOrder: true
     parallel: false
     specs:

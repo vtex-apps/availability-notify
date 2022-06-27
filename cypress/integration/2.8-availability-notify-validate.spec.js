@@ -34,7 +34,7 @@ describe('Test availability notify scenarios', () => {
 
   it('List Requests', () => {
     graphql(listRequests(), (response) => {
-      validateListRequestResponse
+      validateListRequestResponse()
       cy.setavailabilitySubscribeId(response.body.data.listRequests)
     })
   })
