@@ -10,6 +10,9 @@ const { account } = config.base.vtex
 const WIPE_ENV = 'wipe'
 const { name } = config.workspace
 
+const app = 'vtex.availability-notify'
+const version = '1.x'
+
 export function processUnsentRequest() {
   it('verify the unsend request', updateRetry(3), () => {
     cy.addDelayBetweenRetries(2000)
@@ -77,7 +80,7 @@ export function notifySearch() {
   })
 }
 
-export function configureTargetWorkspace(app, version, doShippingSim = false) {
+export function configureTargetWorkspace(doShippingSim = false) {
   it(`Configuring target workspace in ${app}`, updateRetry(2), () => {
     cy.getVtexItems().then((vtex) => {
       // Define constants

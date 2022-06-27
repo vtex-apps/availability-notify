@@ -47,7 +47,7 @@ describe('Test availability notify scenarios', () => {
     })
   })
 
-  configureTargetWorkspace('vtex.availability-notify', '1.7.3', true)
+  configureTargetWorkspace(true)
   updateProductStatus(data1, false)
   it('Open product', updateRetry(3), () => {
     cy.openStoreFront()

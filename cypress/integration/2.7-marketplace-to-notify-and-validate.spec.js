@@ -64,7 +64,7 @@ describe('Testing market place to notify', () => {
     )
   })
 
-  configureTargetWorkspace('vtex.availability-notify', '1.7.3', false)
+  configureTargetWorkspace(false)
   updateProductStatus(data1, true)
 
   triggerBroadCaster(data1.skuId)
