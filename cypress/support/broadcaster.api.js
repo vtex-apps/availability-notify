@@ -1,8 +1,8 @@
 import { FAIL_ON_STATUS_CODE } from './common/constants'
 import { updateRetry } from './common/support'
 
-export function triggerBroadCaster(skuid) {
-  it('Triggering broadcaster api', updateRetry(3), () => {
+export function triggerBroadCaster(prefix, skuid) {
+  it(`${prefix} - Triggering broadcaster api`, updateRetry(3), () => {
     cy.addDelayBetweenRetries(2000)
     cy.getVtexItems().then((vtex) => {
       cy.request({

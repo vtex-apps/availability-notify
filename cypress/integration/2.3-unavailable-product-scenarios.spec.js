@@ -8,21 +8,22 @@ import {
 } from '../support/availability-notify.apis'
 
 const { data1, name } = testCase1
+const prefix = 'Update product as unavailable'
 
 describe('Updating product as unavailable', () => {
   // Load test setup
   testSetup(false)
   const email = generateEmailId()
 
-  updateProductStatus(data1, false)
+  updateProductStatus(prefix, data1, false)
 
-  it('Open product', updateRetry(3), () => {
+  it(`${prefix} - Open product`, updateRetry(3), () => {
     cy.openStoreFront()
     cy.openProduct('weber spirit', true)
   })
 
   it(
-    'verify product should not available and subscribe to product alerts',
+    `${prefix} - Verify product should not available and subscribe to product alerts`,
     updateRetry(3),
     () => {
       cy.subscribeToProduct({ email, name })
@@ -34,7 +35,7 @@ describe('Updating product as unavailable', () => {
   )
 
   it(
-    'Verify with same email address and check if we are getting error',
+    `${prefix} - Verify with same email address and check if we are getting error`,
     updateRetry(3),
     () => {
       cy.subscribeToProduct({ email, name })

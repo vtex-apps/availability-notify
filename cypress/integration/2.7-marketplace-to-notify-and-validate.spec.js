@@ -23,19 +23,20 @@ import {
 
 const { data1, name, email } = testCase1
 const workspace = Cypress.env().workspace.name
+const prefix = 'Marketplace to notify'
 
 describe('Testing market place to notify', () => {
   // Load test setup
   testSetup()
 
-  it('List Requests', () => {
+  it(`${prefix} - List Requests`, () => {
     graphql(listRequests(), (response) => {
       validateListRequestResponse()
       cy.setavailabilitySubscribeId(response.body.data.listRequests)
     })
   })
 
-  it('Delete Request', () => {
+  it(`${prefix} - Delete Request`, () => {
     cy.setDeleteId().then((deleteId) => {
       deleteId.forEach((r) => {
         graphql(deleteRequest(r.id), validateDeleteRequestResponse)
@@ -43,30 +44,34 @@ describe('Testing market place to notify', () => {
     })
   })
 
-  configureBroadcasterAdapter(workspace)
-  configureTargetWorkspace(true)
+  configureBroadcasterAdapter(prefix, workspace)
+  configureTargetWorkspace(prefix, true)
 
-  updateProductStatus(data1, false)
+  updateProductStatus(prefix, data1, false)
 
-  it('Open product', updateRetry(3), () => {
+  it(`${prefix} - Open product`, updateRetry(3), () => {
     cy.openStoreFront()
     cy.openProduct('weber spirit', true)
   })
 
-  it('Enable marketplace to notify and validate', updateRetry(3), () => {
-    cy.subscribeToProduct({ email, name })
-    cy.get(availabilityNotifySelectors.AvailabilityNotifyAlert).should(
-      'have.text',
-      availabilityNotifyConstants.EmailRegistered
-    )
-  })
+  it(
+    `${prefix} - Enable marketplace to notify and validate`,
+    updateRetry(3),
+    () => {
+      cy.subscribeToProduct({ email, name })
+      cy.get(availabilityNotifySelectors.AvailabilityNotifyAlert).should(
+        'have.text',
+        availabilityNotifyConstants.EmailRegistered
+      )
+    }
+  )
 
-  configureTargetWorkspace(false)
-  updateProductStatus(data1, true)
+  configureTargetWorkspace(prefix, false)
+  updateProductStatus(prefix, data1, true)
 
-  triggerBroadCaster(data1.skuId)
+  triggerBroadCaster(prefix, data1.skuId)
 
-  verifyEmail()
+  verifyEmail(prefix)
 
   preserveCookie()
 })

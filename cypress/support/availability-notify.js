@@ -6,8 +6,8 @@ import {
 import { updateRetry } from './common/support'
 import { getEmailContent } from './extract'
 
-export function verifyEmail() {
-  it(`Verifying email`, updateRetry(5), () => {
+export function verifyEmail(prefix) {
+  it(`${prefix} - Verifying email`, updateRetry(5), () => {
     cy.addDelayBetweenRetries(30000)
     cy.getEmailItems().then((e) => {
       graphql(listRequests(), (response) => {

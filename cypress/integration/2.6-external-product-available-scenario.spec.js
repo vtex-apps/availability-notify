@@ -9,17 +9,18 @@ import { verifyEmail } from '../support/availability-notify'
 
 const { data1 } = testCase1
 const workspace = Cypress.env().workspace.name
+const prefix = 'Update product as available'
 
 describe('Update product as available and validate', () => {
   testSetup(false)
 
-  configureBroadcasterAdapter(workspace)
+  configureBroadcasterAdapter(prefix, workspace)
 
-  updateProductStatus(data1, true)
+  updateProductStatus(prefix, data1, true)
 
-  triggerBroadCaster(data1.skuId)
+  triggerBroadCaster(prefix, data1.skuId)
 
-  verifyEmail()
+  verifyEmail(prefix)
 
   preserveCookie()
 })

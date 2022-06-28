@@ -24,19 +24,20 @@ import {
 
 const { data1, name, email } = testCase1
 const workspace = Cypress.env().workspace.name
+const prefix = 'Availability notify'
 
 describe('Test availability notify scenarios', () => {
   // Load test setup
   testSetup()
 
-  it('List Requests', () => {
+  it(`${prefix} - List Requests`, () => {
     graphql(listRequests(), (response) => {
       validateListRequestResponse()
       cy.setavailabilitySubscribeId(response.body.data.listRequests)
     })
   })
 
-  it('Delete Request', () => {
+  it(`${prefix} - Delete Request`, () => {
     cy.setDeleteId().then((deleteId) => {
       deleteId.forEach((r) => {
         graphql(deleteRequest(r.id), validateDeleteRequestResponse)
@@ -44,23 +45,35 @@ describe('Test availability notify scenarios', () => {
     })
   })
 
-  configureTargetWorkspace(true)
-  updateProductStatus(data1, false)
-  it('Open product', updateRetry(3), () => {
+  configureTargetWorkspace(prefix, true)
+  updateProductStatus(prefix, data1, false)
+
+  it(`${prefix} - Open product`, updateRetry(3), () => {
     cy.openStoreFront()
     cy.openProduct(availbalityNotifyProducts.Lenovo.name, true)
   })
-  it('Enable marketplace to notify and validate', updateRetry(3), () => {
-    cy.subscribeToProduct({ email, name })
-    cy.get(availabilityNotifySelectors.AvailabilityNotifyAlert).should(
-      'have.text',
-      availabilityNotifyConstants.EmailRegistered
-    )
-  })
-  configureBroadcasterAdapter(workspace)
-  configureTargetWorkspace(false)
-  updateProductStatus(data1, true)
-  triggerBroadCaster(data1.skuId)
-  verifyEmail()
+
+  it(
+    `${prefix} - Enable marketplace to notify and validate`,
+    updateRetry(3),
+    () => {
+      cy.subscribeToProduct({ email, name })
+      cy.get(availabilityNotifySelectors.AvailabilityNotifyAlert).should(
+        'have.text',
+        availabilityNotifyConstants.EmailRegistered
+      )
+    }
+  )
+
+  configureBroadcasterAdapter(prefix, workspace)
+
+  configureTargetWorkspace(prefix, false)
+
+  updateProductStatus(prefix, data1, true)
+
+  triggerBroadCaster(prefix, data1.skuId)
+
+  verifyEmail(prefix)
+
   preserveCookie()
 })

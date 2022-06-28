@@ -8,6 +8,7 @@ import {
 } from '../support/availability-notify.apis'
 
 const { data1, name } = testCase1
+const prefix = 'Update product as unavailable'
 
 describe('Test external product unavailable scenarios', () => {
   // Load test setup
@@ -15,15 +16,15 @@ describe('Test external product unavailable scenarios', () => {
 
   const email = generateEmailId()
 
-  updateProductStatus(data1, false)
+  updateProductStatus(prefix, data1, false)
 
-  it('Open product', updateRetry(3), () => {
+  it(`${prefix} - Open product`, updateRetry(3), () => {
     cy.openStoreFront()
     cy.openProduct('weber spirit', true)
   })
 
   it(
-    'verify product should not available and subscribe to product alerts',
+    `${prefix} - Verify product should not available and subscribe to product alerts`,
     updateRetry(3),
     () => {
       cy.subscribeToProduct({ email, name })
