@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [1.7.8] - 2022-06-28
+
 ### Fixed
 - Fixed deserialization errors
 
