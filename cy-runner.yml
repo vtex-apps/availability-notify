@@ -9,7 +9,7 @@ base:
     domain: myvtex.com
     vtexIdUrl: https://vtexid.vtex.com.br/api/vtexid/pub/authenticate/default
     deployCli:
-      enabled: false
+      enabled: true
       git: https://github.com/vtex/toolbelt.git
       branch: qe/cypress
   twilio:
@@ -23,7 +23,7 @@ base:
     enabled: false
     channel: some-channel
   cypress:
-    devMode: true
+    devMode: false
     runHeaded: false
     enabled: false
     projectId: wnpzgv
@@ -43,6 +43,7 @@ base:
     pageLoadTimeout: 45000
     browser: chrome
     chromeWebSecurity: false
+    sorry: false
   stateFiles: ['.orders.json', '.emails.json']
 workspace:
   name: random
@@ -52,8 +53,8 @@ workspace:
     logOutput:
       enabled: false
   installApps:
-    # wish-list theme will work only when its peer dependency wish-list is added in the workspace
-    # So, installing wish-list@0.x version
+    # availability-notify theme will work only when its peer dependency availability-notify is added in the workspace
+    # So, installing availability-notify@1.x version
     - vtex.availability-notify@1.x
     # Published a new theme for store-theme E2E test
     - vtex.availability-notify-qa-theme@0.0.2
@@ -67,7 +68,6 @@ workspace:
   teardown:
     enabled: true
 strategy:
-  # Clear reviews before testcase
   api_testcase:
     enabled: true
     sendDashboard: true
@@ -82,14 +82,13 @@ strategy:
     sendDashboard: true
     hardTries: 1
     stopOnFail: true
-    runInOrder: true
     parallel: false
     specs:
       - cypress/integration/2.3-*
       - cypress/integration/2.4-*
       - cypress/integration/2.5-*
       - cypress/integration/2.6-*
-  marketplace_to_notify_testcase:
+  configuration_testcase:
     enabled: true
     sendDashboard: true
     hardTries: 1
@@ -97,11 +96,7 @@ strategy:
     parallel: true
     specs:
       - cypress/integration/2.7-*
-  availability_notify_testcase:
-    enabled: true
-    sendDashboard: true
-    hardTries: 1
-    stopOnFail: false
-    parallel: true
-    specs:
       - cypress/integration/2.8-*
+    dependency:
+      - cypress/integration/2.1-*
+      - cypress/integration/2.2-*
