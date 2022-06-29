@@ -61,7 +61,7 @@ export function listRequests() {
     query:
       'query' +
       // '($name: String, $email: String, $skuId: String,$id: String)' +
-      '{listRequests{id,name,email,skuId, notificationSent}}',
+      '{listRequests{id,name,email,skuId, notificationSent, notificationSentAt}}',
     queryVariables: {},
   }
 }
