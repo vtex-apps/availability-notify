@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [1.7.9] - 2022-06-29
+
 ### Added
 - (NOTIFIER-46) Added logging and error handling listing notify requests
 
