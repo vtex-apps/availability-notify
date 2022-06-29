@@ -314,13 +314,13 @@ namespace AvailabilityNotify.Models
         public bool? HasInterestRate { get; set; }
 
         [JsonProperty("interestRate")]
-        public long InterestRate { get; set; }
+        public long? InterestRate { get; set; }
 
         [JsonProperty("value")]
-        public long Value { get; set; }
+        public long? Value { get; set; }
 
         [JsonProperty("total")]
-        public long Total { get; set; }
+        public long? Total { get; set; }
 
         [JsonProperty("sellerMerchantInstallments", NullValueHandling = NullValueHandling.Ignore)]
         public Installment[] SellerMerchantInstallments { get; set; }
@@ -332,7 +332,7 @@ namespace AvailabilityNotify.Models
     public class PaymentSystem
     {
         [JsonProperty("id")]
-        public long Id { get; set; }
+        public string Id { get; set; }
 
         [JsonProperty("name")]
         public string Name { get; set; }
@@ -413,6 +413,6 @@ namespace AvailabilityNotify.Models
         public string Name { get; set; }
 
         [JsonProperty("value")]
-        public long Value { get; set; }
+        public string Value { get; set; }
     }
 }
