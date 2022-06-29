@@ -13,13 +13,6 @@ import {
 } from '../support/availability-notify.apis'
 import availabilityNotifySelectors from '../support/availability-notify.selectors'
 import availabilityNotifyConstants from '../support/availability-notify.constants'
-import {
-  graphql,
-  validateDeleteRequestResponse,
-  validateListRequestResponse,
-  deleteRequest,
-  listRequests,
-} from '../support/availability.graphql'
 
 const { data1, name, email } = testCase1
 const workspace = Cypress.env().workspace.name
@@ -28,21 +21,6 @@ const prefix = 'Marketplace to notify'
 describe('Testing market place to notify', () => {
   // Load test setup
   testSetup()
-
-  it(`${prefix} - List Requests`, () => {
-    graphql(listRequests(), (response) => {
-      validateListRequestResponse()
-      cy.setavailabilitySubscribeId(response.body.data.listRequests)
-    })
-  })
-
-  it(`${prefix} - Delete Request`, () => {
-    cy.setDeleteId().then((deleteId) => {
-      deleteId.forEach((r) => {
-        graphql(deleteRequest(r.id), validateDeleteRequestResponse)
-      })
-    })
-  })
 
   configureBroadcasterAdapter(prefix, workspace)
   configureTargetWorkspace(prefix, true)

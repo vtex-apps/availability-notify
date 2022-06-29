@@ -14,13 +14,6 @@ import {
 import availabilityNotifySelectors from '../support/availability-notify.selectors'
 import availabilityNotifyConstants from '../support/availability-notify.constants'
 import availbalityNotifyProducts from '../support/availability-notify.products'
-import {
-  graphql,
-  validateDeleteRequestResponse,
-  validateListRequestResponse,
-  deleteRequest,
-  listRequests,
-} from '../support/availability.graphql'
 
 const { data1, name, email } = testCase1
 const workspace = Cypress.env().workspace.name
@@ -29,21 +22,6 @@ const prefix = 'Availability notify'
 describe('Test availability notify scenarios', () => {
   // Load test setup
   testSetup()
-
-  it(`${prefix} - List Requests`, () => {
-    graphql(listRequests(), (response) => {
-      validateListRequestResponse()
-      cy.setavailabilitySubscribeId(response.body.data.listRequests)
-    })
-  })
-
-  it(`${prefix} - Delete Request`, () => {
-    cy.setDeleteId().then((deleteId) => {
-      deleteId.forEach((r) => {
-        graphql(deleteRequest(r.id), validateDeleteRequestResponse)
-      })
-    })
-  })
 
   configureTargetWorkspace(prefix, true)
   updateProductStatus(prefix, data1, false)

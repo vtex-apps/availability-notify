@@ -9,7 +9,7 @@ import {
   listRequests,
   availabilitySubscribe,
 } from '../support/availability-notify.graphql'
-import { testSetup } from '../support/common/support'
+import { testSetup, updateRetry } from '../support/common/support'
 import { availabilityDatas } from '../support/availability-notify.outputvalidation'
 
 describe('Graphql queries', () => {
@@ -26,7 +26,7 @@ describe('Graphql queries', () => {
     )
   })
 
-  it('List Requests', () => {
+  it('List Requests', updateRetry(3), () => {
     graphql(listRequests(), (response) => {
       validateListRequestResponse(response)
       cy.setavailabilitySubscribeId(response.body.data.listRequests)
