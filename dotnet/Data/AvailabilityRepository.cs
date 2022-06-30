@@ -247,7 +247,7 @@ namespace AvailabilityNotify.Services
 
         public async Task<NotifyRequest[]> ListNotifyRequests()
         {
-            NotifyRequest[] notifyRequests = null;
+            NotifyRequest[] notifyRequests = new NotifyRequest[0];
 
             var request = new HttpRequestMessage
             {
@@ -263,12 +263,23 @@ namespace AvailabilityNotify.Services
                 request.Headers.Add(Constants.PROXY_AUTHORIZATION_HEADER_NAME, authToken);
             }
 
-            var client = _clientFactory.CreateClient();
-            var response = await client.SendAsync(request);
-            string responseContent = await response.Content.ReadAsStringAsync();
-            if(response.IsSuccessStatusCode)
+            try
             {
-                notifyRequests = JsonConvert.DeserializeObject<NotifyRequest[]>(responseContent);
+                var client = _clientFactory.CreateClient();
+                var response = await client.SendAsync(request);
+                string responseContent = await response.Content.ReadAsStringAsync();
+                if (response.IsSuccessStatusCode)
+                {
+                    notifyRequests = JsonConvert.DeserializeObject<NotifyRequest[]>(responseContent);
+                }
+                else
+                {
+                    _context.Vtex.Logger.Error("ListNotifyRequests", null, $"[{response.StatusCode}] '{responseContent}'");
+                }
+            }
+            catch(Exception ex)
+            {
+                _context.Vtex.Logger.Error("ListNotifyRequests", null, "Error listing requests.", ex);
             }
             
             return notifyRequests;
