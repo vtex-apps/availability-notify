@@ -2,6 +2,7 @@
 import { updateProductStatusAPI } from './product.api'
 import { VTEX_AUTH_HEADER, FAIL_ON_STATUS_CODE } from './common/constants'
 import { updateRetry } from './common/support'
+import { tick } from '../../cy-runner/node/utils'
 
 const config = Cypress.env()
 
@@ -159,5 +160,5 @@ export function configureBroadcasterAdapter(prefix, workspace = 'master') {
 }
 
 export function generateEmailId() {
-  return `shashi+${(Math.random() + 1).toString(36).substring(7)}@bitcot.com`
+  return `shashi+${tick().toString().substring(7)}@bitcot.com`
 }

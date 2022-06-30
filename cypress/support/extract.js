@@ -27,7 +27,9 @@ export async function getEmailContent({ email, gmailCreds, after, before }) {
       )
     )
 
-    return content
+    if (content !== 0) {
+      return content
+    }
 
     // await delay(5000)
   }
