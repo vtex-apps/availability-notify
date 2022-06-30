@@ -2,7 +2,6 @@
 import { updateProductStatusAPI } from './product.api'
 import { VTEX_AUTH_HEADER, FAIL_ON_STATUS_CODE } from './common/constants'
 import { updateRetry } from './common/support'
-import { tick } from '../../cy-runner/node/utils'
 
 const config = Cypress.env()
 
@@ -15,7 +14,7 @@ const app = 'vtex.availability-notify'
 const version = '1.x'
 
 export function processUnsentRequest() {
-  it('verify the unsend request', updateRetry(3), () => {
+  it.skip('verify the unsend request', updateRetry(3), () => {
     cy.addDelayBetweenRetries(2000)
     cy.getVtexItems((vtex) => {
       cy.request({
@@ -33,7 +32,7 @@ export function processUnsentRequest() {
 }
 
 export function processAllRequest() {
-  it('process all the requests', updateRetry(3), () => {
+  it.skip('process all the requests', updateRetry(3), () => {
     cy.addDelayBetweenRetries(2000)
     cy.getVtexItems((vtex) => {
       cy.request({
@@ -64,8 +63,8 @@ export function updateProductStatus(prefix, data1, unlimited = false) {
   })
 }
 
-export function notifySearch() {
-  it('Notify search', updateRetry(3), () => {
+export function notifySearch(prefix) {
+  it(`${prefix} - Notify search`, updateRetry(3), () => {
     cy.addDelayBetweenRetries(2000)
 
     cy.getVtexItems().then((vtex) => {
@@ -160,5 +159,5 @@ export function configureBroadcasterAdapter(prefix, workspace = 'master') {
 }
 
 export function generateEmailId() {
-  return `shashi+${tick().toString().substring(7)}@bitcot.com`
+  return `shashi+${Date.now().toString().substring(7)}@bitcot.com`
 }
