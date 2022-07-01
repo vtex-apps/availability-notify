@@ -5,6 +5,8 @@ import {
 } from './availability-notify.graphql'
 import { updateRetry } from './common/support'
 import { getEmailContent } from './extract'
+import availabilityNotifySelectors from './availability-notify.selectors'
+import availabilityNotifyConstants from './availability-notify.constants'
 
 export function verifyEmail(prefix) {
   it(`${prefix} - Verifying email`, updateRetry(5), () => {
@@ -41,4 +43,23 @@ export function verifyEmail(prefix) {
       })
     })
   })
+}
+
+export function updateProductAsUnavailable(data) {
+  it(`${data.prefix} - Open product`, updateRetry(3), () => {
+    cy.openStoreFront()
+    cy.openProduct(data.product, true)
+  })
+
+  it(
+    `${data.prefix} - Verify product should not available and subscribe to product alerts`,
+    updateRetry(2),
+    () => {
+      cy.subscribeToProduct({ email: data.email, name: data.name })
+      cy.get(availabilityNotifySelectors.AvailabilityNotifyAlert).should(
+        'have.text',
+        availabilityNotifyConstants.EmailRegistered
+      )
+    }
+  )
 }

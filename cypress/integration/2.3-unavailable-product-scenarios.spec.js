@@ -6,8 +6,10 @@ import {
   generateEmailId,
   updateProductStatus,
 } from '../support/availability-notify.apis'
+import { updateProductAsUnavailable } from '../support/availability-notify'
 
 const { data1, name } = testCase1
+const product = 'weber spirit'
 const prefix = 'Update product as unavailable'
 
 describe('Updating product as unavailable', () => {
@@ -17,22 +19,7 @@ describe('Updating product as unavailable', () => {
 
   updateProductStatus(prefix, data1, false)
 
-  it(`${prefix} - Open product`, updateRetry(3), () => {
-    cy.openStoreFront()
-    cy.openProduct('weber spirit', true)
-  })
-
-  it(
-    `${prefix} - Verify product should not available and subscribe to product alerts`,
-    updateRetry(3),
-    () => {
-      cy.subscribeToProduct({ email, name })
-      cy.get(availabilityNotifySelectors.AvailabilityNotifyAlert).should(
-        'have.text',
-        availabilityNotifyConstants.EmailRegistered
-      )
-    }
-  )
+  updateProductAsUnavailable({ prefix, product, email, name })
 
   it(
     `${prefix} - Verify with same email address and check if we are getting error`,
