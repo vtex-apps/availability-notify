@@ -7,5 +7,9 @@
   "store/availability-notify.invalid-email": "E-mail inválido",
   "store/availability-notify.added-message": "E-mail cadastrado com sucesso",
   "store/availability-notify.error-register": "E-mail já existe",
-  "store/availability-notify.error-message": "Falha ao se cadastrar, tente novamente"
+  "store/availability-notify.error-message": "Falha ao se cadastrar, tente novamente",
+  "admin/availability-notify.menu.label": "Availability Notifier",
+  "admin/request.menu.label": "Notify Requests",
+  "admin/settings.download": "Download Requests",
+  "admin/settings.process-unsent": "Process Unsent"
 }

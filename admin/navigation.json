@@ -1,0 +1,11 @@
+{
+  "section": "products",
+  "subSection": "catalog",
+  "subSectionItems": [
+    {
+      "labelId": "admin/availability-notify.menu.label",
+      "searchKeyWordsHelpers": "",
+      "path": "/admin/availability-notify"
+    }
+  ]
+}

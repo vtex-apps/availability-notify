@@ -21,16 +21,19 @@
     ]
   },
   "devDependencies": {
-    "@vtex/prettier-config": "^1.0.0",
-    "eslint": "^7.4.0",
-    "eslint-config-vtex": "^14.1.2",
-    "eslint-config-vtex-react": "^8.2.1",
+    "@types/node": "12.12.21",
+    "@vtex/intl-equalizer": "^2.5.0",
+    "@vtex/prettier-config": "0.1.4",
+    "eslint": "7.12.1",
+    "eslint-config-vtex": "^14.1.1",
+    "eslint-config-vtex-react": "^6.8.3",
     "husky": "4.2.3",
-    "lint-staged": "^12.2.1",
-    "prettier": "^2.5.1",
+    "lint-staged": "10.1.1",
+    "prettier": "2.0.2",
     "typescript": "3.8.3"
   },
   "dependencies": {
-    "lint": "^0.7.0"
+    "lint": "^0.7.0",
+    "vtex": "^3.0.0"
   }
 }

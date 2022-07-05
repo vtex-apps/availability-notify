@@ -1,0 +1,6 @@
+{
+  "admin.app.availability-notify": {
+    "component": "NotifyAdmin",
+    "path": "/admin/app/availability-notify"
+  }
+}

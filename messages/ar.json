@@ -7,5 +7,9 @@
   "store/availability-notify.invalid-email": "عنوان بريد إلكترني غير صالح",
   "store/availability-notify.added-message": "تم تسجيل البريد الإلكتروني بنجاح",
   "store/availability-notify.error-register": "البريد الإلكتروني مسجل مسبقا",
-  "store/availability-notify.error-message": "محاولة فاشلة، الرجاء المحاولة مرة أخرى"
+  "store/availability-notify.error-message": "محاولة فاشلة، الرجاء المحاولة مرة أخرى",
+  "admin/availability-notify.menu.label": "Availability Notifier",
+  "admin/request.menu.label": "Notify Requests",
+  "admin/settings.download": "Download Requests",
+  "admin/settings.process-unsent": "Process Unsent"
 }

@@ -8,8 +8,6 @@ namespace AvailabilityNotify.Services
     {
         Task<MerchantSettings> GetMerchantSettings();
         Task SetMerchantSettings(MerchantSettings merchantSettings);
-        Task<bool> IsInitialized();
-        Task SetInitialized();
 
         Task<bool> VerifySchema();
         Task SetImportLock(DateTime importStartTime);

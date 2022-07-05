@@ -7,5 +7,9 @@
   "store/availability-notify.invalid-email": "Ugyldig e-post",
   "store/availability-notify.added-message": "E-postadressen ble registrert",
   "store/availability-notify.error-register": "E-post allerede registrert",
-  "store/availability-notify.error-message": "Mislyktes, prøv igjen"
+  "store/availability-notify.error-message": "Mislyktes, prøv igjen",
+  "admin/availability-notify.menu.label": "Availability Notifier",
+  "admin/request.menu.label": "Notify Requests",
+  "admin/settings.download": "Download Requests",
+  "admin/settings.process-unsent": "Process Unsent"
 }

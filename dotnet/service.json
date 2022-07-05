@@ -28,7 +28,11 @@
     },
     "processUnsentRequests": {
       "path": "/_v/availability-notify/process-unsent-requests",
-      "public": false
+      "public": true
+    },
+    "listNotifyRequests": {
+      "path": "/_v/availability-notify/list-requests",
+      "public": true
     }
   },
   "events": {

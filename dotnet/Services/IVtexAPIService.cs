@@ -13,9 +13,10 @@ namespace AvailabilityNotify.Services
         Task<bool> VerifySchema();
         Task<bool> CreateDefaultTemplate();
         Task<List<string>> ProcessAllRequests();
-        Task<List<string>> ProcessUnsentRequests();
+        Task<ProcessingResult[]> ProcessUnsentRequests();
         Task CheckUnsentNotifications();
         Task<CartSimulationResponse> CartSimulation(CartSimulationRequest cartSimulationRequest, RequestContext requestContext);
         Task<bool> CanShipToShopper(NotifyRequest requestToNotify, RequestContext requestContext);
+        Task<NotifyRequest[]> ListNotifyRequests();
     }
 }
