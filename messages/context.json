@@ -11,5 +11,7 @@
   "admin/availability-notify.menu.label": "admin/availability-notify.menu.label",
   "admin/request.menu.label": "admin/request.menu.label",
   "admin/settings.download": "admin/settings.download",
-  "admin/settings.process-unsent": "admin/settings.process-unsent"
+  "admin/settings.process-unsent": "admin/settings.process-unsent",
+  "admin/settings.verify-availability": "admin/settings.verify-availability",
+  "admin/settings.marketplace-to-notify": "admin/settings.marketplace-to-notify"
 }

@@ -4,6 +4,7 @@
   "ttl": 60,
   "minReplicas": 10,
   "maxReplicas": 100,
+  "timeout": 300,
   "runtimeArgs": [],
   "routes": {
     "processNotification": {

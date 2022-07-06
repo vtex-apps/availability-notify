@@ -219,7 +219,6 @@ namespace AvailabilityNotify.Services
             if (responseWrapper.IsSuccess)
             {
                 NotifyRequest[] notifyRequests = JsonConvert.DeserializeObject<NotifyRequest[]>(responseWrapper.ResponseText);
-                Console.WriteLine($"Adding {notifyRequests.Length} records.");
                 notifyRequestsAll.AddRange(notifyRequests);
                 int returnedRecords = notifyRequests.Length;
                 while (!string.IsNullOrEmpty(responseWrapper.MasterDataToken) && returnedRecords > 0)

@@ -64,8 +64,6 @@ namespace service.Controllers
 
         public async Task<IActionResult> ProcessUnsentRequests()
         {
-            Console.WriteLine(" ----------------    ProcessUnsentRequests  ------------------- ");
-            Response.Headers.Add("Cache-Control", "private");
             ProcessingResult[] results = await _vtexAPIService.ProcessUnsentRequests();
             _context.Vtex.Logger.Info("ProcessUnsentRequests", null, JsonConvert.SerializeObject(results));
             return Json(results);
@@ -73,8 +71,6 @@ namespace service.Controllers
 
         public async Task<IActionResult> ListNotifyRequests()
         {
-            Console.WriteLine(" ----------------    ListNotifyRequests  ------------------- ");
-            Response.Headers.Add("Cache-Control", "private");
             NotifyRequest[] results = await _vtexAPIService.ListNotifyRequests();
             return Json(results);
         }

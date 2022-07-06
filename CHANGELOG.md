@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added
+- (NOTIFIER-19) Added admin page with download of request records and button to process unsent requests
+
 ## [1.7.8] - 2022-06-28
 
 ### Fixed
