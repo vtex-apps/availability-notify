@@ -1,6 +1,6 @@
 {
-  "section": "products",
-  "subSection": "catalog",
+  "section": "orders",
+  "subSection": "inventoryAndShipping",
   "subSectionItems": [
     {
       "labelId": "admin/availability-notify.menu.label",
