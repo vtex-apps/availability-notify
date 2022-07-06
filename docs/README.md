@@ -45,15 +45,17 @@ The app records the notification request and monitors inventory updates. This wa
 ```
 
 5. Once you have added the `availability-notify` component, access your store's Admin.
-6. Go to **ACCOUNT SETTINGS** > **Apps** > **My apps**, search for `Availability Notify` and click on it.
+6. Go to **Orders** > **Inventory & Shipping** > **Availability Notifier**.
 7. Then, you will see the app's settings:
 
-![app-setting](https://user-images.githubusercontent.com/47258865/144638028-32f060ee-9b73-4588-aa00-731afb862b1e.png)
+![app-settings](https://user-images.githubusercontent.com/47258865/177632798-1aa3b247-10fe-45e2-93a2-73527c19c0f9.png)
 
 | Setting field           | Description                                                                                                            |
 |-------------------------|------------------------------------------------------------------------------------------------------------------------|
 | `Verify Availability`   | Runs a shipping simulation to verify that the item can be shipped to the shopper before sending a notificaiton.        |
 | `Marketplace to Notify` | Allows a seller account to specify a comma separated list of marketplace account names to notify of inventory updates. |
+| `Download Requests`     | Download an XLS file of all recquest records.                                                                          |
+| `Process Unsent`        | Process all unsent requests and download an XLS file of the results.                                                   |
 
 After making the desired settings in the app, set up its template according to your necessities. Check out more details about it in the next section, [Customizing the Back in stock template](#customizing-the-back-in-stock-template).
 
