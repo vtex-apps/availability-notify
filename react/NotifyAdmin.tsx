@@ -139,8 +139,7 @@ const NotifyAdmin: FC<any> = ({ intl }: Props) => {
     setSettingsState(parsedSettings)
   }, [data])
 
-  const { loading } = state
-  const { processing } = state
+  const { loading, processing } = state
 
   const downloadRequests = (allRequests: any) => {
     const header = [
