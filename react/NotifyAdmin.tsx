@@ -14,6 +14,7 @@ import {
   Input,
   Toggle,
   Button,
+  Divider,
 } from 'vtex.styleguide'
 import XLSX from 'xlsx'
 import { useMutation, useQuery } from 'react-apollo'
@@ -34,7 +35,7 @@ const NotifyAdmin: FC<any> = ({ intl }: Props) => {
   const messages = defineMessages({
     title: {
       id: 'admin/request.menu.label',
-      defaultMessage: 'Requests',
+      defaultMessage: 'Availability Notifier',
     },
     download: {
       id: 'admin/settings.download',
@@ -50,7 +51,7 @@ const NotifyAdmin: FC<any> = ({ intl }: Props) => {
     },
     marketplaceToNotify: {
       id: 'admin/settings.marketplace-to-notify',
-      defaultMessage: 'Marketplace To Notify',
+      defaultMessage: 'Marketplace(s) To Notify',
     },
     saveSettingsSuccess: {
       id: 'admin/settings.saveSettings.success',
@@ -63,6 +64,29 @@ const NotifyAdmin: FC<any> = ({ intl }: Props) => {
     saveSettingsButton: {
       id: 'admin/settings.saveSettings.button',
       defaultMessage: 'Save',
+    },
+    settingsLabel: {
+      id: 'admin/settings.label',
+      defaultMessage: 'Settings',
+    },
+    downloadHelptext: {
+      id: 'admin/settings.download-helptext',
+      defaultMessage: 'Download an XLS file of all notify request records.',
+    },
+    processUnsentHelptext: {
+      id: 'admin/settings.process-unsent-helptext',
+      defaultMessage:
+        'Process all unsent requests to notify and download an XLS file of the results.',
+    },
+    verifyAvailabilityHelptext: {
+      id: 'admin/settings.verify-availability-helptext',
+      defaultMessage:
+        'Runs a shipping simulation to verify that the item can be shipped to the shopper before sending a notificaiton.',
+    },
+    marketplaceToNotifyHelptext: {
+      id: 'admin/settings.marketplace-to-notify-helptext',
+      defaultMessage:
+        'Allows a seller account to specify a comma separated list of marketplace account names to notify of inventory updates.',
     },
   })
 
@@ -217,67 +241,93 @@ const NotifyAdmin: FC<any> = ({ intl }: Props) => {
               <PageHeader title={intl.formatMessage(messages.title)} />
             }
           >
-            <PageBlock variation="full">
-              <div>
-                <Toggle
-                  label={intl.formatMessage(messages.verifyAvailability)}
-                  size="large"
-                  checked={settingsState.doShippingSim}
-                  onChange={() => {
-                    setSettingsState({
-                      ...settingsState,
-                      doShippingSim: !settingsState.doShippingSim,
-                    })
-                  }}
-                />
-              </div>
+            <div className="bg-muted-5 pa8">
+              <PageBlock
+                title={intl.formatMessage(messages.settingsLabel)}
+                variation="full"
+              >
+                <div>
+                  <Toggle
+                    label={intl.formatMessage(messages.verifyAvailability)}
+                    size="large"
+                    checked={settingsState.doShippingSim}
+                    onChange={() => {
+                      setSettingsState({
+                        ...settingsState,
+                        doShippingSim: !settingsState.doShippingSim,
+                      })
+                    }}
+                  />
+                </div>
+                <p className="t-body lh-copy">
+                  {intl.formatMessage(messages.verifyAvailabilityHelptext)}
+                </p>
+                <div className="mv6">
+                  <Divider orientation="horizontal" />
+                </div>
+                <div className="mt6">
+                  <Input
+                    label={intl.formatMessage(messages.marketplaceToNotify)}
+                    onChange={(e: React.FormEvent<HTMLInputElement>) =>
+                      setSettingsState({
+                        ...settingsState,
+                        marketplaceToNotify: e.currentTarget.value,
+                      })
+                    }
+                    value={settingsState.marketplaceToNotify}
+                  />
+                  <p className="t-body lh-copy">
+                    {intl.formatMessage(messages.marketplaceToNotifyHelptext)}
+                  </p>
+                </div>
+                <section className="pt4">
+                  <Button
+                    variation="primary"
+                    onClick={() => handleSaveSettings(showToast)}
+                    isLoading={settingsLoading}
+                  >
+                    {intl.formatMessage(messages.saveSettingsButton)}
+                  </Button>
+                </section>
+              </PageBlock>
+            </div>
 
-              <div>
-                <Input
-                  label={intl.formatMessage(messages.marketplaceToNotify)}
-                  onChange={(e: React.FormEvent<HTMLInputElement>) =>
-                    setSettingsState({
-                      ...settingsState,
-                      marketplaceToNotify: e.currentTarget.value,
-                    })
-                  }
-                  value={settingsState.marketplaceToNotify}
-                />
-              </div>
-              <section className="pt4">
-                <Button
-                  variation="primary"
-                  onClick={() => handleSaveSettings(showToast)}
-                  isLoading={settingsLoading}
-                >
-                  {intl.formatMessage(messages.saveSettingsButton)}
-                </Button>
-              </section>
-            </PageBlock>
-            <PageBlock variation="half">
-              <div>
-                <ButtonWithIcon
-                  icon={download}
-                  isLoading={loading}
-                  onClick={() => {
-                    getAllRequests()
-                  }}
-                >
-                  {intl.formatMessage(messages.download)}
-                </ButtonWithIcon>
-              </div>
-              <div>
-                <ButtonWithIcon
-                  icon={download}
-                  isLoading={processing}
-                  onClick={() => {
-                    processUnsentRequests()
-                  }}
-                >
-                  {intl.formatMessage(messages.processUnsent)}
-                </ButtonWithIcon>
-              </div>
-            </PageBlock>
+            <div className="bg-muted-5 pa8">
+              <PageBlock
+                variation="annotated"
+                title={intl.formatMessage(messages.download)}
+                subtitle={intl.formatMessage(messages.downloadHelptext)}
+              >
+                <div>
+                  <ButtonWithIcon
+                    icon={download}
+                    isLoading={loading}
+                    onClick={() => {
+                      getAllRequests()
+                    }}
+                  >
+                    {intl.formatMessage(messages.download)}
+                  </ButtonWithIcon>
+                </div>
+              </PageBlock>
+              <PageBlock
+                variation="annotated"
+                title={intl.formatMessage(messages.processUnsent)}
+                subtitle={intl.formatMessage(messages.processUnsentHelptext)}
+              >
+                <div>
+                  <ButtonWithIcon
+                    icon={download}
+                    isLoading={processing}
+                    onClick={() => {
+                      processUnsentRequests()
+                    }}
+                  >
+                    {intl.formatMessage(messages.processUnsent)}
+                  </ButtonWithIcon>
+                </div>
+              </PageBlock>
+            </div>
           </Layout>
         )}
       </ToastConsumer>

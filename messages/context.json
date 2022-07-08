@@ -13,5 +13,10 @@
   "admin/settings.download": "admin/settings.download",
   "admin/settings.process-unsent": "admin/settings.process-unsent",
   "admin/settings.verify-availability": "admin/settings.verify-availability",
-  "admin/settings.marketplace-to-notify": "admin/settings.marketplace-to-notify"
+  "admin/settings.marketplace-to-notify": "admin/settings.marketplace-to-notify",
+  "admin/settings.download-helptext": "admin/settings.download-helptext",
+  "admin/settings.process-unsent-helptext": "admin/settings.process-unsent-helptext",
+  "admin/settings.verify-availability-helptext": "admin/settings.verify-availability-helptext",
+  "admin/settings.marketplace-to-notify-helptext": "admin/settings.marketplace-to-notify-helptext",
+  "admin/settings.label": "admin/settings.label"
 }

@@ -9,9 +9,14 @@
   "store/availability-notify.error-register": "E-mail already exists",
   "store/availability-notify.error-message": "Failed, please try again",
   "admin/availability-notify.menu.label": "Availability Notifier",
-  "admin/request.menu.label": "Notify Requests",
+  "admin/request.menu.label": "Availability Notifier",
   "admin/settings.download": "Download Requests",
   "admin/settings.process-unsent": "Process Unsent",
   "admin/settings.verify-availability": "Verify Availability",
-  "admin/settings.marketplace-to-notify": "Marketplace to Notify"
+  "admin/settings.marketplace-to-notify": "Marketplace(s) to Notify",
+  "admin/settings.download-helptext": "Download an XLS file of all notify request records.",
+  "admin/settings.process-unsent-helptext": "Process all unsent requests to notify and download an XLS file of the results.",
+  "admin/settings.verify-availability-helptext": "Runs a shipping simulation to verify that the item can be shipped to the shopper before sending a notificaiton.",
+  "admin/settings.marketplace-to-notify-helptext": "Allows a seller account to specify a comma separated list of marketplace account names to notify of inventory updates.",
+  "admin/settings.label": "Settings"
 }
