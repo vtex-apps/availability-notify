@@ -16,6 +16,8 @@ jobs:
     name: QE
     uses: vtex-apps/usqa/.github/workflows/quality-engineering.yml@v1.0.0
     with:
+      danger: true
+      dangerRequireChangelog: false
       nodeLint: true
       nodeTest: false
       nodeSonar: true
