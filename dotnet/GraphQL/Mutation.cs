@@ -3,8 +3,6 @@ using AvailabilityNotify.Models;
 using AvailabilityNotify.Services;
 using GraphQL;
 using GraphQL.Types;
-using Newtonsoft.Json;
-using System;
 using Vtex.Api.Context;
 
 namespace AvailabilityNotify.GraphQL
