@@ -4,6 +4,7 @@
   "ttl": 60,
   "minReplicas": 10,
   "maxReplicas": 100,
+  "timeout": 300,
   "runtimeArgs": [],
   "routes": {
     "processNotification": {
@@ -28,7 +29,11 @@
     },
     "processUnsentRequests": {
       "path": "/_v/availability-notify/process-unsent-requests",
-      "public": false
+      "public": true
+    },
+    "listNotifyRequests": {
+      "path": "/_v/availability-notify/list-requests",
+      "public": true
     }
   },
   "events": {
