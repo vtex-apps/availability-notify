@@ -1,7 +1,7 @@
 {
   "name": "availability-notify",
   "vendor": "vtex",
-  "version": "1.7.9",
+  "version": "1.8.0",
   "title": "Availability Notify",
   "description": "Record and send notification when an item is back in stock",
   "scripts": {
@@ -131,7 +131,9 @@
     },
     "free": true,
     "type": "free",
-    "availableCountries": ["*"]
+    "availableCountries": [
+      "*"
+    ]
   },
   "$schema": "https://raw.githubusercontent.com/vtex/node-vtex-api/master/gen/manifest.schema"
 }
