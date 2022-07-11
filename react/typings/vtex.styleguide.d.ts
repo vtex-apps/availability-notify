@@ -21,4 +21,6 @@ declare module 'vtex.styleguide' {
   export const Toggle
   export const Layout
   export const PageBlock
+  export const ButtonWithIcon
+  export const IconDownload
 }

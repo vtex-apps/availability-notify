@@ -8,6 +8,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Vtex.Api.Context;
 using System.Net;
+using System.Collections.Generic;
+using System.Net.Http.Headers;
+using System.Linq;
 
 namespace AvailabilityNotify.Services
 {
@@ -42,24 +45,19 @@ namespace AvailabilityNotify.Services
         {
             // Load merchant settings
             // 'http://apps.${region}.vtex.io/${account}/${workspace}/apps/${vendor.appName}/settings'
-            var request = new HttpRequestMessage
+            MerchantSettings merchantSettings = new MerchantSettings();
+            string url = $"http://apps.{this._environmentVariableProvider.Region}.vtex.io/{this._httpContextAccessor.HttpContext.Request.Headers[Constants.VTEX_ACCOUNT_HEADER_NAME]}/{this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_WORKSPACE]}/apps/{Constants.APP_SETTINGS}/settings";
+            ResponseWrapper responseWrapper = await this.SendRequest(url, HttpMethod.Get);
+            if (!responseWrapper.IsSuccess)
             {
-                Method = HttpMethod.Get,
-                RequestUri = new Uri($"http://apps.{this._environmentVariableProvider.Region}.vtex.io/{this._httpContextAccessor.HttpContext.Request.Headers[Constants.VTEX_ACCOUNT_HEADER_NAME]}/{this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_WORKSPACE]}/apps/{Constants.APP_SETTINGS}/settings"),
-            };
-
-            string authToken = this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_CREDENTIAL];
-            if (authToken != null)
+                _context.Vtex.Logger.Error("GetMerchantSettings", null, $"Failed to get merchant settings '{responseWrapper.Message}' ");
+            }
+            else
             {
-                request.Headers.Add(Constants.AUTHORIZATION_HEADER_NAME, authToken);
-                request.Headers.Add(Constants.VTEX_ID_HEADER_NAME, authToken);
+                merchantSettings = JsonConvert.DeserializeObject<MerchantSettings>(responseWrapper.ResponseText);
             }
 
-            var client = _clientFactory.CreateClient();
-            var response = await client.SendAsync(request);
-            string responseContent = await response.Content.ReadAsStringAsync();
-
-            return JsonConvert.DeserializeObject<MerchantSettings>(responseContent);
+            return merchantSettings;
         }
 
         public async Task SetMerchantSettings(MerchantSettings merchantSettings)
@@ -69,282 +67,111 @@ namespace AvailabilityNotify.Services
                 merchantSettings = new MerchantSettings();
             }
 
-            var jsonSerializedMerchantSettings = JsonConvert.SerializeObject(merchantSettings);
-            var request = new HttpRequestMessage
+            string url = $"http://apps.{this._environmentVariableProvider.Region}.vtex.io/{this._httpContextAccessor.HttpContext.Request.Headers[Constants.VTEX_ACCOUNT_HEADER_NAME]}/{this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_WORKSPACE]}/apps/{Constants.APP_SETTINGS}/settings";
+            ResponseWrapper responseWrapper = await this.SendRequest(url, HttpMethod.Put, merchantSettings);
+            if (!responseWrapper.IsSuccess)
             {
-                Method = HttpMethod.Put,
-                RequestUri = new Uri($"http://apps.{this._environmentVariableProvider.Region}.vtex.io/{this._httpContextAccessor.HttpContext.Request.Headers[Constants.VTEX_ACCOUNT_HEADER_NAME]}/{this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_WORKSPACE]}/apps/{Constants.APP_SETTINGS}/settings"),
-                Content = new StringContent(jsonSerializedMerchantSettings, Encoding.UTF8, Constants.APPLICATION_JSON)
-            };
-
-            string authToken = this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_CREDENTIAL];
-            if (authToken != null)
-            {
-                request.Headers.Add(Constants.AUTHORIZATION_HEADER_NAME, authToken);
-                request.Headers.Add(Constants.VTEX_ID_HEADER_NAME, authToken);
+                _context.Vtex.Logger.Error("SetMerchantSettings", null, $"Failed to set merchant settings '{responseWrapper.Message}' ");
             }
-
-            request.Headers.Add(Constants.AppKey, merchantSettings.AppKey);
-            request.Headers.Add(Constants.AppToken, merchantSettings.AppToken);
-
-            var client = _clientFactory.CreateClient();
-            var response = await client.SendAsync(request);
-
-            response.EnsureSuccessStatusCode();
-        }
-
-        public async Task<bool> IsInitialized()
-        {
-            bool isInitialized = false;
-            var request = new HttpRequestMessage
-            {
-                Method = HttpMethod.Get,
-                RequestUri = new Uri($"http://vbase.{this._environmentVariableProvider.Region}.vtex.io/{this._httpContextAccessor.HttpContext.Request.Headers[Constants.VTEX_ACCOUNT_HEADER_NAME]}/{this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_WORKSPACE]}/buckets/{this._applicationName}/{Constants.AppName}/files/initialized"),
-            };
-
-            string authToken = this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_CREDENTIAL];
-            if (authToken != null)
-            {
-                request.Headers.Add(Constants.AUTHORIZATION_HEADER_NAME, authToken);
-                request.Headers.Add(Constants.VTEX_ID_HEADER_NAME, authToken);
-            }
-
-            var client = _clientFactory.CreateClient();
-            var response = await client.SendAsync(request);
-            string responseContent = await response.Content.ReadAsStringAsync();
-            if(response.IsSuccessStatusCode)
-            {
-                if (responseContent.Equals("true"))
-                {
-                    isInitialized = true;
-                }
-            }
-
-            return isInitialized;
-        }
-
-        public async Task SetInitialized()
-        {
-            var request = new HttpRequestMessage
-            {
-                Method = HttpMethod.Put,
-                RequestUri = new Uri($"http://vbase.{this._environmentVariableProvider.Region}.vtex.io/{this._httpContextAccessor.HttpContext.Request.Headers[Constants.VTEX_ACCOUNT_HEADER_NAME]}/{this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_WORKSPACE]}/buckets/{this._applicationName}/{Constants.AppName}/files/initialized"),
-                Content = new StringContent("true", Encoding.UTF8, "text/plain")
-            };
-
-            string authToken = this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_CREDENTIAL];
-            if (authToken != null)
-            {
-                request.Headers.Add(Constants.AUTHORIZATION_HEADER_NAME, authToken);
-                request.Headers.Add(Constants.VTEX_ID_HEADER_NAME, authToken);
-            }
-
-            var client = _clientFactory.CreateClient();
-            var response = await client.SendAsync(request);
-
-            response.EnsureSuccessStatusCode();
         }
 
         public async Task<bool> VerifySchema()
         {
             // https://{{accountName}}.vtexcommercestable.com.br/api/dataentities/{{data_entity_name}}/schemas/{{schema_name}}
-            var request = new HttpRequestMessage
-            {
-                Method = HttpMethod.Get,
-                RequestUri = new Uri($"http://{this._httpContextAccessor.HttpContext.Request.Headers[Constants.VTEX_ACCOUNT_HEADER_NAME]}.vtexcommercestable.com.br/api/dataentities/{Constants.DATA_ENTITY}/schemas/{Constants.SCHEMA}")
-            };
 
-            string authToken = this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_CREDENTIAL];
-            if (authToken != null)
+            string url = $"http://{this._httpContextAccessor.HttpContext.Request.Headers[Constants.VTEX_ACCOUNT_HEADER_NAME]}.vtexcommercestable.com.br/api/dataentities/{Constants.DATA_ENTITY}/schemas/{Constants.SCHEMA}";
+            ResponseWrapper responseWrapper = await this.SendRequest(url, HttpMethod.Get);
+            if (!responseWrapper.IsSuccess)
             {
-                request.Headers.Add(Constants.AUTHORIZATION_HEADER_NAME, authToken);
-                request.Headers.Add(Constants.VTEX_ID_HEADER_NAME, authToken);
-                request.Headers.Add(Constants.PROXY_AUTHORIZATION_HEADER_NAME, authToken);
+                _context.Vtex.Logger.Error("VerifySchema", null, $"Failed to get schema '{responseWrapper.Message}' ");
+            }
+            else if (!responseWrapper.ResponseText.Equals(Constants.SCHEMA_JSON))
+            {
+                url = $"http://{this._httpContextAccessor.HttpContext.Request.Headers[Constants.VTEX_ACCOUNT_HEADER_NAME]}.vtexcommercestable.com.br/api/dataentities/{Constants.DATA_ENTITY}/schemas/{Constants.SCHEMA}";
+                responseWrapper = await this.SendRequest(url, HttpMethod.Put, Constants.SCHEMA_JSON);
+                _context.Vtex.Logger.Debug("VerifySchema", null, $"Applying Schema [{responseWrapper.IsSuccess}] '{responseWrapper.ResponseText}' ");
             }
 
-            var client = _clientFactory.CreateClient();
-            var response = await client.SendAsync(request);
-            string responseContent = await response.Content.ReadAsStringAsync();
-            _context.Vtex.Logger.Debug("VerifySchema", null, $"[{response.StatusCode}] {responseContent}");
-
-            if (response.IsSuccessStatusCode && !responseContent.Equals(Constants.SCHEMA_JSON))
-            {
-                request = new HttpRequestMessage
-                {
-                    Method = HttpMethod.Put,
-                    RequestUri = new Uri($"http://{this._httpContextAccessor.HttpContext.Request.Headers[Constants.VTEX_ACCOUNT_HEADER_NAME]}.vtexcommercestable.com.br/api/dataentities/{Constants.DATA_ENTITY}/schemas/{Constants.SCHEMA}"),
-                    Content = new StringContent(Constants.SCHEMA_JSON, Encoding.UTF8, Constants.APPLICATION_JSON)
-                };
-
-                if (authToken != null)
-                {
-                    request.Headers.Add(Constants.AUTHORIZATION_HEADER_NAME, authToken);
-                    request.Headers.Add(Constants.VTEX_ID_HEADER_NAME, authToken);
-                    request.Headers.Add(Constants.PROXY_AUTHORIZATION_HEADER_NAME, authToken);
-                }
-
-                response = await client.SendAsync(request);
-                responseContent = await response.Content.ReadAsStringAsync();
-
-                _context.Vtex.Logger.Debug("VerifySchema", null, $"Applying Schema [{response.StatusCode}] {responseContent}");
-            }
-
-            return response.IsSuccessStatusCode;
+            return responseWrapper.IsSuccess;
         }
 
         public async Task<bool> SaveNotifyRequest(NotifyRequest notifyRequest, RequestContext requestContext)
         {
             // PATCH https://{{accountName}}.vtexcommercestable.com.br/api/dataentities/{{data_entity_name}}/documents
 
-            var jsonSerializedListItems = JsonConvert.SerializeObject(notifyRequest);
-            var request = new HttpRequestMessage
+            string url = $"http://{requestContext.Account}.vtexcommercestable.com.br/api/dataentities/{Constants.DATA_ENTITY}/documents";
+            ResponseWrapper responseWrapper = await this.SendRequest(url, HttpMethod.Put, notifyRequest);
+            if (!responseWrapper.IsSuccess)
             {
-                Method = HttpMethod.Put,
-                RequestUri = new Uri($"http://{requestContext.Account}.vtexcommercestable.com.br/api/dataentities/{Constants.DATA_ENTITY}/documents"), //?_schema={Constants.SCHEMA}"),
-                Content = new StringContent(jsonSerializedListItems, Encoding.UTF8, Constants.APPLICATION_JSON)
-            };
-
-            string authToken = requestContext.AuthToken;
-            if (authToken != null)
-            {
-                request.Headers.Add(Constants.AUTHORIZATION_HEADER_NAME, authToken);
-                request.Headers.Add(Constants.VTEX_ID_HEADER_NAME, authToken);
-                request.Headers.Add(Constants.PROXY_AUTHORIZATION_HEADER_NAME, authToken);
+                _context.Vtex.Logger.Error("SaveNotifyRequest", null, $"Failed to save '{JsonConvert.SerializeObject(notifyRequest)}' ");
             }
 
-            var client = _clientFactory.CreateClient();
-            var response = await client.SendAsync(request);
-            string responseContent = await response.Content.ReadAsStringAsync();
-            _context.Vtex.Logger.Debug("SaveNotifyRequest", null, $"[{response.StatusCode}] '{responseContent}'\n{jsonSerializedListItems}");
-
-            return response.IsSuccessStatusCode;
+            return responseWrapper.IsSuccess;
         }
 
         public async Task<bool> DeleteNotifyRequest(string documentId)
         {
             // DELETE https://{accountName}.{environment}.com.br/api/dataentities/data_entity_name/documents/id
 
-            var request = new HttpRequestMessage
+            string url = $"http://{this._httpContextAccessor.HttpContext.Request.Headers[Constants.VTEX_ACCOUNT_HEADER_NAME]}.vtexcommercestable.com.br/api/dataentities/{Constants.DATA_ENTITY}/documents/{documentId}";
+            ResponseWrapper responseWrapper = await this.SendRequest(url, HttpMethod.Delete);
+            if (!responseWrapper.IsSuccess)
             {
-                Method = HttpMethod.Delete,
-                RequestUri = new Uri($"http://{this._httpContextAccessor.HttpContext.Request.Headers[Constants.VTEX_ACCOUNT_HEADER_NAME]}.vtexcommercestable.com.br/api/dataentities/{Constants.DATA_ENTITY}/documents/{documentId}")
-            };
-
-            string authToken = this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_CREDENTIAL];
-            if (authToken != null)
-            {
-                request.Headers.Add(Constants.AUTHORIZATION_HEADER_NAME, authToken);
-                request.Headers.Add(Constants.VTEX_ID_HEADER_NAME, authToken);
-                request.Headers.Add(Constants.PROXY_AUTHORIZATION_HEADER_NAME, authToken);
+                _context.Vtex.Logger.Error("DeleteNotifyRequest", null, $"Failed to delete '{documentId}' ");
             }
 
-            var client = _clientFactory.CreateClient();
-            var response = await client.SendAsync(request);
-            string responseContent = await response.Content.ReadAsStringAsync();
-
-            return response.IsSuccessStatusCode;
+            return responseWrapper.IsSuccess;
         }
 
         public async Task<NotifyRequest[]> ListNotifyRequests()
         {
             NotifyRequest[] notifyRequests = new NotifyRequest[0];
-
-            var request = new HttpRequestMessage
+            RequestContext requestContext = new RequestContext
             {
-                Method = HttpMethod.Get,
-                RequestUri = new Uri($"http://{this._httpContextAccessor.HttpContext.Request.Headers[Constants.VTEX_ACCOUNT_HEADER_NAME]}.vtexcommercestable.com.br/api/dataentities/{Constants.DATA_ENTITY}/scroll?_fields={Constants.FIELDS}")
+                Account = _context.Vtex.Account,
+                AuthToken = _context.Vtex.AuthToken
             };
-
-            string authToken = this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_CREDENTIAL];
-            if (authToken != null)
-            {
-                request.Headers.Add(Constants.AUTHORIZATION_HEADER_NAME, authToken);
-                request.Headers.Add(Constants.VTEX_ID_HEADER_NAME, authToken);
-                request.Headers.Add(Constants.PROXY_AUTHORIZATION_HEADER_NAME, authToken);
-            }
 
             try
             {
-                var client = _clientFactory.CreateClient();
-                var response = await client.SendAsync(request);
-                string responseContent = await response.Content.ReadAsStringAsync();
-                if (response.IsSuccessStatusCode)
-                {
-                    notifyRequests = JsonConvert.DeserializeObject<NotifyRequest[]>(responseContent);
-                }
-                else
-                {
-                    _context.Vtex.Logger.Error("ListNotifyRequests", null, $"[{response.StatusCode}] '{responseContent}'");
-                }
+                notifyRequests = await this.ScrollRequests(requestContext);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                _context.Vtex.Logger.Error("ListNotifyRequests", null, "Error listing requests.", ex);
+                _context.Vtex.Logger.Error("ListNotifyRequests", null, null, ex);
             }
-            
+
             return notifyRequests;
         }
 
         public async Task<NotifyRequest[]> ListUnsentNotifyRequests()
         {
-            NotifyRequest[] notifyRequests = null;
-
-            var request = new HttpRequestMessage
+            NotifyRequest[] notifyRequests = new NotifyRequest[0];
+            RequestContext requestContext = new RequestContext
             {
-                Method = HttpMethod.Get,
-                RequestUri = new Uri($"http://{this._httpContextAccessor.HttpContext.Request.Headers[Constants.VTEX_ACCOUNT_HEADER_NAME]}.vtexcommercestable.com.br/api/dataentities/{Constants.DATA_ENTITY}/search?_fields={Constants.FIELDS}&_schema=notify&_where=notificationSend=false")
+                Account = _context.Vtex.Account,
+                AuthToken = _context.Vtex.AuthToken
             };
 
-            string authToken = this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_CREDENTIAL];
-            if (authToken != null)
+            try
             {
-                request.Headers.Add(Constants.AUTHORIZATION_HEADER_NAME, authToken);
-                request.Headers.Add(Constants.VTEX_ID_HEADER_NAME, authToken);
-                request.Headers.Add(Constants.PROXY_AUTHORIZATION_HEADER_NAME, authToken);
+                notifyRequests = await this.SearchRequests(requestContext, "notificationSend=false");
+            }
+            catch (Exception ex)
+            {
+                _context.Vtex.Logger.Error("ListUnsentNotifyRequests", null, null, ex);
             }
 
-            var client = _clientFactory.CreateClient();
-            var response = await client.SendAsync(request);
-            string responseContent = await response.Content.ReadAsStringAsync();
-            if(response.IsSuccessStatusCode)
-            {
-                notifyRequests = JsonConvert.DeserializeObject<NotifyRequest[]>(responseContent);
-            }
-            
             return notifyRequests;
         }
 
         public async Task<NotifyRequest[]> ListRequestsForSkuId(string skuId, RequestContext requestContext)
         {
-            NotifyRequest[] notifyRequests = null;
-
-            var request = new HttpRequestMessage
-            {
-                Method = HttpMethod.Get,
-                RequestUri = new Uri($"http://{requestContext.Account}.vtexcommercestable.com.br/api/dataentities/{Constants.DATA_ENTITY}/search?_fields={Constants.FIELDS}&_schema={Constants.SCHEMA}&notificationSend=false&skuId={skuId}")
-            };
-
-            string authToken = requestContext.AuthToken;
-            if (authToken != null)
-            {
-                request.Headers.Add(Constants.AUTHORIZATION_HEADER_NAME, authToken);
-                request.Headers.Add(Constants.VTEX_ID_HEADER_NAME, authToken);
-                request.Headers.Add(Constants.PROXY_AUTHORIZATION_HEADER_NAME, authToken);
-            }
+            NotifyRequest[] notifyRequests = new NotifyRequest[0];
 
             try
             {
-                var client = _clientFactory.CreateClient();
-                var response = await client.SendAsync(request);
-                string responseContent = await response.Content.ReadAsStringAsync();
-                if (response.IsSuccessStatusCode)
-                {
-                    notifyRequests = JsonConvert.DeserializeObject<NotifyRequest[]>(responseContent);
-                }
-                else
-                {
-                    _context.Vtex.Logger.Debug("ListRequestsForSkuId", null, $"Sku '{skuId}' returned [{response.StatusCode}] '{responseContent}'");
-                }
+                notifyRequests = await this.SearchRequests(requestContext, $"notificationSend=false&skuId={skuId}");
             }
             catch(Exception ex)
             {
@@ -354,136 +181,127 @@ namespace AvailabilityNotify.Services
             return notifyRequests;
         }
 
+        public async Task<NotifyRequest[]> SearchRequests(RequestContext requestContext, string searchString, int? searchFrom = null)
+        {
+            List<NotifyRequest> notifyRequestsAll = new List<NotifyRequest>();
+            if(searchFrom == null)
+            {
+                searchFrom = 0;
+            }
+
+            int searchTo = (searchFrom ?? 0) + 99;
+
+            string url = $"http://{requestContext.Account}.vtexcommercestable.com.br/api/dataentities/{Constants.DATA_ENTITY}/search?_fields={Constants.FIELDS}&_schema={Constants.SCHEMA}&{searchString}";
+            ResponseWrapper responseWrapper = await this.SendRequest(url, HttpMethod.Get, null, searchFrom.ToString(), searchTo.ToString());
+            if(responseWrapper.IsSuccess)
+            {
+                NotifyRequest[] notifyRequests = JsonConvert.DeserializeObject<NotifyRequest[]>(responseWrapper.ResponseText);
+                notifyRequestsAll.AddRange(notifyRequests);
+                int from = 0;
+                int to = 0;
+                int total = 0;
+                if (!string.IsNullOrEmpty(responseWrapper.To) && !string.IsNullOrEmpty(responseWrapper.From) && int.TryParse(responseWrapper.To, out to) && int.TryParse(responseWrapper.From, out from) && int.TryParse(responseWrapper.Total, out total) && to < total)
+                {
+                    int newFrom = to + 1;
+                    notifyRequests = await this.SearchRequests(requestContext, searchString, newFrom);
+                    notifyRequestsAll.AddRange(notifyRequests);
+                }
+            }
+
+            return notifyRequestsAll.ToArray();
+        }
+
+        public async Task<NotifyRequest[]> ScrollRequests(RequestContext requestContext)
+        {
+            List<NotifyRequest> notifyRequestsAll = new List<NotifyRequest>();
+            string url = $"http://{requestContext.Account}.vtexcommercestable.com.br/api/dataentities/{Constants.DATA_ENTITY}/scroll?_fields={Constants.FIELDS}";
+            ResponseWrapper responseWrapper = await this.SendRequest(url, HttpMethod.Get);
+            if (responseWrapper.IsSuccess)
+            {
+                NotifyRequest[] notifyRequests = JsonConvert.DeserializeObject<NotifyRequest[]>(responseWrapper.ResponseText);
+                notifyRequestsAll.AddRange(notifyRequests);
+                int returnedRecords = notifyRequests.Length;
+                while (!string.IsNullOrEmpty(responseWrapper.MasterDataToken) && returnedRecords > 0)
+                {
+                    url = $"http://{requestContext.Account}.vtexcommercestable.com.br/api/dataentities/{Constants.DATA_ENTITY}/scroll?_token={responseWrapper.MasterDataToken}";
+                    responseWrapper = await this.SendRequest(url, HttpMethod.Get);
+                    if (responseWrapper.IsSuccess)
+                    {
+                        notifyRequests = JsonConvert.DeserializeObject<NotifyRequest[]>(responseWrapper.ResponseText);
+                        returnedRecords = notifyRequests.Length;
+                        if (returnedRecords > 0)
+                        {
+                            notifyRequestsAll.AddRange(notifyRequests);
+                        }
+                    }
+                    else
+                    {
+                        _context.Vtex.Logger.Error("ScrollRequests", null, responseWrapper.ResponseText);
+                    }
+                }
+            }
+
+            return notifyRequestsAll.ToArray();
+        }
+
         public async Task SetImportLock(DateTime importStartTime)
         {
-            try
+            var processingLock = new Lock
             {
-                var processingLock = new Lock
-                {
-                    ProcessingStarted = importStartTime,
-                };
+                ProcessingStarted = importStartTime,
+            };
 
-                var jsonSerializedLock = JsonConvert.SerializeObject(processingLock);
-                var request = new HttpRequestMessage
-                {
-                    Method = HttpMethod.Put,
-                    RequestUri = new Uri($"http://infra.io.vtex.com/vbase/v2/{this._httpContextAccessor.HttpContext.Request.Headers[Constants.VTEX_ACCOUNT_HEADER_NAME]}/{this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_WORKSPACE]}/buckets/{this._applicationName}/{Constants.BUCKET}/files/{Constants.LOCK}"),
-                    Content = new StringContent(jsonSerializedLock, Encoding.UTF8, Constants.APPLICATION_JSON)
-                };
-
-                string authToken = this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_CREDENTIAL];
-                if (authToken != null)
-                {
-                    request.Headers.Add(Constants.AUTHORIZATION_HEADER_NAME, authToken);
-                    request.Headers.Add(Constants.VTEX_ID_HEADER_NAME, authToken);
-                }
-
-                var client = _clientFactory.CreateClient();
-                var response = await client.SendAsync(request);
-            }
-            catch(Exception ex)
+            string url = $"http://infra.io.vtex.com/vbase/v2/{this._httpContextAccessor.HttpContext.Request.Headers[Constants.VTEX_ACCOUNT_HEADER_NAME]}/{this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_WORKSPACE]}/buckets/{this._applicationName}/{Constants.BUCKET}/files/{Constants.LOCK}";
+            ResponseWrapper responseWrapper = await this.SendRequest(url, HttpMethod.Put, processingLock);
+            if(!responseWrapper.IsSuccess)
             {
-                _context.Vtex.Logger.Error("SetImportLock", null, null, ex);
+                _context.Vtex.Logger.Error("SetImportLock", null, responseWrapper.Message);
             }
         }
 
         public async Task<DateTime> CheckImportLock()
         {
-            try
+            Lock processingLock = new Lock
             {
-                var request = new HttpRequestMessage
-                {
-                    Method = HttpMethod.Get,
-                    RequestUri = new Uri($"http://infra.io.vtex.com/vbase/v2/{this._httpContextAccessor.HttpContext.Request.Headers[Constants.VTEX_ACCOUNT_HEADER_NAME]}/{this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_WORKSPACE]}/buckets/{this._applicationName}/{Constants.BUCKET}/files/{Constants.LOCK}")
-                };
+                ProcessingStarted = new DateTime()
+            };
 
-                string authToken = this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_CREDENTIAL];
-                if (authToken != null)
-                {
-                    request.Headers.Add(Constants.AUTHORIZATION_HEADER_NAME, authToken);
-                    request.Headers.Add(Constants.VTEX_ID_HEADER_NAME, authToken);
-                }
+            string url = $"http://infra.io.vtex.com/vbase/v2/{this._httpContextAccessor.HttpContext.Request.Headers[Constants.VTEX_ACCOUNT_HEADER_NAME]}/{this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_WORKSPACE]}/buckets/{this._applicationName}/{Constants.BUCKET}/files/{Constants.LOCK}";
+            ResponseWrapper responseWrapper = await this.SendRequest(url, HttpMethod.Get);
 
-                request.Headers.Add("Cache-Control", "no-cache");
-
-                var client = _clientFactory.CreateClient();
-                var response = await client.SendAsync(request);
-                string responseContent = await response.Content.ReadAsStringAsync();
-
-                if (response.StatusCode == HttpStatusCode.NotFound)
-                {
-                    return new DateTime();
-                }
-
-                Lock processingLock = JsonConvert.DeserializeObject<Lock>(responseContent);
-
-                return processingLock.ProcessingStarted;
-            }
-            catch(Exception ex)
+            if (responseWrapper.IsSuccess)
             {
-                _context.Vtex.Logger.Error("CheckImportLock", null, null, ex);
-                return new DateTime();
+                processingLock = JsonConvert.DeserializeObject<Lock>(responseWrapper.ResponseText);
             }
+
+            return processingLock.ProcessingStarted;
         }
 
         public async Task ClearImportLock()
         {
-            try
+            var processingLock = new Lock
             {
-                var processingLock = new Lock
-                {
-                    ProcessingStarted = new DateTime(),
-                };
+                ProcessingStarted = new DateTime(),
+            };
 
-                var jsonSerializedLock = JsonConvert.SerializeObject(processingLock);
-                var request = new HttpRequestMessage
-                {
-                    Method = HttpMethod.Put,
-                    RequestUri = new Uri($"http://infra.io.vtex.com/vbase/v2/{this._httpContextAccessor.HttpContext.Request.Headers[Constants.VTEX_ACCOUNT_HEADER_NAME]}/{this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_WORKSPACE]}/buckets/{this._applicationName}/{Constants.BUCKET}/files/{Constants.LOCK}"),
-                    Content = new StringContent(jsonSerializedLock, Encoding.UTF8, Constants.APPLICATION_JSON)
-                };
-
-                request.Headers.Add("Cache-Control", "no-cache");
-
-                string authToken = this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_CREDENTIAL];
-                if (authToken != null)
-                {
-                    request.Headers.Add(Constants.AUTHORIZATION_HEADER_NAME, authToken);
-                    request.Headers.Add(Constants.VTEX_ID_HEADER_NAME, authToken);
-                }
-
-                var client = _clientFactory.CreateClient();
-                await client.SendAsync(request);
-            }
-            catch (Exception ex)
+            string url = $"http://infra.io.vtex.com/vbase/v2/{this._httpContextAccessor.HttpContext.Request.Headers[Constants.VTEX_ACCOUNT_HEADER_NAME]}/{this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_WORKSPACE]}/buckets/{this._applicationName}/{Constants.BUCKET}/files/{Constants.LOCK}";
+            ResponseWrapper responseWrapper = await this.SendRequest(url, HttpMethod.Put, processingLock);
+            if (!responseWrapper.IsSuccess)
             {
-                _context.Vtex.Logger.Error("ClearImportLock", null, null, ex);
+                _context.Vtex.Logger.Error("ClearImportLock", null, $"Failed to clear lock. {responseWrapper.Message}");
             }
         }
 
         public async Task<DateTime> GetLastUnsentCheck()
         {
             DateTime lastCheck = DateTime.Now;
-            var request = new HttpRequestMessage
+            string url = $"http://vbase.{this._environmentVariableProvider.Region}.vtex.io/{this._httpContextAccessor.HttpContext.Request.Headers[Constants.VTEX_ACCOUNT_HEADER_NAME]}/{this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_WORKSPACE]}/buckets/{this._applicationName}/{Constants.BUCKET}/files/{Constants.UNSENT_CHECK}";
+            ResponseWrapper responseWrapper = await this.SendRequest(url, HttpMethod.Get);
+            if (responseWrapper.IsSuccess)
             {
-                Method = HttpMethod.Get,
-                RequestUri = new Uri($"http://vbase.{this._environmentVariableProvider.Region}.vtex.io/{this._httpContextAccessor.HttpContext.Request.Headers[Constants.VTEX_ACCOUNT_HEADER_NAME]}/{this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_WORKSPACE]}/buckets/{this._applicationName}/{Constants.BUCKET}/files/{Constants.UNSENT_CHECK}"),
-            };
-
-            string authToken = this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_CREDENTIAL];
-            if (authToken != null)
-            {
-                request.Headers.Add(Constants.AUTHORIZATION_HEADER_NAME, authToken);
-            }
-
-            var client = _clientFactory.CreateClient();
-            var response = await client.SendAsync(request);
-            if (response.IsSuccessStatusCode)
-            {
-                string responseContent = await response.Content.ReadAsStringAsync();
-                if (!string.IsNullOrEmpty(responseContent))
+                if (!string.IsNullOrEmpty(responseWrapper.ResponseText))
                 {
-                    lastCheck = JsonConvert.DeserializeObject<DateTime>(responseContent);
+                    lastCheck = JsonConvert.DeserializeObject<DateTime>(responseWrapper.ResponseText);
                 }
                 else
                 {
@@ -500,24 +318,108 @@ namespace AvailabilityNotify.Services
 
         public async Task SetLastUnsentCheck(DateTime lastCheck)
         {
-            var jsonSerializedStoreList = JsonConvert.SerializeObject(lastCheck);
+            string url = $"http://vbase.{this._environmentVariableProvider.Region}.vtex.io/{this._httpContextAccessor.HttpContext.Request.Headers[Constants.VTEX_ACCOUNT_HEADER_NAME]}/{this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_WORKSPACE]}/buckets/{this._applicationName}/{Constants.BUCKET}/files/{Constants.UNSENT_CHECK}";
+            ResponseWrapper responseWrapper = await this.SendRequest(url, HttpMethod.Put, lastCheck);
+            if(!responseWrapper.IsSuccess)
+            {
+                _context.Vtex.Logger.Error("SetLastUnsentCheck", null, $"Failed to set last check. {responseWrapper.Message}");
+            }
+        }
+
+        public async Task<ResponseWrapper> SendRequest(string url, HttpMethod httpMethod, object requestObject = null, string from = null, string to = null)
+        {
+            ResponseWrapper responseWrapper = null;
+            string jsonSerializedRequest = string.Empty;
+
             var request = new HttpRequestMessage
             {
-                Method = HttpMethod.Put,
-                RequestUri = new Uri($"http://vbase.{this._environmentVariableProvider.Region}.vtex.io/{this._httpContextAccessor.HttpContext.Request.Headers[Constants.VTEX_ACCOUNT_HEADER_NAME]}/{this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_WORKSPACE]}/buckets/{this._applicationName}/{Constants.BUCKET}/files/{Constants.UNSENT_CHECK}"),
-                Content = new StringContent(jsonSerializedStoreList, Encoding.UTF8, Constants.APPLICATION_JSON)
+                Method = httpMethod,
+                RequestUri = new Uri(url)
             };
 
+            if (requestObject != null)
+            {
+                try
+                {
+                    jsonSerializedRequest = JsonConvert.SerializeObject(requestObject);
+                    request.Content = new StringContent(jsonSerializedRequest, Encoding.UTF8, Constants.APPLICATION_JSON);
+                }
+                catch (Exception ex)
+                {
+                    _context.Vtex.Logger.Error("SendRequest", null, $"Error Serializing Request Object", ex);
+                }
+            }
+
+            if (!string.IsNullOrEmpty(from) && !string.IsNullOrEmpty(to))
+            {
+                request.Headers.Add("REST-Range", $"resources={from}-{to}");
+            }
+
+            request.Headers.Add(Constants.USE_HTTPS_HEADER_NAME, "true");
             string authToken = this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_CREDENTIAL];
             if (authToken != null)
             {
                 request.Headers.Add(Constants.AUTHORIZATION_HEADER_NAME, authToken);
+                request.Headers.Add(Constants.VTEX_ID_HEADER_NAME, authToken);
+                request.Headers.Add(Constants.PROXY_AUTHORIZATION_HEADER_NAME, authToken);
             }
 
             var client = _clientFactory.CreateClient();
-            var response = await client.SendAsync(request);
 
-            response.EnsureSuccessStatusCode();
+            try
+            {
+                HttpResponseMessage responseMessage = await client.SendAsync(request);
+                string responseContent = await responseMessage.Content.ReadAsStringAsync();
+                responseWrapper = new ResponseWrapper
+                {
+                    IsSuccess = responseMessage.IsSuccessStatusCode,
+                    ResponseText = responseContent
+                };
+
+                if (!responseWrapper.IsSuccess)
+                {
+                    _context.Vtex.Logger.Warn("SendRequest", null, $"Problem Sending Request '{request.RequestUri}'.\n'{responseWrapper.ResponseText}' {jsonSerializedRequest}");
+                }
+
+                HttpHeaders headers = responseMessage.Headers;
+                IEnumerable<string> values;
+                if (headers.TryGetValues("REST-Content-Range", out values))
+                {
+                    // resources 0-10/168
+                    string resources = values.First();
+                    string[] split = resources.Split(' ');
+                    string ranges = split[1];
+                    string[] splitRanges = ranges.Split('/');
+                    string fromTo = splitRanges[0];
+                    string total = splitRanges[1];
+                    string[] splitFromTo = fromTo.Split('-');
+                    string responseFrom = splitFromTo[0];
+                    string responseTo = splitFromTo[1];
+
+                    responseWrapper.Total = total;
+                    responseWrapper.From = responseFrom;
+                    responseWrapper.To = responseTo;
+
+                    _context.Vtex.Logger.Debug("SendRequest", "REST-Content-Range", resources);
+                }
+
+                if (headers.TryGetValues("X-VTEX-MD-TOKEN", out values))
+                {
+                    string token = values.First();
+                    responseWrapper.MasterDataToken = token;
+                }
+            }
+            catch (Exception ex)
+            {
+                _context.Vtex.Logger.Error("SendRequest", null, $"Error Sending Request to {request.RequestUri}\n{jsonSerializedRequest}", ex);
+                responseWrapper = new ResponseWrapper
+                {
+                    IsSuccess = false,
+                    Message = ex.Message
+                };
+            }
+
+            return responseWrapper;
         }
     }
 }

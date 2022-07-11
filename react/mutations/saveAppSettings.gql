@@ -1,0 +1,9 @@
+mutation SaveAppSettings($version: String, $settings: String) {
+  saveAppSettings(
+    app: "vtex.availability-notify"
+    settings: $settings
+    version: $version
+  ) @context(provider: "vtex.apps-graphql") {
+    message
+  }
+}

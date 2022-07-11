@@ -815,9 +815,9 @@ namespace AvailabilityNotify.Services
             return results;
         }
 
-        public async Task<List<string>> ProcessUnsentRequests()
+        public async Task<ProcessingResult[]> ProcessUnsentRequests()
         {
-            List<string> results = new List<string>();
+            List<ProcessingResult> results = new List<ProcessingResult>();
             RequestContext requestContext = new RequestContext
             {
                 Account = _context.Vtex.Account,
@@ -855,15 +855,25 @@ namespace AvailabilityNotify.Services
                         }
                     }
 
-                    results.Add($"{skuId} Qnty:{available} '{requestToNotify.Email}' Sent? {sendMail} Updated? {updatedRecord}");
+                    //results.Add($"{skuId} Qnty:{available} '{requestToNotify.Email}' Sent? {sendMail} Updated? {updatedRecord}");
+                    ProcessingResult processingResult = new ProcessingResult
+                    {
+                        QuantityAvailable = available.ToString(),
+                        Email = requestToNotify.Email,
+                        Sent = sendMail,
+                        SkuId = skuId,
+                        Updated = updatedRecord
+                    };
+
+                    results.Add(processingResult);
                 }
             }
             else
             {
-                results.Add("No requests to notify.");
+                results.Add(new ProcessingResult());
             }
 
-            return results;
+            return results.ToArray();
         }
 
         public async Task<bool> CanShipToShopper(NotifyRequest requestToNotify, RequestContext requestContext)
@@ -1040,11 +1050,16 @@ namespace AvailabilityNotify.Services
             DateTime lastCheck = await _availabilityRepository.GetLastUnsentCheck();
             if (lastCheck.AddMinutes(windowInMinutes) < DateTime.Now)
             {
-                List<string> results = await this.ProcessUnsentRequests();
-                _context.Vtex.Logger.Info("CheckUnsentNotifications", null, string.Join(", ", results));
+                ProcessingResult[] processingResults = await this.ProcessUnsentRequests();
+                _context.Vtex.Logger.Info("CheckUnsentNotifications", null, JsonConvert.SerializeObject(processingResults));
 
                 await _availabilityRepository.SetLastUnsentCheck(DateTime.Now);
             }
+        }
+
+        public async Task<NotifyRequest[]> ListNotifyRequests()
+        {
+            return await _availabilityRepository.ListNotifyRequests();
         }
     }
 }
