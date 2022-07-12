@@ -1,7 +1,7 @@
 {
   "name": "availability-notify",
   "vendor": "vtex",
-  "version": "1.7.9",
+  "version": "1.8.0",
   "title": "Availability Notify",
   "description": "Record and send notification when an item is back in stock",
   "scripts": {
@@ -13,7 +13,8 @@
     "store": "0.x",
     "docs": "0.x",
     "react": "3.x",
-    "messages": "1.x"
+    "messages": "1.x",
+    "admin": "0.x"
   },
   "dependencies": {
     "vtex.address-form": "4.x",

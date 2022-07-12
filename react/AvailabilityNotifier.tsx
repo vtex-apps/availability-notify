@@ -140,8 +140,7 @@ function AvailabilityNotifier(props: Props) {
   }
 
   const validateEmail = (newEmail: string) => {
-    const emailRegex =
-      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
     setEmailError(!emailRegex.test(newEmail.toLowerCase()))
   }
@@ -175,7 +174,7 @@ function AvailabilityNotifier(props: Props) {
           id: 'store/availability-notify.notify-label',
         })}
       </div>
-      <form className={`${styles.form} mb4`} onSubmit={(e) => handleSubmit(e)}>
+      <form className={`${styles.form} mb4`} onSubmit={e => handleSubmit(e)}>
         <div className={`${styles.content} flex-ns justify-between mt4 mw6`}>
           <div className={`${styles.input} ${styles.inputName} w-100 mr5 mb4`}>
             <Input
