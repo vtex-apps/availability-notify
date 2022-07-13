@@ -578,7 +578,7 @@ namespace AvailabilityNotify.Services
                     {
                         bool successThis = await this.ForwardNotification(notification, marketplace, requestContext);
                         sb.AppendLine($"'{marketplace}' {successThis}");
-                        success &= successThis;
+                        // success &= successThis; // Ignore forwarding errors
                     }
 
                     _context.Vtex.Logger.Info("ProcessNotification", "ForwardNotification", $"Sku:{skuId}", new[] { ("accounts", sb.ToString()) });
@@ -1033,12 +1033,12 @@ namespace AvailabilityNotify.Services
                 }
                 catch (Exception ex)
                 {
-                    _context.Vtex.Logger.Error("ForwardNotification", null, $"Error forwarding request to '{accountName}' ", ex, new[] { ("url", $"http://app.io.vtex.com/vtex.availability-notify/v{_context.Vtex.App.Major}/{accountName}/master/_v/availability-notify/notify"), ("Notification", jsonSerializedData) });
+                    _context.Vtex.Logger.Warn("ForwardNotification", null, $"Error forwarding request to '{accountName}' '{ex.Message}'", new[] { ("url", $"http://app.io.vtex.com/vtex.availability-notify/v{_context.Vtex.App.Major}/{accountName}/master/_v/availability-notify/notify"), ("Notification", jsonSerializedData) });
                 }
             }
             else
             {
-                _context.Vtex.Logger.Error("ForwardNotification", null, "Account name is empty.");
+                _context.Vtex.Logger.Warn("ForwardNotification", null, "Account name is empty.");
             }
 
             return success;

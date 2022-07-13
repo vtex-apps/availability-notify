@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Changed
+- (NOTIFIER-49) Changed errors to warnings when forwarding a notification.
+
 ## [1.8.0] - 2022-07-11
 
 ### Added
