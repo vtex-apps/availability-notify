@@ -27,16 +27,6 @@ namespace service.Controllers
         {
             try
             {
-                DateTime processingStarted = _availabilityRepository.CheckImportLock().Result;
-                TimeSpan elapsedTime = DateTime.Now - processingStarted;
-                if (elapsedTime.TotalMinutes < 1)
-                {
-                    _context.Vtex.Logger.Warn("BroadcasterNotification", null, $"Blocked by lock.  Processing started: {processingStarted}");
-                    return StatusCode(423); // 423 Locked - maybe 425 Too Early or 429 Too Many Requests?
-                }
-
-                _availabilityRepository.SetImportLock(DateTime.Now);
-
                 BroadcastNotification notification = null;
                 string bodyAsText = string.Empty;
                 try
@@ -47,12 +37,31 @@ namespace service.Controllers
                 catch (Exception ex)
                 {
                     _context.Vtex.Logger.Error("BroadcasterNotification", null, "Error reading Notification", ex);
+                    return BadRequest();
                 }
+
+                string skuId = notification.IdSku;
+                if(string.IsNullOrEmpty(skuId))
+                {
+                    _context.Vtex.Logger.Warn("BroadcasterNotification", null, "Empty Sku");
+                    return BadRequest();
+                }
+
+                DateTime processingStarted = _availabilityRepository.CheckImportLock(skuId).Result;
+                TimeSpan elapsedTime = DateTime.Now - processingStarted;
+                if (elapsedTime.TotalMinutes < 1)
+                {
+                    // Commenting this out to reduce noise
+                    //_context.Vtex.Logger.Warn("BroadcasterNotification", null, $"Sku {skuId} blocked by lock.  Processing started: {processingStarted}");
+                    return Ok();
+                }
+
+                _ = _availabilityRepository.SetImportLock(DateTime.Now, skuId);
 
                 bool processed = _vtexAPIService.ProcessNotification(notification).Result;
                 _context.Vtex.Logger.Info("BroadcasterNotification", null, $"Processed Notification? {processed} : {bodyAsText}");
 
-                _availabilityRepository.ClearImportLock();
+                _ = _availabilityRepository.ClearImportLock(skuId);
             }
             catch(Exception ex)
             {
