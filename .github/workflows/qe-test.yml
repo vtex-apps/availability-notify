@@ -1,0 +1,18 @@
+name: '[TST] Quality Engineering'
+
+on:
+  push:
+    branches:
+      - test/sonarcloud
+
+jobs:
+  quality-engineering:
+    name: QE
+    uses: vtex-apps/usqa/.github/workflows/quality-engineering.yml@improve-sonarcloud-dotnet
+    with:
+      dotnetSonar: true
+      dotnetSonarProjectKey: vtex-apps_availability-notify-dotnet
+      dotnetSonarOrganization: vtex-apps
+    secrets:
+      githubToken: ${{ secrets.GITHUB_TOKEN }}
+      sonarToken: ${{ secrets.SONAR_TOKEN }}
