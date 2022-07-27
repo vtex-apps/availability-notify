@@ -29,7 +29,7 @@
     },
     "processUnsentRequests": {
       "path": "/_v/availability-notify/process-unsent-requests",
-      "public": true
+      "public": false
     },
     "listNotifyRequests": {
       "path": "/_v/availability-notify/list-requests",

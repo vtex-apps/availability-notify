@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AvailabilityNotify.Models;
+using System.Net;
 
 namespace AvailabilityNotify.Services
 {
@@ -18,5 +19,7 @@ namespace AvailabilityNotify.Services
         Task<CartSimulationResponse> CartSimulation(CartSimulationRequest cartSimulationRequest, RequestContext requestContext);
         Task<bool> CanShipToShopper(NotifyRequest requestToNotify, RequestContext requestContext);
         Task<NotifyRequest[]> ListNotifyRequests();
+        Task<HttpStatusCode> IsValidAuthUser();
+        Task<ValidatedUser> ValidateUserToken(string token);
     }
 }
