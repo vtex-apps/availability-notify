@@ -21,73 +21,74 @@ import { useMutation, useQuery } from 'react-apollo'
 
 import AppSettings from './queries/appSettings.gql'
 import SaveAppSettings from './mutations/saveAppSettings.gql'
+import ProcessUnsentRequests from './graphql/processUnsentRequests.gql'
 
 interface Props {
   intl: any
 }
 
+const messages = defineMessages({
+  title: {
+    id: 'admin/request.menu.label',
+    defaultMessage: 'Availability Notifier',
+  },
+  download: {
+    id: 'admin/settings.download',
+    defaultMessage: 'Download Requests',
+  },
+  processUnsent: {
+    id: 'admin/settings.process-unsent',
+    defaultMessage: 'Process Unsent',
+  },
+  verifyAvailability: {
+    id: 'admin/settings.verify-availability',
+    defaultMessage: 'Verify Availability',
+  },
+  marketplaceToNotify: {
+    id: 'admin/settings.marketplace-to-notify',
+    defaultMessage: 'Marketplace(s) To Notify',
+  },
+  saveSettingsSuccess: {
+    id: 'admin/settings.saveSettings.success',
+    defaultMessage: 'Settings Saved',
+  },
+  saveSettingsFailure: {
+    id: 'admin/settings.saveSettings.failure',
+    defaultMessage: 'Did not save settings',
+  },
+  saveSettingsButton: {
+    id: 'admin/settings.saveSettings.button',
+    defaultMessage: 'Save',
+  },
+  settingsLabel: {
+    id: 'admin/settings.label',
+    defaultMessage: 'Settings',
+  },
+  downloadHelptext: {
+    id: 'admin/settings.download-helptext',
+    defaultMessage: 'Download an XLS file of all notify request records.',
+  },
+  processUnsentHelptext: {
+    id: 'admin/settings.process-unsent-helptext',
+    defaultMessage:
+      'Process all unsent requests to notify and download an XLS file of the results.',
+  },
+  verifyAvailabilityHelptext: {
+    id: 'admin/settings.verify-availability-helptext',
+    defaultMessage:
+      'Runs a shipping simulation to verify that the item can be shipped to the shopper before sending a notificaiton.',
+  },
+  marketplaceToNotifyHelptext: {
+    id: 'admin/settings.marketplace-to-notify-helptext',
+    defaultMessage:
+      'Allows a seller account to specify a comma separated list of marketplace account names to notify of inventory updates.',
+  },
+})
+
 const NotifyAdmin: FC<any> = ({ intl }: Props) => {
   const [state, setState] = useState<any>({
     loading: false,
     processing: false,
-  })
-
-  const messages = defineMessages({
-    title: {
-      id: 'admin/request.menu.label',
-      defaultMessage: 'Availability Notifier',
-    },
-    download: {
-      id: 'admin/settings.download',
-      defaultMessage: 'Download Requests',
-    },
-    processUnsent: {
-      id: 'admin/settings.process-unsent',
-      defaultMessage: 'Process Unsent',
-    },
-    verifyAvailability: {
-      id: 'admin/settings.verify-availability',
-      defaultMessage: 'Verify Availability',
-    },
-    marketplaceToNotify: {
-      id: 'admin/settings.marketplace-to-notify',
-      defaultMessage: 'Marketplace(s) To Notify',
-    },
-    saveSettingsSuccess: {
-      id: 'admin/settings.saveSettings.success',
-      defaultMessage: 'Settings Saved',
-    },
-    saveSettingsFailure: {
-      id: 'admin/settings.saveSettings.failure',
-      defaultMessage: 'Did not save settings',
-    },
-    saveSettingsButton: {
-      id: 'admin/settings.saveSettings.button',
-      defaultMessage: 'Save',
-    },
-    settingsLabel: {
-      id: 'admin/settings.label',
-      defaultMessage: 'Settings',
-    },
-    downloadHelptext: {
-      id: 'admin/settings.download-helptext',
-      defaultMessage: 'Download an XLS file of all notify request records.',
-    },
-    processUnsentHelptext: {
-      id: 'admin/settings.process-unsent-helptext',
-      defaultMessage:
-        'Process all unsent requests to notify and download an XLS file of the results.',
-    },
-    verifyAvailabilityHelptext: {
-      id: 'admin/settings.verify-availability-helptext',
-      defaultMessage:
-        'Runs a shipping simulation to verify that the item can be shipped to the shopper before sending a notificaiton.',
-    },
-    marketplaceToNotifyHelptext: {
-      id: 'admin/settings.marketplace-to-notify-helptext',
-      defaultMessage:
-        'Allows a seller account to specify a comma separated list of marketplace account names to notify of inventory updates.',
-    },
   })
 
   const { data } = useQuery(AppSettings, {
@@ -98,6 +99,7 @@ const NotifyAdmin: FC<any> = ({ intl }: Props) => {
   })
 
   const [saveSettings] = useMutation(SaveAppSettings)
+  const [processUnsentRequess] = useMutation(ProcessUnsentRequests)
   const [settingsLoading, setSettingsLoading] = useState(false)
 
   const [settingsState, setSettingsState] = useState({
@@ -219,13 +221,16 @@ const NotifyAdmin: FC<any> = ({ intl }: Props) => {
   const processUnsentRequests = async () => {
     setState({ ...state, processing: true })
 
-    const result: any = await fetch(
-      `/_v/availability-notify/process-unsent-requests`
-    ).then(response => response.json())
+    try {
+      const {
+        data: { processUnsentRequests: requestArr },
+      } = await processUnsentRequess()
 
-    const requestArr = result
+      processRequestsResults(requestArr)
+    } catch (error) {
+      throw new Error(`processUnsentRequests-error: ${error.message}`)
+    }
 
-    processRequestsResults(requestArr)
     setState({ ...state, processing: false })
   }
 

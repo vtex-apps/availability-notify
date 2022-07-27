@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Changed
+- (NOTIFIER-40) Make private the processUnsentRequests service.
+- (NOTIFIER-40) Create graphQL mutations for processUnsentRequests.
+- (NOTIFIER-40) Admin access permission check for mutations processUnsentRequests and deleteRequest.
+
 ## [1.8.3] - 2022-07-15
 
 ### Changed
