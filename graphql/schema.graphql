@@ -8,7 +8,9 @@ type Mutation {
     locale: String
     sellerObj: SellerObjInputType!
   ): Boolean
-  deleteRequest(id: String): Boolean
+  deleteRequest(id: String): Boolean @cacheControl(scope: PRIVATE)
+
+  processUnsentRequests: [NotifyRequest] @cacheControl(scope: PRIVATE)
 }
 
 # Queries

@@ -244,14 +244,14 @@ namespace AvailabilityNotify.Services
             return notifyRequestsAll.ToArray();
         }
 
-        public async Task SetImportLock(DateTime importStartTime)
+        public async Task SetImportLock(DateTime importStartTime, string sku)
         {
             var processingLock = new Lock
             {
                 ProcessingStarted = importStartTime,
             };
 
-            string url = $"http://infra.io.vtex.com/vbase/v2/{this._httpContextAccessor.HttpContext.Request.Headers[Constants.VTEX_ACCOUNT_HEADER_NAME]}/{this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_WORKSPACE]}/buckets/{this._applicationName}/{Constants.BUCKET}/files/{Constants.LOCK}";
+            string url = $"http://infra.io.vtex.com/vbase/v2/{this._httpContextAccessor.HttpContext.Request.Headers[Constants.VTEX_ACCOUNT_HEADER_NAME]}/{this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_WORKSPACE]}/buckets/{this._applicationName}/{Constants.BUCKET}/files/{Constants.LOCK}-{sku}";
             ResponseWrapper responseWrapper = await this.SendRequest(url, HttpMethod.Put, processingLock);
             if(!responseWrapper.IsSuccess)
             {
@@ -259,14 +259,14 @@ namespace AvailabilityNotify.Services
             }
         }
 
-        public async Task<DateTime> CheckImportLock()
+        public async Task<DateTime> CheckImportLock(string sku)
         {
             Lock processingLock = new Lock
             {
                 ProcessingStarted = new DateTime()
             };
 
-            string url = $"http://infra.io.vtex.com/vbase/v2/{this._httpContextAccessor.HttpContext.Request.Headers[Constants.VTEX_ACCOUNT_HEADER_NAME]}/{this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_WORKSPACE]}/buckets/{this._applicationName}/{Constants.BUCKET}/files/{Constants.LOCK}";
+            string url = $"http://infra.io.vtex.com/vbase/v2/{this._httpContextAccessor.HttpContext.Request.Headers[Constants.VTEX_ACCOUNT_HEADER_NAME]}/{this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_WORKSPACE]}/buckets/{this._applicationName}/{Constants.BUCKET}/files/{Constants.LOCK}-{sku}";
             ResponseWrapper responseWrapper = await this.SendRequest(url, HttpMethod.Get);
 
             if (responseWrapper.IsSuccess)
@@ -277,18 +277,18 @@ namespace AvailabilityNotify.Services
             return processingLock.ProcessingStarted;
         }
 
-        public async Task ClearImportLock()
+        public async Task ClearImportLock(string sku)
         {
             var processingLock = new Lock
             {
                 ProcessingStarted = new DateTime(),
             };
 
-            string url = $"http://infra.io.vtex.com/vbase/v2/{this._httpContextAccessor.HttpContext.Request.Headers[Constants.VTEX_ACCOUNT_HEADER_NAME]}/{this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_WORKSPACE]}/buckets/{this._applicationName}/{Constants.BUCKET}/files/{Constants.LOCK}";
+            string url = $"http://infra.io.vtex.com/vbase/v2/{this._httpContextAccessor.HttpContext.Request.Headers[Constants.VTEX_ACCOUNT_HEADER_NAME]}/{this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_WORKSPACE]}/buckets/{this._applicationName}/{Constants.BUCKET}/files/{Constants.LOCK}-{sku}";
             ResponseWrapper responseWrapper = await this.SendRequest(url, HttpMethod.Put, processingLock);
             if (!responseWrapper.IsSuccess)
             {
-                _context.Vtex.Logger.Error("ClearImportLock", null, $"Failed to clear lock. {responseWrapper.Message}");
+                _context.Vtex.Logger.Error("ClearImportLock", null, $"Failed to clear lock. {responseWrapper.Message} Sku: {sku}");
             }
         }
 

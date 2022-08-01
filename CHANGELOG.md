@@ -6,6 +6,28 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [1.8.4] - 2022-07-27
+
+### Changed
+- (NOTIFIER-40) Make private the processUnsentRequests service.
+- (NOTIFIER-40) Create graphQL mutations for processUnsentRequests.
+- (NOTIFIER-40) Admin access permission check for mutations processUnsentRequests and deleteRequest.
+
+## [1.8.3] - 2022-07-15
+
+### Changed
+- (NOTIFIER-50) Added LMProductId prop to admin route.
+
+## [1.8.2] - 2022-07-15
+
+### Changed
+- Changed lock file to be sku specific
+
+## [1.8.1] - 2022-07-13
+
+### Changed
+- (NOTIFIER-49) Changed errors to warnings when forwarding a notification.
+
 ## [1.8.0] - 2022-07-11
 
 ### Added

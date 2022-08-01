@@ -578,7 +578,7 @@ namespace AvailabilityNotify.Services
                     {
                         bool successThis = await this.ForwardNotification(notification, marketplace, requestContext);
                         sb.AppendLine($"'{marketplace}' {successThis}");
-                        success &= successThis;
+                        // success &= successThis; // Ignore forwarding errors
                     }
 
                     _context.Vtex.Logger.Info("ProcessNotification", "ForwardNotification", $"Sku:{skuId}", new[] { ("accounts", sb.ToString()) });
@@ -1033,12 +1033,12 @@ namespace AvailabilityNotify.Services
                 }
                 catch (Exception ex)
                 {
-                    _context.Vtex.Logger.Error("ForwardNotification", null, $"Error forwarding request to '{accountName}' ", ex, new[] { ("url", $"http://app.io.vtex.com/vtex.availability-notify/v{_context.Vtex.App.Major}/{accountName}/master/_v/availability-notify/notify"), ("Notification", jsonSerializedData) });
+                    _context.Vtex.Logger.Warn("ForwardNotification", null, $"Error forwarding request to '{accountName}' '{ex.Message}'", new[] { ("url", $"http://app.io.vtex.com/vtex.availability-notify/v{_context.Vtex.App.Major}/{accountName}/master/_v/availability-notify/notify"), ("Notification", jsonSerializedData) });
                 }
             }
             else
             {
-                _context.Vtex.Logger.Error("ForwardNotification", null, "Account name is empty.");
+                _context.Vtex.Logger.Warn("ForwardNotification", null, "Account name is empty.");
             }
 
             return success;
@@ -1060,6 +1060,80 @@ namespace AvailabilityNotify.Services
         public async Task<NotifyRequest[]> ListNotifyRequests()
         {
             return await _availabilityRepository.ListNotifyRequests();
+        }
+
+        public async Task<ValidatedUser> ValidateUserToken(string token)
+        {
+            ValidatedUser validatedUser = null;
+            ValidateToken validateToken = new ValidateToken
+            {
+                Token = token
+            };
+
+            var jsonSerializedToken = JsonConvert.SerializeObject(validateToken);
+            var request = new HttpRequestMessage
+            {
+                Method = HttpMethod.Post,
+                RequestUri = new Uri($"http://{this._httpContextAccessor.HttpContext.Request.Headers[Constants.VTEX_ACCOUNT_HEADER_NAME]}.vtexcommercestable.com.br/api/vtexid/credential/validate"),
+                Content = new StringContent(jsonSerializedToken, Encoding.UTF8, Constants.APPLICATION_JSON)
+            };
+
+            string authToken = this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_CREDENTIAL];
+
+            if (authToken != null)
+            {
+                request.Headers.Add(Constants.AUTHORIZATION_HEADER_NAME, authToken);
+            }
+
+            var client = _clientFactory.CreateClient();
+
+            try
+            {
+                var response = await client.SendAsync(request);
+                string responseContent = await response.Content.ReadAsStringAsync();
+                //_context.Vtex.Logger.Info("ValidateUserToken", null, $"[{response.StatusCode}] {responseContent}");
+                if (response.IsSuccessStatusCode)
+                {
+                    validatedUser = JsonConvert.DeserializeObject<ValidatedUser>(responseContent);
+                }
+            }
+            catch (Exception ex)
+            {
+                _context.Vtex.Logger.Error("ValidateUserToken", null, $"Error validating user token", ex);
+            }
+
+            return validatedUser;
+        }
+
+        public async Task<HttpStatusCode> IsValidAuthUser()
+        {
+            if (string.IsNullOrEmpty(_context.Vtex.AdminUserAuthToken))
+            {
+                return HttpStatusCode.Unauthorized;
+            }
+
+            ValidatedUser validatedUser = null;
+
+            try {
+                validatedUser = await ValidateUserToken(_context.Vtex.AdminUserAuthToken);
+            }
+            catch (Exception ex)
+            {
+                _context.Vtex.Logger.Error("IsValidAuthUser", null, "Error fetching user", ex);
+
+                return HttpStatusCode.BadRequest;
+            }
+
+            bool hasPermission = validatedUser != null && validatedUser.AuthStatus.Equals("Success");
+
+            if (!hasPermission)
+            {
+                _context.Vtex.Logger.Warn("IsValidAuthUser", null, "User Does Not Have Permission");
+
+                return HttpStatusCode.Forbidden;
+            }
+
+            return HttpStatusCode.OK;
         }
     }
 }

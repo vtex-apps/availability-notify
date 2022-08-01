@@ -4,6 +4,7 @@ using AvailabilityNotify.Services;
 using GraphQL;
 using GraphQL.Types;
 using Vtex.Api.Context;
+using System.Net;
 
 namespace AvailabilityNotify.GraphQL
 {
@@ -35,16 +36,47 @@ namespace AvailabilityNotify.GraphQL
                     return vtexApiService.AvailabilitySubscribe(email, skuId, name, locale, sellerObj);
                 });
 
-            Field<BooleanGraphType>(
+            FieldAsync<BooleanGraphType>(
                 "deleteRequest",
                 arguments: new QueryArguments(
                     new QueryArgument<StringGraphType> {Name = "id"}
                 ),
-                resolve: context =>
+                resolve: async context =>
                 {
+                    HttpStatusCode isValidAuthUser = await vtexApiService.IsValidAuthUser();
+
+                    if (isValidAuthUser != HttpStatusCode.OK)
+                    {
+                        context.Errors.Add(new ExecutionError(isValidAuthUser.ToString())
+                        {
+                            Code = isValidAuthUser.ToString()
+                        });
+
+                        return default;
+                    }
+
                     var id = context.GetArgument<string>("id");
 
-                    return availabilityRepository.DeleteNotifyRequest(id);
+                    return await availabilityRepository.DeleteNotifyRequest(id);
+                });
+            
+            FieldAsync<ListGraphType<StringGraphType>>(
+                "processUnsentRequests",
+                resolve: async context =>
+                {
+                    HttpStatusCode isValidAuthUser = await vtexApiService.IsValidAuthUser();
+
+                    if (isValidAuthUser != HttpStatusCode.OK)
+                    {
+                        context.Errors.Add(new ExecutionError(isValidAuthUser.ToString())
+                        {
+                            Code = isValidAuthUser.ToString()
+                        });
+
+                        return default;
+                    }
+
+                    return await vtexApiService.ProcessUnsentRequests();
                 });
         }
     }

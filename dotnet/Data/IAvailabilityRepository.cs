@@ -10,9 +10,9 @@ namespace AvailabilityNotify.Services
         Task SetMerchantSettings(MerchantSettings merchantSettings);
 
         Task<bool> VerifySchema();
-        Task SetImportLock(DateTime importStartTime);
-        Task<DateTime> CheckImportLock();
-        Task ClearImportLock();
+        Task SetImportLock(DateTime importStartTime, string sku);
+        Task<DateTime> CheckImportLock(string sku);
+        Task ClearImportLock(string sku);
         Task<DateTime> GetLastUnsentCheck();
         Task SetLastUnsentCheck(DateTime lastCheck);
 
