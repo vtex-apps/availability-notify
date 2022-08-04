@@ -60,7 +60,7 @@ namespace AvailabilityNotify.GraphQL
                     return await availabilityRepository.DeleteNotifyRequest(id);
                 });
             
-            FieldAsync<ListGraphType<StringGraphType>>(
+            FieldAsync<ListGraphType<ProcessingResultType>>(
                 "processUnsentRequests",
                 resolve: async context =>
                 {

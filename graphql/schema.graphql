@@ -8,15 +8,22 @@ type Mutation {
     locale: String
     sellerObj: SellerObjInputType!
   ): Boolean
-  deleteRequest(id: String): Boolean @cacheControl(scope: PRIVATE)
 
-  processUnsentRequests: [NotifyRequest] @cacheControl(scope: PRIVATE)
+  deleteRequest(id: String): Boolean @cacheControl(scope: PRIVATE)
+  processUnsentRequests: [ProcesingResult] @cacheControl(scope: PRIVATE)
 }
 
 # Queries
 
 type Query {
   listRequests: [NotifyRequest]
+}
+
+type ProcesingResult {
+  skuId: String
+  email: String
+  sent: String
+  updated: String
 }
 
 type NotifyRequest {

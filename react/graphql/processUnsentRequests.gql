@@ -1,3 +1,8 @@
 mutation ProcessUnsentRequests {
-  processUnsentRequests @context(provider: "vtex.availability-notify")
+  processUnsentRequests @context(provider: "vtex.availability-notify") {
+    skuId
+    email
+    sent
+    updated
+  }
 }
