@@ -17,10 +17,10 @@ namespace AvailabilityNotify.GraphQL.Types
         {
             Name = "ProcessingResult";
             Field(c => c.SkuId, type: typeof(StringGraphType)).Description("SkuId");
-            Field(c => c.QuantityAvailable, type: typeof(StringGraphType)).Description("QuantityAvailable");
-            Field(c => c.Sent, type: typeof(StringGraphType)).Description("Sent");
             Field(c => c.Email, type: typeof(StringGraphType)).Description("Email");
-            Field(c => c.Updated, type: typeof(StringGraphType)).Description("Updated");
+            Field(c => c.QuantityAvailable, type: typeof(StringGraphType)).Description("QuantityAvailable");
+            Field(c => c.Sent, type: typeof(BooleanGraphType)).Description("Sent");
+            Field(c => c.Updated, type: typeof(BooleanGraphType)).Description("Updated");
         }
     }
 }

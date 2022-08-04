@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Fixed
+- (NOTIFIER-56) Fix processUnsentRequests mutation response.
+
 ## [1.8.4] - 2022-07-27
 
 ### Changed

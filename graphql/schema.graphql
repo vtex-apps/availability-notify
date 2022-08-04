@@ -22,8 +22,9 @@ type Query {
 type ProcesingResult {
   skuId: String
   email: String
-  sent: String
-  updated: String
+  quantityAvailable: String
+  sent: Boolean
+  updated: Boolean
 }
 
 type NotifyRequest {
