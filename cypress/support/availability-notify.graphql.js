@@ -28,7 +28,7 @@ export function graphql(getQuery, validateResponseFn = null) {
   }).as('RESPONSE')
 
   if (validateResponseFn) {
-    cy.get('@RESPONSE').then((response) => {
+    cy.get('@RESPONSE').then(response => {
       expect(response.status).to.equal(200)
       expect(response.body.data).to.not.equal(null)
       validateResponseFn(response)
@@ -66,6 +66,13 @@ export function listRequests() {
   }
 }
 
+export function processUnsentRequest() {
+  return {
+    query: 'mutation' + '{processUnsentRequests{email,skuId,sent}}',
+    queryVariables: {},
+  }
+}
+
 export function availabilitySubscribe(availabilityDatas) {
   const query =
     'mutation' +
@@ -92,4 +99,9 @@ export function validateAvailabilitySubscribeRequestResponse(response) {
 
 export function validateListRequestResponse(response) {
   expect(response.body.data).to.not.equal(null)
+}
+
+export function validateProcessUnsentRequestResponse(response) {
+  expect(response.body.data).to.not.equal(null)
+  expect(response.body.data.processUnsentRequests).to.be.an('array')
 }

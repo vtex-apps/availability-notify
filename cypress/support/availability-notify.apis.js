@@ -13,24 +13,6 @@ const { name } = config.workspace
 const app = 'vtex.availability-notify'
 const version = '1.x'
 
-export function processUnsentRequest() {
-  it.skip('verify the unsend request', updateRetry(3), () => {
-    cy.addDelayBetweenRetries(2000)
-    cy.getVtexItems((vtex) => {
-      cy.request({
-        method: 'GET',
-        url: `https://${vtex.account}.myvtex.com/availability-notify/process-unsent-requests`,
-        headers: {
-          VtexIdclientAutCookie: vtex.userAuthCookieValue,
-        },
-        ...FAIL_ON_STATUS_CODE,
-      }).then((response) => {
-        expect(response.status).to.equal(200)
-      })
-    })
-  })
-}
-
 export function processAllRequest() {
   it.skip('process all the requests', updateRetry(3), () => {
     cy.addDelayBetweenRetries(2000)

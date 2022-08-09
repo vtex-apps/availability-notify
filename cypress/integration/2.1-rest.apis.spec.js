@@ -1,7 +1,6 @@
 import {
   notifySearch,
   processAllRequest,
-  processUnsentRequest,
   updateProductStatus,
 } from '../support/availability-notify.apis'
 import { testSetup } from '../support/common/support'
@@ -13,7 +12,6 @@ const prefix = 'Rest API'
 describe('Rest api', () => {
   testSetup()
 
-  processUnsentRequest()
   processAllRequest()
   updateProductStatus(prefix, data1, true)
   notifySearch(prefix)
