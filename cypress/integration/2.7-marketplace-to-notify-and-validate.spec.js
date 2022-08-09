@@ -13,6 +13,7 @@ import {
 } from '../support/availability-notify.apis'
 import availabilityNotifySelectors from '../support/availability-notify.selectors'
 import availabilityNotifyConstants from '../support/availability-notify.constants'
+import { MESSAGES } from '../support/utils'
 
 const { data1, name, email } = testCase1
 const workspace = Cypress.env().workspace.name
@@ -39,7 +40,7 @@ describe('Testing market place to notify', () => {
       cy.subscribeToProduct({ email, name })
       cy.get(availabilityNotifySelectors.AvailabilityNotifyAlert).should(
         'have.text',
-        availabilityNotifyConstants.EmailRegistered
+        MESSAGES.EmailRegistered
       )
     }
   )

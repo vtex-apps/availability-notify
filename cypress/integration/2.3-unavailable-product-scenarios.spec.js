@@ -1,12 +1,12 @@
 import availabilityNotifySelectors from '../support/availability-notify.selectors'
 import { testSetup, updateRetry } from '../support/common/support'
 import { testCase1 } from '../support/availability-notify.outputvalidation'
-import availabilityNotifyConstants from '../support/availability-notify.constants'
 import {
   generateEmailId,
   updateProductStatus,
 } from '../support/availability-notify.apis'
 import { updateProductAsUnavailable } from '../support/availability-notify'
+import { MESSAGES } from '../support/utils'
 
 const { data1, name } = testCase1
 const product = 'weber spirit'
@@ -28,7 +28,7 @@ describe('Updating product as unavailable', () => {
       cy.subscribeToProduct({ email, name })
       cy.get(availabilityNotifySelectors.AvailabilityNotifyAlert).should(
         'have.text',
-        availabilityNotifyConstants.EmailAlreadyExist
+        MESSAGES.EmailAlreadyExist
       )
     }
   )

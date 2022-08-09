@@ -6,21 +6,21 @@ import {
 import { updateRetry } from './common/support'
 import { getEmailContent } from './extract'
 import availabilityNotifySelectors from './availability-notify.selectors'
-import availabilityNotifyConstants from './availability-notify.constants'
+import { MESSAGES } from './utils'
 
 export function verifyEmail(prefix) {
   it(`${prefix} - Verifying email`, updateRetry(5), () => {
     cy.addDelayBetweenRetries(30000)
-    cy.getEmailItems().then((e) => {
-      graphql(listRequests(), (response) => {
+    cy.getEmailItems().then(e => {
+      graphql(listRequests(), response => {
         validateListRequestResponse(response)
         const list = response.body.data.listRequests
-        const request = list.filter((req) => req.email === e.email)
+        const request = list.filter(req => req.email === e.email)
         const notification = request[0].notificationSent
 
         expect(notification).to.be(true)
       })
-      cy.getGmailItems().then(async (gmail) => {
+      cy.getGmailItems().then(async gmail => {
         const gmailCreds = {
           clientId: gmail.clientId,
           clientSecret: gmail.clientSecret,
@@ -58,7 +58,7 @@ export function updateProductAsUnavailable(data) {
       cy.subscribeToProduct({ email: data.email, name: data.name })
       cy.get(availabilityNotifySelectors.AvailabilityNotifyAlert).should(
         'have.text',
-        availabilityNotifyConstants.EmailRegistered
+        MESSAGES.EmailRegistered
       )
     }
   )
