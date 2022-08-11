@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { updateProductStatusAPI } from './product.api'
+import { updateProductStatusAPI, getProcessAllRequestAPI } from './product.api'
 import { VTEX_AUTH_HEADER, FAIL_ON_STATUS_CODE } from './common/constants'
 import { updateRetry } from './common/support'
 
@@ -14,12 +14,12 @@ const app = 'vtex.availability-notify'
 const version = '1.x'
 
 export function processAllRequest() {
-  it.skip('process all the requests', updateRetry(3), () => {
+  it('process all the requests', updateRetry(3), () => {
     cy.addDelayBetweenRetries(2000)
     cy.getVtexItems((vtex) => {
       cy.request({
         method: 'GET',
-        url: `https://${vtex.account}.myvtex.com/availability-notify/process-all-requests`,
+        url: `${getProcessAllRequestAPI()}/${vtex.account}/${name}/_v/availability-notify/process-all-requests`,
         ...FAIL_ON_STATUS_CODE,
       }).then((response) => {
         expect(response.status).to.equal(200)

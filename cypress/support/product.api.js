@@ -1,11 +1,8 @@
 export default {
-  getallProcessUnsentRequestAPI: (baseUrl) => {
-    return `${baseUrl}.myvtex.com/availability-notify/process-unsent-requests`
+  getProcessAllRequestAPI: () => {
+    return `https://app.io.vtex.com/vtex.availability-notify/v1`
   },
-  getProcessAllRequestAPI: (baseUrl) => {
-    return `${baseUrl}.myvtex.com/availability-notify/process-all-requests`
-  },
-  updateProductStatusAPI: (data) => {
+  updateProductStatusAPI: data => {
     return `https://productusqa.vtexcommercestable.com.br/api/logistics/pvt/inventory/skus/${data.skuId}/warehouses/${data.warehouseId}`
   },
 }
