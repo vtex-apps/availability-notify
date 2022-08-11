@@ -16,9 +16,9 @@ export function verifyEmail(prefix) {
         validateListRequestResponse(response)
         const list = response.body.data.listRequests
         const request = list.filter(req => req.email === e.email)
-        const notification = request[0].notificationSent
+        const notification = request[0].notificationSent !== 'false'
 
-        expect(notification).to.be(true)
+        expect(notification).to.be.true
       })
       cy.getGmailItems().then(async gmail => {
         const gmailCreds = {
@@ -39,7 +39,7 @@ export function verifyEmail(prefix) {
           before,
         })
 
-        expect(emailContent).to.not.equal('0')
+        expect(emailContent).to.not.equal('Email not received')
       })
     })
   })
