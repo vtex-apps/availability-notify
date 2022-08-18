@@ -356,7 +356,7 @@ namespace AvailabilityNotify.Services
             }
 
             request.Headers.Add(Constants.USE_HTTPS_HEADER_NAME, "true");
-            string authToken = this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_CREDENTIAL];
+            string authToken = string authToken = _context.Vtex.AuthToken;
             if (authToken != null)
             {
                 request.Headers.Add(Constants.AUTHORIZATION_HEADER_NAME, authToken);
