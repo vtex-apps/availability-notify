@@ -80,6 +80,9 @@
       "name": "send-message"
     },
     {
+      "name": "POWER_USER_DS"
+    },
+    {
       "name": "template-criar"
     },
     {
@@ -131,9 +134,7 @@
     },
     "free": true,
     "type": "free",
-    "availableCountries": [
-      "*"
-    ]
+    "availableCountries": ["*"]
   },
   "$schema": "https://raw.githubusercontent.com/vtex/node-vtex-api/master/gen/manifest.schema"
 }
