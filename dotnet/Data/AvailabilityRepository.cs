@@ -88,7 +88,7 @@ namespace AvailabilityNotify.Services
             else if (!responseWrapper.ResponseText.Equals(Constants.SCHEMA_JSON))
             {
                 url = $"http://{this._httpContextAccessor.HttpContext.Request.Headers[Constants.VTEX_ACCOUNT_HEADER_NAME]}.vtexcommercestable.com.br/api/dataentities/{Constants.DATA_ENTITY}/schemas/{Constants.SCHEMA}";
-                responseWrapper = await this.SendRequest(url, HttpMethod.Put, Constants.SCHEMA_JSON);
+                responseWrapper = await this.SendRequest(url, HttpMethod.Put, null, null, null, Constants.SCHEMA_JSON);
                 _context.Vtex.Logger.Debug("VerifySchema", null, $"Applying Schema [{responseWrapper.IsSuccess}] '{responseWrapper.ResponseText}' ");
             }
 
@@ -326,7 +326,7 @@ namespace AvailabilityNotify.Services
             }
         }
 
-        public async Task<ResponseWrapper> SendRequest(string url, HttpMethod httpMethod, object requestObject = null, string from = null, string to = null)
+public async Task<ResponseWrapper> SendRequest(string url, HttpMethod httpMethod, object requestObject = null, string from = null, string to = null, string jsonSerializedData = null)
         {
             ResponseWrapper responseWrapper = null;
             string jsonSerializedRequest = string.Empty;
@@ -348,6 +348,11 @@ namespace AvailabilityNotify.Services
                 {
                     _context.Vtex.Logger.Error("SendRequest", null, $"Error Serializing Request Object", ex);
                 }
+            }
+            else if (!string.IsNullOrEmpty(jsonSerializedData))
+            {
+                request.Content = new StringContent(jsonSerializedData, Encoding.UTF8, Constants.APPLICATION_JSON);
+                jsonSerializedRequest = jsonSerializedData;  // for logging
             }
 
             if (!string.IsNullOrEmpty(from) && !string.IsNullOrEmpty(to))
