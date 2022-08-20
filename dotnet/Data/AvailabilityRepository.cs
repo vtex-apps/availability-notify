@@ -326,7 +326,7 @@ namespace AvailabilityNotify.Services
             }
         }
 
-public async Task<ResponseWrapper> SendRequest(string url, HttpMethod httpMethod, object requestObject = null, string from = null, string to = null, string jsonSerializedData = null)
+        public async Task<ResponseWrapper> SendRequest(string url, HttpMethod httpMethod, object requestObject = null, string from = null, string to = null, string jsonSerializedData = null)
         {
             ResponseWrapper responseWrapper = null;
             string jsonSerializedRequest = string.Empty;
