@@ -90,7 +90,7 @@ namespace service.Controllers
             }
             catch(Exception ex)
             {
-                _context.Vtex.Logger.Error("AllStates", null, "Error processing Orders Broadcaster Notification", ex);
+                _context.Vtex.Logger.Warn("AllStates", null, $"Error processing Orders Broadcaster Notification: {ex.Message}");
             }
         }
     }
