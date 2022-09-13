@@ -1,7 +1,6 @@
 namespace service.Controllers
 {
   using System;
-  using System.Net;
   using System.Threading.Tasks;
   using AvailabilityNotify.Data;
   using AvailabilityNotify.Models;
@@ -83,10 +82,16 @@ namespace service.Controllers
 
         public void AllStates(string account, string workspace)
         {
-            string bodyAsText = new System.IO.StreamReader(HttpContext.Request.Body).ReadToEndAsync().Result;
-            AllStatesNotification allStatesNotification = JsonConvert.DeserializeObject<AllStatesNotification>(bodyAsText);
-            //_context.Vtex.Logger.Debug("Order Broadcast", null, $"Notification {bodyAsText}");
-            _vtexAPIService.ProcessNotification(allStatesNotification);
+            try
+            {
+                string bodyAsText = new System.IO.StreamReader(HttpContext.Request.Body).ReadToEndAsync().Result;
+                AllStatesNotification allStatesNotification = JsonConvert.DeserializeObject<AllStatesNotification>(bodyAsText);
+                _vtexAPIService.ProcessNotification(allStatesNotification);
+            }
+            catch(Exception ex)
+            {
+                _context.Vtex.Logger.Warn("AllStates", null, $"Error processing Orders Broadcaster Notification: {ex.Message}");
+            }
         }
     }
 }

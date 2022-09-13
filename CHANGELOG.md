@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added
+- Added error handling when reading orders broadcaster notification
+
 ## [1.8.6] - 2022-08-22
 
 ### Added
