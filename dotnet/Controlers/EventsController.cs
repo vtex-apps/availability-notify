@@ -1,6 +1,7 @@
 namespace service.Controllers
 {
     using System;
+    using System.Threading;
     using System.Threading.Tasks;
     using AvailabilityNotify.Data;
     using AvailabilityNotify.Models;
@@ -29,11 +30,11 @@ namespace service.Controllers
 
         public async Task<IActionResult> BroadcasterNotification(string account, string workspace)
         {
-            Throttle.counter += 1;
-            if (Throttle.counter > 10)
+            var incremented_counter = Interlocked.Increment(ref Throttle.counter);
+            if (incremented_counter > 10)
             {
                 // Throttling -- event system will retry the event later
-                Throttle.counter -= 1;
+                Interlocked.Decrement(ref Throttle.counter);
                 return StatusCode(429);
             }
 
@@ -49,8 +50,7 @@ namespace service.Controllers
                 catch (Exception ex)
                 {
                     _context.Vtex.Logger.Error("BroadcasterNotification", null, "Error reading Notification", ex);
-                    Throttle.counter -= 1;
-
+                    Interlocked.Decrement(ref Throttle.counter);
                     return BadRequest();
                 }
 
@@ -58,7 +58,7 @@ namespace service.Controllers
                 if (string.IsNullOrEmpty(skuId))
                 {
                     _context.Vtex.Logger.Warn("BroadcasterNotification", null, "Empty Sku");
-                    Throttle.counter -= 1;
+                    Interlocked.Decrement(ref Throttle.counter);
 
                     return BadRequest();
                 }
@@ -69,8 +69,7 @@ namespace service.Controllers
                 {
                     // Commenting this out to reduce noise
                     //_context.Vtex.Logger.Warn("BroadcasterNotification", null, $"Sku {skuId} blocked by lock.  Processing started: {processingStarted}");
-                    Throttle.counter -= 1;
-
+                    Interlocked.Decrement(ref Throttle.counter);
                     return Ok();
                 }
 
@@ -84,11 +83,11 @@ namespace service.Controllers
             catch (Exception ex)
             {
                 _context.Vtex.Logger.Error("BroadcasterNotification", null, "Error processing Notification", ex);
-                Throttle.counter -= 1;
+                Interlocked.Decrement(ref Throttle.counter);
                 throw;
             }
 
-            Throttle.counter -= 1;
+            Interlocked.Decrement(ref Throttle.counter);
             return Ok();
         }
 
