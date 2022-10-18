@@ -2,9 +2,9 @@
   "stack": "dotnet",
   "memory": 512,
   "ttl": 60,
-  "minReplicas": 10,
-  "maxReplicas": 100,
-  "timeout": 300,
+  "minReplicas": 2,
+  "maxReplicas": 10,
+  "timeout": 60,
   "runtimeArgs": [],
   "routes": {
     "processNotification": {

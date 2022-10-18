@@ -6,24 +6,32 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Fixed
+
+- Reduce logging and add throttling for catalog events
+
 ## [1.8.7] - 2022-09-13
 
 ### Added
+
 - Added error handling when reading orders broadcaster notification
 
 ## [1.8.6] - 2022-08-22
 
 ### Added
+
 - Added policy to handle request for MD
 
 ## [1.8.5] - 2022-08-08
 
 ### Fixed
+
 - (NOTIFIER-56) Fix processUnsentRequests mutation response.
 
 ## [1.8.4] - 2022-07-27
 
 ### Changed
+
 - (NOTIFIER-40) Make private the processUnsentRequests service.
 - (NOTIFIER-40) Create graphQL mutations for processUnsentRequests.
 - (NOTIFIER-40) Admin access permission check for mutations processUnsentRequests and deleteRequest.
@@ -31,41 +39,49 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [1.8.3] - 2022-07-15
 
 ### Changed
+
 - (NOTIFIER-50) Added LMProductId prop to admin route.
 
 ## [1.8.2] - 2022-07-15
 
 ### Changed
+
 - Changed lock file to be sku specific
 
 ## [1.8.1] - 2022-07-13
 
 ### Changed
+
 - (NOTIFIER-49) Changed errors to warnings when forwarding a notification.
 
 ## [1.8.0] - 2022-07-11
 
 ### Added
+
 - (NOTIFIER-19) Added admin page with download of request records and button to process unsent requests
 
 ## [1.7.9] - 2022-06-29
 
 ### Added
+
 - (NOTIFIER-46) Added logging and error handling listing notify requests
 
 ## [1.7.8] - 2022-06-28
 
 ### Fixed
+
 - Fixed deserialization errors
 
 ## [1.7.7] - 2022-06-24
 
 ### Fixed
+
 - Fixed deserialization errors
 
 ## [1.7.6] - 2022-06-22
 
 ### Fixed
+
 - (NOTIFIER-39) Fixed Cart Simulation logic when verifying that a sku can ship to a shopper
 
 ## [1.7.5] - 2022-06-21
@@ -75,9 +91,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [1.7.4] - 2022-06-21
 
 ### Fixed
+
 - (NOTIFIER-39) Fixed Cart Simulation logic when verifying that a sku can ship to a shopper
 
 ### Changed
+
 - (NOTIFIER-44) Updated manual processing links
 
 ## [1.7.3] - 2022-05-16
@@ -100,7 +118,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 
-- Periodically process all unsent notifications 
+- Periodically process all unsent notifications
 
 ## [1.6.7] - 2022-05-06
 
@@ -118,11 +136,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [1.6.5] - 2022-04-07
 
 ### Fix
+
 - Added validation and avoid subscribing more than once for the same sku
 
 ## [1.6.4] - 2022-03-11
 
 ### Fix
+
 - Added validation and request to get sku from marketplace
 
 ## [1.6.3] - 2022-03-09
@@ -143,7 +163,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - (NOTIFIER-24) Changed lock error to 429
 
-
 ## [1.6.0] - 2022-03-04
 
 ### Added
@@ -161,20 +180,24 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [1.4.5] - 2022-02-25
 
 ### Added
+
 - Added info back to README (this app works on master workspace)
 
 ## [1.4.4] - 2022-02-07
 
 ### Fixed
+
 - Change property type to string
 
 ## [1.4.3] - 2022-01-21
 
 ### Added
+
 - Policy to the settings process notification service
 - Add wildcard to allow request from any account
 
 ### Fixed
+
 - Change type for PriceValidUntil
 - Added outbound access to the availability-notify endpoint
 

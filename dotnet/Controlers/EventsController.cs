@@ -1,15 +1,21 @@
 namespace service.Controllers
 {
-  using System;
-  using System.Threading.Tasks;
-  using AvailabilityNotify.Data;
-  using AvailabilityNotify.Models;
-  using AvailabilityNotify.Services;
-  using Microsoft.AspNetCore.Mvc;
-  using Newtonsoft.Json;
-  using Vtex.Api.Context;
+    using System;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using AvailabilityNotify.Data;
+    using AvailabilityNotify.Models;
+    using AvailabilityNotify.Services;
+    using Microsoft.AspNetCore.Mvc;
+    using Newtonsoft.Json;
+    using Vtex.Api.Context;
 
-  public class EventsController : Controller
+    static class Throttle
+    {
+        public static int counter = 0;
+    }
+
+    public class EventsController : Controller
     {
         private readonly IVtexAPIService _vtexAPIService;
         private readonly IIOServiceContext _context;
@@ -24,6 +30,14 @@ namespace service.Controllers
 
         public async Task<IActionResult> BroadcasterNotification(string account, string workspace)
         {
+            var incremented_counter = Interlocked.Increment(ref Throttle.counter);
+            if (incremented_counter > 10)
+            {
+                // Throttling -- event system will retry the event later
+                Interlocked.Decrement(ref Throttle.counter);
+                return StatusCode(429);
+            }
+
             try
             {
                 BroadcastNotification notification = null;
@@ -36,13 +50,16 @@ namespace service.Controllers
                 catch (Exception ex)
                 {
                     _context.Vtex.Logger.Error("BroadcasterNotification", null, "Error reading Notification", ex);
+                    Interlocked.Decrement(ref Throttle.counter);
                     return BadRequest();
                 }
 
                 string skuId = notification.IdSku;
-                if(string.IsNullOrEmpty(skuId))
+                if (string.IsNullOrEmpty(skuId))
                 {
                     _context.Vtex.Logger.Warn("BroadcasterNotification", null, "Empty Sku");
+                    Interlocked.Decrement(ref Throttle.counter);
+
                     return BadRequest();
                 }
 
@@ -52,6 +69,7 @@ namespace service.Controllers
                 {
                     // Commenting this out to reduce noise
                     //_context.Vtex.Logger.Warn("BroadcasterNotification", null, $"Sku {skuId} blocked by lock.  Processing started: {processingStarted}");
+                    Interlocked.Decrement(ref Throttle.counter);
                     return Ok();
                 }
 
@@ -62,12 +80,14 @@ namespace service.Controllers
 
                 _ = _availabilityRepository.ClearImportLock(skuId);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _context.Vtex.Logger.Error("BroadcasterNotification", null, "Error processing Notification", ex);
+                Interlocked.Decrement(ref Throttle.counter);
                 throw;
             }
 
+            Interlocked.Decrement(ref Throttle.counter);
             return Ok();
         }
 
@@ -88,7 +108,7 @@ namespace service.Controllers
                 AllStatesNotification allStatesNotification = JsonConvert.DeserializeObject<AllStatesNotification>(bodyAsText);
                 _vtexAPIService.ProcessNotification(allStatesNotification);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _context.Vtex.Logger.Warn("AllStates", null, $"Error processing Orders Broadcaster Notification: {ex.Message}");
             }
