@@ -9,12 +9,16 @@ namespace service.Controllers
     using Newtonsoft.Json;
     using Vtex.Api.Context;
 
+    static class Throttle
+    {
+        public static int counter = 0;
+    }
+
     public class EventsController : Controller
     {
         private readonly IVtexAPIService _vtexAPIService;
         private readonly IIOServiceContext _context;
         private readonly IAvailabilityRepository _availabilityRepository;
-        private static int counter = 0;
 
         public EventsController(IVtexAPIService vtexAPIService, IIOServiceContext context, IAvailabilityRepository availabilityRepository)
         {
@@ -25,11 +29,11 @@ namespace service.Controllers
 
         public async Task<IActionResult> BroadcasterNotification(string account, string workspace)
         {
-            counter += 1;
-
-            if (counter > 10)
+            Throttle.counter += 1;
+            if (Throttle.counter > 10)
             {
                 // Throttling -- event system will retry the event later
+                Throttle.counter -= 1;
                 return StatusCode(429);
             }
 
@@ -45,7 +49,7 @@ namespace service.Controllers
                 catch (Exception ex)
                 {
                     _context.Vtex.Logger.Error("BroadcasterNotification", null, "Error reading Notification", ex);
-                    counter -= 1;
+                    Throttle.counter -= 1;
 
                     return BadRequest();
                 }
@@ -54,7 +58,7 @@ namespace service.Controllers
                 if (string.IsNullOrEmpty(skuId))
                 {
                     _context.Vtex.Logger.Warn("BroadcasterNotification", null, "Empty Sku");
-                    counter -= 1;
+                    Throttle.counter -= 1;
 
                     return BadRequest();
                 }
@@ -65,7 +69,7 @@ namespace service.Controllers
                 {
                     // Commenting this out to reduce noise
                     //_context.Vtex.Logger.Warn("BroadcasterNotification", null, $"Sku {skuId} blocked by lock.  Processing started: {processingStarted}");
-                    counter -= 1;
+                    Throttle.counter -= 1;
 
                     return Ok();
                 }
@@ -80,11 +84,11 @@ namespace service.Controllers
             catch (Exception ex)
             {
                 _context.Vtex.Logger.Error("BroadcasterNotification", null, "Error processing Notification", ex);
-                counter -= 1;
+                Throttle.counter -= 1;
                 throw;
             }
 
-            counter -= 1;
+            Throttle.counter -= 1;
             return Ok();
         }
 
