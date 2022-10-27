@@ -49,7 +49,7 @@ namespace AvailabilityNotify.Services
         public async Task<InventoryBySku> ListInventoryBySku(string sku, RequestContext requestContext)
         {
             // GET https://{accountName}.{environment}.com.br/api/logistics/pvt/inventory/skus/skuId
-        
+
             InventoryBySku inventoryBySku = new InventoryBySku();
 
             try
@@ -186,7 +186,7 @@ namespace AvailabilityNotify.Services
 
             return totalAvailable;
         }
-        
+
         public async Task<bool> CreateOrUpdateTemplate(string jsonSerializedTemplate)
         {
             // POST: "http://hostname/api/template-render/pvt/templates"
@@ -219,7 +219,7 @@ namespace AvailabilityNotify.Services
         public async Task<bool> CreateOrUpdateTemplate(EmailTemplate template)
         {
             string jsonSerializedTemplate = JsonConvert.SerializeObject(template);
-            if(string.IsNullOrEmpty(jsonSerializedTemplate))
+            if (string.IsNullOrEmpty(jsonSerializedTemplate))
             {
                 return false;
             }
@@ -279,7 +279,7 @@ namespace AvailabilityNotify.Services
             else
             {
                 _context.Vtex.Logger.Info("GetDefaultTemplate", "Response", $"[{response.StatusCode}] {responseContent} [{Constants.GITHUB_URL}/{Constants.RESPOSITORY}/{Constants.TEMPLATE_FOLDER}/{templateName}.{Constants.TEMPLATE_FILE_EXTENSION}]");
-            }    
+            }
 
             return templateBody;
         }
@@ -404,7 +404,7 @@ namespace AvailabilityNotify.Services
         {
             bool success = false;
             string templateName = Constants.DEFAULT_TEMPLATE_NAME;
-            
+
             EmailMessage emailMessage = new EmailMessage
             {
                 TemplateName = templateName,
@@ -415,17 +415,17 @@ namespace AvailabilityNotify.Services
                     NotifyRequest = notifyRequest
                 }
             };
-            
+
             string accountName = requestContext.Account;
             string message = JsonConvert.SerializeObject(emailMessage);
-            
+
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
                 RequestUri = new Uri($"{Constants.MAIL_SERVICE}?an={accountName}"),
                 Content = new StringContent(message, Encoding.UTF8, Constants.APPLICATION_JSON)
             };
-            
+
             request.Headers.Add(Constants.USE_HTTPS_HEADER_NAME, "true");
             string authToken = requestContext.AuthToken;
             if (authToken != null)
@@ -434,7 +434,7 @@ namespace AvailabilityNotify.Services
                 request.Headers.Add(Constants.VTEX_ID_HEADER_NAME, authToken);
                 request.Headers.Add(Constants.PROXY_AUTHORIZATION_HEADER_NAME, authToken);
             }
-            
+
             HttpClient client = _clientFactory.CreateClient();
             try
             {
@@ -452,7 +452,7 @@ namespace AvailabilityNotify.Services
                 _context.Vtex.Logger.Error("SendEmail", null, $"Failure sending {message}", ex);
                 success = false;  //jic
             }
-            
+
             return success;
         }
 
@@ -470,8 +470,8 @@ namespace AvailabilityNotify.Services
             if (requestsToNotify.Any(x => x.Email.Equals(email)))
             {
                 return success;
-            } 
-                
+            }
+
             NotifyRequest notifyRequest = new NotifyRequest
             {
                 RequestedAt = DateTime.Now.ToUniversalTime().ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'"),
@@ -565,7 +565,7 @@ namespace AvailabilityNotify.Services
             bool isActive = notification.IsActive;
             bool inventoryUpdated = notification.StockModified;
             string skuId = notification.IdSku;
-            _context.Vtex.Logger.Debug("ProcessNotification", "BroadcastNotification", $"Sku:{skuId} Active?{isActive} Inventory Changed?{inventoryUpdated}");
+            // _context.Vtex.Logger.Debug("ProcessNotification", "BroadcastNotification", $"Sku:{skuId} Active?{isActive} Inventory Changed?{inventoryUpdated}");
             success = await this.ProcessNotification(requestContext, isActive, inventoryUpdated, skuId);
             if (isActive && inventoryUpdated)
             {
@@ -624,7 +624,7 @@ namespace AvailabilityNotify.Services
                 var client = _clientFactory.CreateClient();
                 var response = await client.SendAsync(request);
                 string responseContent = await response.Content.ReadAsStringAsync();
-                if(response.IsSuccessStatusCode)
+                if (response.IsSuccessStatusCode)
                 {
                     _context.Vtex.Logger.Debug("GetShopperByEmail", null, $"Shopper '{email}'\n[{response.StatusCode}] '{responseContent}'");
                     shopperRecord = JsonConvert.DeserializeObject<ShopperRecord[]>(responseContent);
@@ -743,10 +743,10 @@ namespace AvailabilityNotify.Services
                             _context.Vtex.Logger.Debug("ProcessNotification", null, $"SkuId '{skuId}' {available} available");
                         }
                     }
-                    else
-                    {
-                        _context.Vtex.Logger.Debug("ProcessNotification", null, $"No requests to be notified for {skuId}");
-                    }
+                    // else
+                    // {
+                    // _context.Vtex.Logger.Debug("ProcessNotification", null, $"No requests to be notified for {skuId}");
+                    // }
                 }
                 else
                 {
@@ -767,29 +767,29 @@ namespace AvailabilityNotify.Services
             };
 
             NotifyRequest[] allRequests = await _availabilityRepository.ListNotifyRequests();
-            if(allRequests != null && allRequests.Length > 0)
+            if (allRequests != null && allRequests.Length > 0)
             {
-                foreach(NotifyRequest requestToNotify in allRequests)
+                foreach (NotifyRequest requestToNotify in allRequests)
                 {
                     bool sendMail = false;
                     bool updatedRecord = false;
                     string skuId = requestToNotify.SkuId;
-                    if(requestToNotify.NotificationSent.Equals("true"))
+                    if (requestToNotify.NotificationSent.Equals("true"))
                     {
                         results.Add($"{skuId} {requestToNotify.Email} Sent at {requestToNotify.NotificationSentAt}");
                     }
                     else
                     {
                         long available = await GetTotalAvailableForSku(skuId, requestContext);
-                        if(available > 0)
+                        if (available > 0)
                         {
                             bool canSend = true;
                             MerchantSettings merchantSettings = await _availabilityRepository.GetMerchantSettings();
-                            if(merchantSettings.DoShippingSim)
+                            if (merchantSettings.DoShippingSim)
                             {
                                 canSend = await this.CanShipToShopper(requestToNotify, requestContext);
                             }
-                            
+
                             if (canSend)
                             {
                                 GetSkuContextResponse skuContextResponse = await GetSkuContext(skuId, requestContext);
@@ -825,15 +825,15 @@ namespace AvailabilityNotify.Services
             };
 
             NotifyRequest[] allRequests = await _availabilityRepository.ListUnsentNotifyRequests();
-            if(allRequests != null && allRequests.Length > 0)
+            if (allRequests != null && allRequests.Length > 0)
             {
-                foreach(NotifyRequest requestToNotify in allRequests)
+                foreach (NotifyRequest requestToNotify in allRequests)
                 {
                     bool sendMail = false;
                     bool updatedRecord = false;
                     string skuId = requestToNotify.SkuId;
                     long available = await GetTotalAvailableForSku(skuId, requestContext);
-                    if(available > 0)
+                    if (available > 0)
                     {
                         bool canSend = true;
                         MerchantSettings merchantSettings = await _availabilityRepository.GetMerchantSettings();
@@ -912,9 +912,9 @@ namespace AvailabilityNotify.Services
                         cartSimulationRequest.PostalCode = shopperAddress.PostalCode;
                         cartSimulationRequest.Country = shopperAddress.Country;
                         CartSimulationResponse cartSimulationResponse = await this.CartSimulation(cartSimulationRequest, requestContext);
-                        if (cartSimulationResponse != null 
-                            && cartSimulationResponse.Items != null 
-                            && cartSimulationResponse.Items.Length > 0 
+                        if (cartSimulationResponse != null
+                            && cartSimulationResponse.Items != null
+                            && cartSimulationResponse.Items.Length > 0
                             && cartSimulationResponse.Items[0].Availability.Equals(Constants.Availability.Available))
                         {
                             sendMail = true;
@@ -953,7 +953,7 @@ namespace AvailabilityNotify.Services
                 var client = _clientFactory.CreateClient();
                 var response = await client.SendAsync(request);
                 string responseContent = await response.Content.ReadAsStringAsync();
-                if(response.IsSuccessStatusCode)
+                if (response.IsSuccessStatusCode)
                 {
                     cartSimulationResponse = JsonConvert.DeserializeObject<CartSimulationResponse>(responseContent);
                 }
@@ -981,7 +981,7 @@ namespace AvailabilityNotify.Services
                     _context.Vtex.Logger.Warn("ForwardNotification", null, $"Skipping self reference.  Please remove account from app settings.");
                     return true;
                 }
-                
+
                 AffiliateNotification affiliateNotification = new AffiliateNotification
                 {
                     An = notification.An,
@@ -1114,7 +1114,8 @@ namespace AvailabilityNotify.Services
 
             ValidatedUser validatedUser = null;
 
-            try {
+            try
+            {
                 validatedUser = await ValidateUserToken(_context.Vtex.AdminUserAuthToken);
             }
             catch (Exception ex)

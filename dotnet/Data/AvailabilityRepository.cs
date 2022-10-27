@@ -88,7 +88,7 @@ namespace AvailabilityNotify.Services
             else if (!responseWrapper.ResponseText.Equals(Constants.SCHEMA_JSON))
             {
                 url = $"http://{this._httpContextAccessor.HttpContext.Request.Headers[Constants.VTEX_ACCOUNT_HEADER_NAME]}.vtexcommercestable.com.br/api/dataentities/{Constants.DATA_ENTITY}/schemas/{Constants.SCHEMA}";
-                responseWrapper = await this.SendRequest(url, HttpMethod.Put, Constants.SCHEMA_JSON);
+                responseWrapper = await this.SendRequest(url, HttpMethod.Put, null, null, null, Constants.SCHEMA_JSON);
                 _context.Vtex.Logger.Debug("VerifySchema", null, $"Applying Schema [{responseWrapper.IsSuccess}] '{responseWrapper.ResponseText}' ");
             }
 
@@ -173,7 +173,7 @@ namespace AvailabilityNotify.Services
             {
                 notifyRequests = await this.SearchRequests(requestContext, $"notificationSend=false&skuId={skuId}");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _context.Vtex.Logger.Error("ListRequestsForSkuId", null, $"Sku '{skuId}' ", ex);
             }
@@ -184,7 +184,7 @@ namespace AvailabilityNotify.Services
         public async Task<NotifyRequest[]> SearchRequests(RequestContext requestContext, string searchString, int? searchFrom = null)
         {
             List<NotifyRequest> notifyRequestsAll = new List<NotifyRequest>();
-            if(searchFrom == null)
+            if (searchFrom == null)
             {
                 searchFrom = 0;
             }
@@ -193,7 +193,7 @@ namespace AvailabilityNotify.Services
 
             string url = $"http://{requestContext.Account}.vtexcommercestable.com.br/api/dataentities/{Constants.DATA_ENTITY}/search?_fields={Constants.FIELDS}&_schema={Constants.SCHEMA}&{searchString}";
             ResponseWrapper responseWrapper = await this.SendRequest(url, HttpMethod.Get, null, searchFrom.ToString(), searchTo.ToString());
-            if(responseWrapper.IsSuccess)
+            if (responseWrapper.IsSuccess)
             {
                 NotifyRequest[] notifyRequests = JsonConvert.DeserializeObject<NotifyRequest[]>(responseWrapper.ResponseText);
                 notifyRequestsAll.AddRange(notifyRequests);
@@ -253,7 +253,7 @@ namespace AvailabilityNotify.Services
 
             string url = $"http://infra.io.vtex.com/vbase/v2/{this._httpContextAccessor.HttpContext.Request.Headers[Constants.VTEX_ACCOUNT_HEADER_NAME]}/{this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_WORKSPACE]}/buckets/{this._applicationName}/{Constants.BUCKET}/files/{Constants.LOCK}-{sku}";
             ResponseWrapper responseWrapper = await this.SendRequest(url, HttpMethod.Put, processingLock);
-            if(!responseWrapper.IsSuccess)
+            if (!responseWrapper.IsSuccess)
             {
                 _context.Vtex.Logger.Error("SetImportLock", null, responseWrapper.Message);
             }
@@ -320,13 +320,13 @@ namespace AvailabilityNotify.Services
         {
             string url = $"http://vbase.{this._environmentVariableProvider.Region}.vtex.io/{this._httpContextAccessor.HttpContext.Request.Headers[Constants.VTEX_ACCOUNT_HEADER_NAME]}/{this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_WORKSPACE]}/buckets/{this._applicationName}/{Constants.BUCKET}/files/{Constants.UNSENT_CHECK}";
             ResponseWrapper responseWrapper = await this.SendRequest(url, HttpMethod.Put, lastCheck);
-            if(!responseWrapper.IsSuccess)
+            if (!responseWrapper.IsSuccess)
             {
                 _context.Vtex.Logger.Error("SetLastUnsentCheck", null, $"Failed to set last check. {responseWrapper.Message}");
             }
         }
 
-        public async Task<ResponseWrapper> SendRequest(string url, HttpMethod httpMethod, object requestObject = null, string from = null, string to = null)
+        public async Task<ResponseWrapper> SendRequest(string url, HttpMethod httpMethod, object requestObject = null, string from = null, string to = null, string jsonSerializedData = null)
         {
             ResponseWrapper responseWrapper = null;
             string jsonSerializedRequest = string.Empty;
@@ -349,6 +349,11 @@ namespace AvailabilityNotify.Services
                     _context.Vtex.Logger.Error("SendRequest", null, $"Error Serializing Request Object", ex);
                 }
             }
+            else if (!string.IsNullOrEmpty(jsonSerializedData))
+            {
+                request.Content = new StringContent(jsonSerializedData, Encoding.UTF8, Constants.APPLICATION_JSON);
+                jsonSerializedRequest = jsonSerializedData;  // for logging
+            }
 
             if (!string.IsNullOrEmpty(from) && !string.IsNullOrEmpty(to))
             {
@@ -356,7 +361,7 @@ namespace AvailabilityNotify.Services
             }
 
             request.Headers.Add(Constants.USE_HTTPS_HEADER_NAME, "true");
-            string authToken = this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_CREDENTIAL];
+            string authToken = _context.Vtex.AuthToken;
             if (authToken != null)
             {
                 request.Headers.Add(Constants.AUTHORIZATION_HEADER_NAME, authToken);
@@ -400,7 +405,7 @@ namespace AvailabilityNotify.Services
                     responseWrapper.From = responseFrom;
                     responseWrapper.To = responseTo;
 
-                    _context.Vtex.Logger.Debug("SendRequest", "REST-Content-Range", resources);
+                    // _context.Vtex.Logger.Debug("SendRequest", "REST-Content-Range", resources);
                 }
 
                 if (headers.TryGetValues("X-VTEX-MD-TOKEN", out values))
