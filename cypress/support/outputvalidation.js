@@ -1,11 +1,11 @@
 export default {
   data1: {
     skuId: '880223',
-    name: 'saravanan',
-    email: 'saravananvenkatesan@bitcot.com',
+    name: 'shashi',
+    email: 'shashi@bitcot.com',
     sellerObj: {
       sellerId: '24',
-      sellerName: 'saravanan',
+      sellerName: 'shashi',
     },
   },
   data2: {

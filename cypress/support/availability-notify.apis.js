@@ -6,8 +6,6 @@ import { updateRetry } from './common/support'
 const config = Cypress.env()
 
 // Constants
-const { account } = config.base.vtex
-const WIPE_ENV = 'wipe'
 const { name } = config.workspace
 
 const app = 'vtex.availability-notify'
@@ -16,12 +14,14 @@ const version = '1.x'
 export function processAllRequest() {
   it('process all the requests', updateRetry(3), () => {
     cy.addDelayBetweenRetries(2000)
-    cy.getVtexItems((vtex) => {
+    cy.getVtexItems(vtex => {
       cy.request({
         method: 'GET',
-        url: `${getProcessAllRequestAPI()}/${vtex.account}/${name}/_v/availability-notify/process-all-requests`,
+        url: `${getProcessAllRequestAPI()}/${
+          vtex.account
+        }/${name}/_v/availability-notify/process-all-requests`,
         ...FAIL_ON_STATUS_CODE,
-      }).then((response) => {
+      }).then(response => {
         expect(response.status).to.equal(200)
       })
     })
@@ -31,14 +31,14 @@ export function processAllRequest() {
 export function updateProductStatus(prefix, data1, unlimited = false) {
   it(`${prefix} - update the product status`, updateRetry(3), () => {
     cy.addDelayBetweenRetries(2000)
-    cy.getVtexItems().then((vtex) => {
+    cy.getVtexItems().then(vtex => {
       cy.request({
         method: 'PUT',
         url: updateProductStatusAPI(data1),
         headers: VTEX_AUTH_HEADER(vtex.apiKey, vtex.apiToken),
         ...FAIL_ON_STATUS_CODE,
         body: { unlimitedQuantity: unlimited, quantity: 0 },
-      }).then((response) => {
+      }).then(response => {
         expect(response.body).to.be.true
       })
     })
@@ -49,13 +49,13 @@ export function notifySearch(prefix) {
   it(`${prefix} - Notify search`, updateRetry(3), () => {
     cy.addDelayBetweenRetries(2000)
 
-    cy.getVtexItems().then((vtex) => {
+    cy.getVtexItems().then(vtex => {
       cy.request({
         method: 'GET',
         url: `https://${vtex.account}.myvtex.com/api/dataentities/notify/search?_schema=reviewsSchema&_fields=email,skuId,name,createdAt`,
         headers: VTEX_AUTH_HEADER(vtex.apiKey, vtex.apiToken),
         ...FAIL_ON_STATUS_CODE,
-      }).then((response) => {
+      }).then(response => {
         expect(response.status).to.equal(200)
       })
     })
@@ -67,7 +67,7 @@ export function configureTargetWorkspace(prefix, doShippingSim = false) {
     `${prefix} - Configuring target workspace in ${app}`,
     updateRetry(2),
     () => {
-      cy.getVtexItems().then((vtex) => {
+      cy.getVtexItems().then(vtex => {
         // Define constants
         const APP_NAME = 'vtex.apps-graphql'
         const APP_VERSION = '3.x'
@@ -105,7 +105,7 @@ export function configureBroadcasterAdapter(prefix, workspace = 'master') {
     `${prefix} - Register target workspace as ${workspace} in ${BROADCASTER_APP}`,
     updateRetry(2),
     () => {
-      cy.getVtexItems().then((vtex) => {
+      cy.getVtexItems().then(vtex => {
         // Define constants
         const APP_NAME = 'vtex.apps-graphql'
         const APP_VERSION = '3.x'

@@ -5,6 +5,11 @@ import { generateAddtoCartCardSelector } from './common/utils'
 const availabilityJson = '.availability.json'
 const emailsJson = '.emails.json'
 
+const config = Cypress.env()
+
+// Constants
+const { id } = config.base.gmail
+
 Cypress.Commands.add('gotoProductDetailPage', () => {
   cy.get(selectors.ProductAnchorElement)
     .should('have.attr', 'href')
@@ -46,9 +51,7 @@ Cypress.Commands.add('openProduct', (product, detailPage = false) => {
 })
 
 Cypress.Commands.add('setavailabilitySubscribeId', availabilityValue => {
-  const data = availabilityValue.filter(
-    a => a.email === 'saravananvenkatesan@bitcot.com'
-  )
+  const data = availabilityValue.filter(a => a.email === id)
 
   cy.writeFile(availabilityJson, data)
 })
