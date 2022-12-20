@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 
+- Cypress improvements
+
+### Changed
+
 - GitHub reusable workflow uptaded to v2
 
 ## [1.8.8] - 2022-10-18
