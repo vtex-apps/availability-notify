@@ -1,11 +1,6 @@
 export default {
-  InputName: '.vtex-store-components-3-x-subscriberContainer input[name=name]',
-  InputEmail:
-    '.vtex-store-components-3-x-subscriberContainer input[name=email]',
-  AvailabilityNotifySubmitButton: '.vtex-availability-notify-1-x-submit button',
-  AvailabilityNotifyAlert: '.vtex-availability-notify-1-x-success',
-  name:
-    '.vtex-availability-notify-1-x-inputName > .vtex-input > .vtex-input-prefix__group > .vtex-styleguide-9-x-input',
-  email:
-    '.vtex-availability-notify-1-x-inputEmail > .vtex-input > .vtex-input-prefix__group > .vtex-styleguide-9-x-input',
+  AvailabilityNotifySubmitButton: 'div[class*="submit"] button',
+  AvailabilityNotifyAlert: 'div[class*=success]',
+  name: 'div[class*="subscriberContainer"] input[name="name"]',
+  email: 'div[class*="subscriberContainer"] input[name="email"]',
 }

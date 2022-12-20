@@ -5,7 +5,7 @@ import {
 } from './availability-notify.graphql'
 import { updateRetry } from './common/support'
 import { getEmailContent } from './extract'
-import availabilityNotifySelectors from './availability-notify.selectors'
+import availabilityNotifySelectors from './selectors'
 import { MESSAGES } from './utils'
 
 export function verifyEmail(prefix) {
