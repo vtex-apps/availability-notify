@@ -1,4 +1,4 @@
-const GmailAPI = require('./gmail')
+const GmailAPI = require('./common/gmail')
 
 function extractContent(message) {
   if (message) {
