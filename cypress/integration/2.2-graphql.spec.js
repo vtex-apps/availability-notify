@@ -11,11 +11,11 @@ import {
   processUnsentRequest,
   validateProcessUnsentRequestResponse,
 } from '../support/availability-notify.graphql'
-import { testSetup, updateRetry } from '../support/common/support'
+import { loginViaCookies, updateRetry } from '../support/common/support'
 import { availabilityDatas } from '../support/outputvalidation'
 
 describe('Graphql queries', () => {
-  testSetup(false)
+  loginViaCookies()
 
   it('Get Version', () => {
     graphql(version(), validateGetVersionResponse)

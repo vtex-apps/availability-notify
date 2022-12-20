@@ -2,7 +2,7 @@ import {
   updateProductStatus,
   configureBroadcasterAdapter,
 } from '../support/availability-notify.apis'
-import { preserveCookie, testSetup } from '../support/common/support'
+import { preserveCookie, loginViaCookies } from '../support/common/support'
 import { testCase1 } from '../support/outputvalidation'
 import { triggerBroadCaster } from '../support/broadcaster.api'
 import { verifyEmail } from '../support/availability-notify'
@@ -12,7 +12,7 @@ const workspace = Cypress.env().workspace.name
 const prefix = 'Update product as available'
 
 describe('Update product as available and validate', () => {
-  testSetup(false)
+  loginViaCookies()
 
   configureBroadcasterAdapter(prefix, workspace)
 

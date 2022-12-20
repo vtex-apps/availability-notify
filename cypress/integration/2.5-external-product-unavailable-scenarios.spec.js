@@ -1,4 +1,4 @@
-import { testSetup } from '../support/common/support'
+import { loginViaCookies } from '../support/common/support'
 import { testCase1 } from '../support/outputvalidation'
 import {
   generateEmailId,
@@ -11,8 +11,7 @@ const product = 'weber spirit'
 const prefix = 'Update product as unavailable'
 
 describe('Test external product unavailable scenarios', () => {
-  // Load test setup
-  testSetup(false)
+  loginViaCookies()
 
   const email = generateEmailId()
 

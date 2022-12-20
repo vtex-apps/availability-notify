@@ -1,5 +1,5 @@
 import availabilityNotifySelectors from '../support/selectors'
-import { testSetup, updateRetry } from '../support/common/support'
+import { loginViaCookies, updateRetry } from '../support/common/support'
 import { testCase1 } from '../support/outputvalidation'
 import {
   generateEmailId,
@@ -13,8 +13,8 @@ const product = 'weber spirit'
 const prefix = 'Update product as unavailable'
 
 describe('Updating product as unavailable', () => {
-  // Load test setup
-  testSetup(false)
+  loginViaCookies()
+
   const email = generateEmailId()
 
   updateProductStatus(prefix, data1, false)

@@ -1,5 +1,5 @@
 import {
-  testSetup,
+  loginViaCookies,
   updateRetry,
   preserveCookie,
 } from '../support/common/support'
@@ -20,8 +20,7 @@ const workspace = Cypress.env().workspace.name
 const prefix = 'Availability notify'
 
 describe('Test availability notify scenarios', () => {
-  // Load test setup
-  testSetup()
+  loginViaCookies()
 
   configureTargetWorkspace(prefix, true)
   updateProductStatus(prefix, data1, false)

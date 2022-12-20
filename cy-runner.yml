@@ -9,10 +9,12 @@ base:
     domain: myvtex.com
     vtexIdUrl: https://vtexid.vtex.com.br/api/vtexid/pub/authenticate/default
   jira:
-    enabled: false
-    account: config-dev
-    board: jira-key
-    issueType: task
+    enabled: true
+    account: vtex-dev
+    board: NOTIFIER
+    issueType: Bug
+    priority: High
+    testing: true
   slack:
     enabled: false
     channel: some-channel
@@ -37,7 +39,6 @@ base:
     pageLoadTimeout: 45000
     browser: chrome
     chromeWebSecurity: false
-    sorry: false
   stateFiles: ['.orders.json', '.emails.json']
 workspace:
   name: random

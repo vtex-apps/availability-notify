@@ -1,5 +1,5 @@
 import {
-  testSetup,
+  loginViaCookies,
   updateRetry,
   preserveCookie,
 } from '../support/common/support'
@@ -19,8 +19,7 @@ const workspace = Cypress.env().workspace.name
 const prefix = 'Marketplace to notify'
 
 describe('Testing market place to notify', () => {
-  // Load test setup
-  testSetup()
+  loginViaCookies()
 
   configureBroadcasterAdapter(prefix, workspace)
   configureTargetWorkspace(prefix, true)
