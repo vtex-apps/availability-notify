@@ -3,7 +3,7 @@ import {
   updateRetry,
   preserveCookie,
 } from '../support/common/support'
-import { testCase1 } from '../support/availability-notify.outputvalidation'
+import { testCase1 } from '../support/outputvalidation'
 import { triggerBroadCaster } from '../support/broadcaster.api'
 import { verifyEmail } from '../support/availability-notify'
 import {
@@ -11,8 +11,7 @@ import {
   configureTargetWorkspace,
   configureBroadcasterAdapter,
 } from '../support/availability-notify.apis'
-import availabilityNotifySelectors from '../support/availability-notify.selectors'
-import availabilityNotifyConstants from '../support/availability-notify.constants'
+import availabilityNotifySelectors from '../support/selectors'
 import { MESSAGES } from '../support/utils'
 
 const { data1, name, email } = testCase1

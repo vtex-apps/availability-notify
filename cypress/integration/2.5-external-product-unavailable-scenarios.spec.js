@@ -1,5 +1,5 @@
 import { testSetup } from '../support/common/support'
-import { testCase1 } from '../support/availability-notify.outputvalidation'
+import { testCase1 } from '../support/outputvalidation'
 import {
   generateEmailId,
   updateProductStatus,

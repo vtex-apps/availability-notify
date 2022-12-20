@@ -1,6 +1,6 @@
-import availabilityNotifySelectors from '../support/availability-notify.selectors'
+import availabilityNotifySelectors from '../support/selectors'
 import { testSetup, updateRetry } from '../support/common/support'
-import { testCase1 } from '../support/availability-notify.outputvalidation'
+import { testCase1 } from '../support/outputvalidation'
 import {
   generateEmailId,
   updateProductStatus,

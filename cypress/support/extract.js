@@ -4,10 +4,10 @@ function extractContent(message) {
   if (message) {
     return message.includes('Weber 45010001 Spirit II E-310 3-Burner')
       ? message
-      : '0'
+      : 'Email not received'
   }
 
-  return '0'
+  return 'Email not received'
 }
 
 export async function getEmailContent({ email, gmailCreds, after, before }) {

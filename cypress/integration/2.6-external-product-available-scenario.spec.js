@@ -3,7 +3,7 @@ import {
   configureBroadcasterAdapter,
 } from '../support/availability-notify.apis'
 import { preserveCookie, testSetup } from '../support/common/support'
-import { testCase1 } from '../support/availability-notify.outputvalidation'
+import { testCase1 } from '../support/outputvalidation'
 import { triggerBroadCaster } from '../support/broadcaster.api'
 import { verifyEmail } from '../support/availability-notify'
 
