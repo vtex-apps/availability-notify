@@ -1,0 +1,22 @@
+{
+  "store/availability-notify.title": "Ez a termék pillanatnyilag nem áll rendelkezésre",
+  "store/availability-notify.notify-label": "Szeretném tudni, mikor lesz a termék elérhető",
+  "store/availability-notify.email-placeholder": "E-mail-cím",
+  "store/availability-notify.name-placeholder": "Név",
+  "store/availability-notify.send-label": "Küldés",
+  "store/availability-notify.invalid-email": "Érvénytelen e-mail-cím",
+  "store/availability-notify.added-message": "Az e-mail-cím regisztrációja sikeresen megtörtént",
+  "store/availability-notify.error-register": "Az e-mail-cím már létezik",
+  "store/availability-notify.error-message": "Sikertelen, kérjük, próbálja újra",
+  "admin/availability-notify.menu.label": "Értesítés elérhetőségről",
+  "admin/request.menu.label": "Értesítés elérhetőségről",
+  "admin/settings.download": "Letöltési kérések",
+  "admin/settings.process-unsent": "Elküldetlen feldolgozása",
+  "admin/settings.verify-availability": "Elérhetőség ellenőrzése",
+  "admin/settings.marketplace-to-notify": "Értesítendő piactér(ek)",
+  "admin/settings.download-helptext": "XLS-fájl letöltése az összes értesítésre vonatkozó kérésről.",
+  "admin/settings.process-unsent-helptext": "Az összes el nem küldött kérés feldolgozása, és az eredmények XLS-fájlban való letöltése.",
+  "admin/settings.verify-availability-helptext": "Szállítási szimuláció futtatása az értesítés küldése előtt, ellenőrizendő, hogy a termék elküldhető-e a vásárlónak.",
+  "admin/settings.marketplace-to-notify-helptext": "Lehetővé teszi, hogy az eladói fiók megadjon egy vesszővel szeparált értékeket tartalmazó listát (CSV-fájl) a piactéri fiókokról, amelyeket a raktárkészlet változásáról értesíteni kell.",
+  "admin/settings.label": "Beállítások"
+}
