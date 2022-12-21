@@ -1,8 +1,13 @@
+const config = Cypress.env()
+
+// Constants
+const { id } = config.base.gmail
+
 export default {
   data1: {
     skuId: '880223',
     name: 'shashi',
-    email: 'shashi@bitcot.com',
+    email: id,
     sellerObj: {
       sellerId: '24',
       sellerName: 'shashi',
@@ -10,7 +15,7 @@ export default {
   },
   data2: {
     name: 'Shashi',
-    email: 'shashi@bitcot.com',
+    email: id,
   },
   testCase1: {
     data1: {
@@ -18,7 +23,7 @@ export default {
       warehouseId: '1_1',
     },
     name: 'Shashi',
-    email: 'shashi@bitcot.com',
+    email: id,
   },
   appDetails: {
     app: 'vtex.availability-notify',
