@@ -62,41 +62,37 @@ export function notifySearch(prefix) {
   })
 }
 
-export function configureTargetWorkspace(prefix, doShippingSim = false) {
-  it(
-    `${prefix} - Configuring target workspace in ${app}`,
-    updateRetry(2),
-    () => {
-      cy.getVtexItems().then(vtex => {
-        // Define constants
-        const APP_NAME = 'vtex.apps-graphql'
-        const APP_VERSION = '3.x'
-        const APP = `${APP_NAME}@${APP_VERSION}`
-        const CUSTOM_URL = `${vtex.baseUrl}/_v/private/admin-graphql-ide/v0/${APP}`
+export function updateAppSettings(prefix, doShippingSim = false) {
+  it(`${prefix} - Configuring app settings`, updateRetry(2), () => {
+    cy.getVtexItems().then(vtex => {
+      // Define constants
+      const APP_NAME = 'vtex.apps-graphql'
+      const APP_VERSION = '3.x'
+      const APP = `${APP_NAME}@${APP_VERSION}`
+      const CUSTOM_URL = `${vtex.baseUrl}/_v/private/admin-graphql-ide/v0/${APP}`
 
-        const GRAPHQL_MUTATION =
-          'mutation' +
-          '($app:String,$version:String,$settings:String)' +
-          '{saveAppSettings(app:$app,version:$version,settings:$settings){message}}'
+      const GRAPHQL_MUTATION =
+        'mutation' +
+        '($app:String,$version:String,$settings:String)' +
+        '{saveAppSettings(app:$app,version:$version,settings:$settings){message}}'
 
-        const QUERY_VARIABLES = {
-          app,
-          version,
-          settings: `{\"doShippingSim\":${doShippingSim},\"notifyMarketplace\":\"productusqaseller\"}`,
-        }
-        // Mutating it to the new workspace
-        cy.request({
-          method: 'POST',
-          url: CUSTOM_URL,
-          ...FAIL_ON_STATUS_CODE,
-          body: {
-            query: GRAPHQL_MUTATION,
-            variables: QUERY_VARIABLES,
-          },
-        }).its('body.data.saveAppSettings.message', { timeout: 10000 })
-      })
-    }
-  )
+      const QUERY_VARIABLES = {
+        app,
+        version,
+        settings: `{\"doShippingSim\":${doShippingSim},\"notifyMarketplace\":\"productusqaseller\"}`,
+      }
+      // Mutating it to the new workspace
+      cy.request({
+        method: 'POST',
+        url: CUSTOM_URL,
+        ...FAIL_ON_STATUS_CODE,
+        body: {
+          query: GRAPHQL_MUTATION,
+          variables: QUERY_VARIABLES,
+        },
+      }).its('body.data.saveAppSettings.message', { timeout: 10000 })
+    })
+  })
 }
 
 export function configureBroadcasterAdapter(prefix, workspace = 'master') {

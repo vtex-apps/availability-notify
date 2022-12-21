@@ -5,7 +5,7 @@ import {
   generateEmailId,
   updateProductStatus,
 } from '../support/availability-notify.apis'
-import { updateProductAsUnavailable } from '../support/availability-notify'
+import { subscribeToProductAlerts } from '../support/availability-notify'
 import { MESSAGES } from '../support/utils'
 
 const { data1, name, product } = testCase1
@@ -18,7 +18,7 @@ describe('Updating product as unavailable', () => {
 
   updateProductStatus(prefix, data1, false)
 
-  updateProductAsUnavailable({ prefix, product, email, name })
+  subscribeToProductAlerts({ prefix, product, email, name })
 
   it(
     `${prefix} - Verify with same email address and check if we are getting error`,

@@ -45,7 +45,7 @@ export function verifyEmail(prefix) {
   })
 }
 
-export function updateProductAsUnavailable(data) {
+export function subscribeToProductAlerts(data) {
   it(`${data.prefix} - Open product`, updateRetry(3), () => {
     cy.openStoreFront()
     cy.openProduct(data.product, true)

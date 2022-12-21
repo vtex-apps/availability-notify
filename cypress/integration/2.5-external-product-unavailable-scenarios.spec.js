@@ -4,7 +4,7 @@ import {
   generateEmailId,
   updateProductStatus,
 } from '../support/availability-notify.apis'
-import { updateProductAsUnavailable } from '../support/availability-notify'
+import { subscribeToProductAlerts } from '../support/availability-notify'
 
 const { data1, name, product } = testCase1
 const prefix = 'Update product as unavailable'
@@ -16,5 +16,5 @@ describe('Test external product unavailable scenarios', () => {
 
   updateProductStatus(prefix, data1, false)
 
-  updateProductAsUnavailable({ prefix, product, email, name })
+  subscribeToProductAlerts({ prefix, product, email, name })
 })
