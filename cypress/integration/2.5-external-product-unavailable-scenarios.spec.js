@@ -6,8 +6,7 @@ import {
 } from '../support/availability-notify.apis'
 import { updateProductAsUnavailable } from '../support/availability-notify'
 
-const { data1, name } = testCase1
-const product = 'weber spirit'
+const { data1, name, product } = testCase1
 const prefix = 'Update product as unavailable'
 
 describe('Test external product unavailable scenarios', () => {

@@ -24,6 +24,7 @@ export default {
     },
     name: 'Shashi',
     email: id,
+    product: 'weber spirit',
   },
   appDetails: {
     app: 'vtex.availability-notify',
