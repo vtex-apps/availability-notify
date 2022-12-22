@@ -1,0 +1,22 @@
+{
+  "store/availability-notify.title": "Tento produkt nie je momentálne k dispozícii",
+  "store/availability-notify.notify-label": "Chcem byť informovaný, keď bude tento produkt dostupný",
+  "store/availability-notify.email-placeholder": "E-mail",
+  "store/availability-notify.name-placeholder": "Meno",
+  "store/availability-notify.send-label": "Odoslať",
+  "store/availability-notify.invalid-email": "Neplatný e-mail",
+  "store/availability-notify.added-message": "E-mail bol úspešne zaregistrovaný",
+  "store/availability-notify.error-register": "E-mail už existuje",
+  "store/availability-notify.error-message": "Došlo k zlyhaniu, skúste to znova",
+  "admin/availability-notify.menu.label": "Oznamovateľ dostupnosti",
+  "admin/request.menu.label": "Oznamovateľ dostupnosti",
+  "admin/settings.download": "Žiadosti o stiahnutie",
+  "admin/settings.process-unsent": "Proces neodoslaný",
+  "admin/settings.verify-availability": "Overenie dostupnosti",
+  "admin/settings.marketplace-to-notify": "Ktoré Marketplace dostanú oznámenie?",
+  "admin/settings.download-helptext": "Stiahnite si súbor XLS so všetkými záznamami žiadostí o oznámenie.",
+  "admin/settings.process-unsent-helptext": "Spracujte všetky neodoslané žiadosti o oznámenie a stiahnite súbor XLS s výsledkami.",
+  "admin/settings.verify-availability-helptext": "Pred odoslaním oznámenia sa vykoná simulácia prepravy, aby sa overilo, či je možné tovar odoslať kupujúcemu.",
+  "admin/settings.marketplace-to-notify-helptext": "Umožňuje účtu predajcu zadať zoznam názvov účtov v marketplace oddelených čiarkou, ktoré sa majú informovať o aktualizáciách zásob.",
+  "admin/settings.label": "Nastavenia"
+}
