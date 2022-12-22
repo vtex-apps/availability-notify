@@ -1,14 +1,19 @@
-import availabilityNotifySelectors from './availability-notify.selectors'
+import availabilityNotifySelectors from './selectors'
 import selectors from './common/selectors'
 import { generateAddtoCartCardSelector } from './common/utils'
 
 const availabilityJson = '.availability.json'
 const emailsJson = '.emails.json'
 
+const config = Cypress.env()
+
+// Constants
+const { id } = config.base.gmail
+
 Cypress.Commands.add('gotoProductDetailPage', () => {
   cy.get(selectors.ProductAnchorElement)
     .should('have.attr', 'href')
-    .then((href) => {
+    .then(href => {
       cy.get(generateAddtoCartCardSelector(href)).first().click()
     })
 })
@@ -45,15 +50,13 @@ Cypress.Commands.add('openProduct', (product, detailPage = false) => {
   }
 })
 
-Cypress.Commands.add('setavailabilitySubscribeId', (availabilityValue) => {
-  const data = availabilityValue.filter(
-    (a) => a.email === 'saravananvenkatesan@bitcot.com'
-  )
+Cypress.Commands.add('setavailabilitySubscribeId', availabilityValue => {
+  const data = availabilityValue.filter(a => a.email === id)
 
   cy.writeFile(availabilityJson, data)
 })
 
-Cypress.Commands.add('saveEmailId', (email) => {
+Cypress.Commands.add('saveEmailId', email => {
   cy.writeFile(emailsJson, { email })
 })
 
@@ -62,18 +65,18 @@ Cypress.Commands.add('getGmailItems', () => {
 })
 
 Cypress.Commands.add('getEmailItems', () => {
-  cy.readFile(emailsJson).then((email) => {
+  cy.readFile(emailsJson).then(email => {
     return email
   })
 })
 
 Cypress.Commands.add('setDeleteId', () => {
-  cy.readFile(availabilityJson).then((items) => {
+  cy.readFile(availabilityJson).then(items => {
     return items.listRequests.id
   })
 })
 
-Cypress.Commands.add('subscribeToProduct', (data) => {
+Cypress.Commands.add('subscribeToProduct', data => {
   cy.saveEmailId(data.email)
   cy.get(availabilityNotifySelectors.name).type(data.name)
   cy.get(availabilityNotifySelectors.email).type(data.email)
@@ -83,7 +86,7 @@ Cypress.Commands.add('subscribeToProduct', (data) => {
 })
 
 Cypress.Commands.add('setDeleteId', () => {
-  cy.readFile(availabilityJson).then((items) => {
+  cy.readFile(availabilityJson).then(items => {
     return items.listRequests
   })
 })

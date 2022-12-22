@@ -4,7 +4,7 @@ import { updateRetry } from './common/support'
 export function triggerBroadCaster(prefix, skuid) {
   it(`${prefix} - Triggering broadcaster api`, updateRetry(3), () => {
     cy.addDelayBetweenRetries(2000)
-    cy.getVtexItems().then((vtex) => {
+    cy.getVtexItems().then(vtex => {
       cy.request({
         method: 'POST',
         url: `http://app.io.vtex.com/vtex.broadcaster/v0/${vtex.account}/${
@@ -19,7 +19,7 @@ export function triggerBroadCaster(prefix, skuid) {
           StockModified: true,
         },
         ...FAIL_ON_STATUS_CODE,
-      }).then((response) => {
+      }).then(response => {
         expect(response.status).to.equal(200)
       })
     })
