@@ -70,12 +70,6 @@ Cypress.Commands.add('getEmailItems', () => {
   })
 })
 
-Cypress.Commands.add('setDeleteId', () => {
-  cy.readFile(availabilityJson).then(items => {
-    return items.listRequests.id
-  })
-})
-
 Cypress.Commands.add('subscribeToProduct', data => {
   cy.saveEmailId(data.email)
   cy.get(availabilityNotifySelectors.name).type(data.name)
@@ -85,7 +79,7 @@ Cypress.Commands.add('subscribeToProduct', data => {
     .click()
 })
 
-Cypress.Commands.add('setDeleteId', () => {
+Cypress.Commands.add('getRequests', () => {
   cy.readFile(availabilityJson).then(items => {
     return items.listRequests
   })

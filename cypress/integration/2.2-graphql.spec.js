@@ -46,10 +46,10 @@ describe('Graphql queries', () => {
   })
 
   it('Delete Request', () => {
-    cy.setDeleteId().then(deleteId => {
+    cy.getRequests().then(request => {
       graphql(
         AVAILABILITY_NOTIFY_APP,
-        deleteRequest(deleteId.id),
+        deleteRequest(request[0].id),
         validateDeleteRequestResponse
       )
     })
