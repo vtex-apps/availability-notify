@@ -34,7 +34,7 @@ export function updateProductStatus({
   skuId,
   unlimited = false,
 }) {
-  it(`${prefix} - update the product status`, updateRetry(3), () => {
+  it(`${prefix} - Update the product status`, updateRetry(3), () => {
     cy.addDelayBetweenRetries(2000)
     cy.getVtexItems().then(vtex => {
       cy.request({

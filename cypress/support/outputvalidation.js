@@ -10,17 +10,12 @@ export default {
     skuId: '880210',
     name: 'Shashi',
     email: id,
-    sellerObj: {
-      sellerId: '',
-    },
     warehouseId: '1_1',
     product: products.Weber.name,
   },
   testCase2: {
-    data: {
-      skuId: '880160',
-      warehouseId: '1_1',
-    },
+    skuId: '880160',
+    warehouseId: '1_1',
     name: 'Shashi',
     email: id,
     product: products.Lenovo.name,
