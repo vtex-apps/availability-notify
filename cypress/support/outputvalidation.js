@@ -1,15 +1,11 @@
+import { generateEmailId } from './availability-notify.apis'
 import products from './products'
-
-const config = Cypress.env()
-
-// Constants
-const { id } = config.base.gmail
 
 export default {
   testCase1: {
     skuId: '880210',
     name: 'Shashi',
-    email: id,
+    email: generateEmailId(),
     warehouseId: '1_1',
     product: products.Weber.name,
   },
@@ -17,7 +13,7 @@ export default {
     skuId: '880160',
     warehouseId: '1_1',
     name: 'Shashi',
-    email: id,
+    email: generateEmailId(),
     product: products.Lenovo.name,
   },
   appDetails: {

@@ -1,18 +1,19 @@
 import {
-  graphql,
   listRequests,
   validateListRequestResponse,
 } from './availability-notify.graphql'
+import { graphql } from './common/graphql_utils'
 import { updateRetry } from './common/support'
 import { getEmailContent } from './extract'
 import availabilityNotifySelectors from './selectors'
 import { MESSAGES } from './utils'
+import { AVAILABILITY_NOTIFY_APP } from './graphql_apps'
 
 export function verifyEmail(prefix) {
   it.skip(`${prefix} - Verifying email`, updateRetry(5), () => {
     cy.addDelayBetweenRetries(30000)
     cy.getEmailItems().then(e => {
-      graphql(listRequests(), response => {
+      graphql(AVAILABILITY_NOTIFY_APP, listRequests(), response => {
         validateListRequestResponse(response)
         const list = response.body.data.listRequests
         const request = list.filter(req => req.email === e.email)

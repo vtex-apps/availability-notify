@@ -1,5 +1,4 @@
 import {
-  graphql,
   validateGetVersionResponse,
   validateDeleteRequestResponse,
   validateListRequestResponse,
@@ -13,6 +12,8 @@ import {
 } from '../support/availability-notify.graphql'
 import { loginViaCookies, updateRetry } from '../support/common/support'
 import { testCase1 } from '../support/outputvalidation'
+import { graphql } from '../support/common/graphql_utils'
+import { AVAILABILITY_NOTIFY_APP } from '../support/graphql_apps'
 
 describe('Graphql queries', () => {
   loginViaCookies()
@@ -23,25 +24,34 @@ describe('Graphql queries', () => {
 
   it('Availability Subscriber Request', () => {
     graphql(
+      AVAILABILITY_NOTIFY_APP,
       availabilitySubscribe(testCase1),
       validateAvailabilitySubscribeRequestResponse
     )
   })
 
   it('List Requests', updateRetry(3), () => {
-    graphql(listRequests(), response => {
+    graphql(AVAILABILITY_NOTIFY_APP, listRequests(), response => {
       validateListRequestResponse(response)
       cy.setavailabilitySubscribeId(response.body.data.listRequests)
     })
   })
 
   it('Process Unsent Requests', updateRetry(3), () => {
-    graphql(processUnsentRequest(), validateProcessUnsentRequestResponse)
+    graphql(
+      AVAILABILITY_NOTIFY_APP,
+      processUnsentRequest(),
+      validateProcessUnsentRequestResponse
+    )
   })
 
   it('Delete Request', () => {
     cy.setDeleteId().then(deleteId => {
-      graphql(deleteRequest(deleteId.id), validateDeleteRequestResponse)
+      graphql(
+        AVAILABILITY_NOTIFY_APP,
+        deleteRequest(deleteId.id),
+        validateDeleteRequestResponse
+      )
     })
   })
 })
