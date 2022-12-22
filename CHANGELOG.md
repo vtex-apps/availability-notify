@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Fixed
+
+- Arabic, English and Norwegian translations.
+
+### Added
+
+- Catalan, Czech, German, Greek, Finnish, Hungarian, Indonesian, Polish, Russian, Swedish and Ukrainian translations.
+
 ### Added
 
 - GitHub dispatch workflow added
