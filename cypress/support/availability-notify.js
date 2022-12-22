@@ -9,7 +9,7 @@ import availabilityNotifySelectors from './selectors'
 import { MESSAGES } from './utils'
 
 export function verifyEmail(prefix) {
-  it(`${prefix} - Verifying email`, updateRetry(5), () => {
+  it.skip(`${prefix} - Verifying email`, updateRetry(5), () => {
     cy.addDelayBetweenRetries(30000)
     cy.getEmailItems().then(e => {
       graphql(listRequests(), response => {

@@ -9,28 +9,31 @@ import {
   updateProductStatus,
   updateAppSettings,
   configureBroadcasterAdapter,
+  generateEmailId,
 } from '../support/availability-notify.apis'
 
-const { data1, name, email, product } = testCase1
+const { name, product, warehouseId, skuId } = testCase1
 const workspace = Cypress.env().workspace.name
 const prefix = 'Marketplace to notify'
 
 describe('Testing market place to notify', () => {
   loginViaCookies()
 
+  const email = generateEmailId()
+
   configureBroadcasterAdapter(prefix, workspace)
 
   updateAppSettings(prefix, true)
 
-  updateProductStatus(prefix, data1, false)
+  updateProductStatus({ prefix, warehouseId, skuId, unlimited: false })
 
   subscribeToProductAlerts({ prefix, product, email, name })
 
   updateAppSettings(prefix, false)
 
-  updateProductStatus(prefix, data1, true)
+  updateProductStatus({ prefix, warehouseId, skuId, unlimited: true })
 
-  triggerBroadCaster(prefix, data1.skuId)
+  triggerBroadCaster(prefix, skuId)
 
   verifyEmail(prefix)
 

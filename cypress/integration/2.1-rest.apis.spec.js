@@ -6,13 +6,18 @@ import {
 import { loginViaCookies } from '../support/common/support'
 import { testCase1 } from '../support/outputvalidation'
 
-const { data1 } = testCase1
+const { skuId, warehouseId } = testCase1
 const prefix = 'Rest API'
 
 describe('Rest api', () => {
   loginViaCookies()
 
   processAllRequest()
-  updateProductStatus(prefix, data1, true)
+  updateProductStatus({
+    prefix,
+    warehouseId,
+    skuId,
+    unlimited: true,
+  })
   notifySearch(prefix)
 })

@@ -73,7 +73,16 @@ export function processUnsentRequest() {
   }
 }
 
-export function availabilitySubscribe(availabilityDatas) {
+export function availabilitySubscribe(availabilityData) {
+  const data = {
+    name: availabilityData.name,
+    email: availabilityData.email,
+    skuId: availabilityData.skuId,
+    sellerObj: {
+      sellerId: '',
+    },
+  }
+
   const query =
     'mutation' +
     '($name: String, $email: String, $skuId: String, $sellerObj: SellerObjInputType!)' +
@@ -81,7 +90,7 @@ export function availabilitySubscribe(availabilityDatas) {
 
   return {
     query,
-    queryVariables: availabilityDatas,
+    queryVariables: data,
   }
 }
 
@@ -91,10 +100,12 @@ export function validateGetVersionResponse(response) {
 
 export function validateDeleteRequestResponse(response) {
   expect(response.body.data).to.not.equal(null)
+  expect(response.body.data.deleteRequest).to.not.equal(false)
 }
 
 export function validateAvailabilitySubscribeRequestResponse(response) {
   expect(response.body.data).to.not.equal(null)
+  expect(response.body.data.availabilitySubscribe).to.not.equal(false)
 }
 
 export function validateListRequestResponse(response) {

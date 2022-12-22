@@ -1,30 +1,24 @@
+import products from './products'
+
 const config = Cypress.env()
 
 // Constants
 const { id } = config.base.gmail
 
 export default {
-  data1: {
-    skuId: '880223',
-    name: 'shashi',
-    email: id,
-    sellerObj: {
-      sellerId: '24',
-      sellerName: 'shashi',
-    },
-  },
-  data2: {
-    name: 'Shashi',
-    email: id,
-  },
   testCase1: {
-    data1: {
-      skuId: '880210',
-      warehouseId: '1_1',
-    },
+    skuId: '880210',
     name: 'Shashi',
     email: id,
-    product: 'weber spirit',
+    warehouseId: '1_1',
+    product: products.Weber.name,
+  },
+  testCase2: {
+    skuId: '880160',
+    warehouseId: '1_1',
+    name: 'Shashi',
+    email: id,
+    product: products.Lenovo.name,
   },
   appDetails: {
     app: 'vtex.availability-notify',

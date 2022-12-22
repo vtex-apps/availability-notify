@@ -1,5 +1,5 @@
 import { loginViaCookies, preserveCookie } from '../support/common/support'
-import { testCase1 } from '../support/outputvalidation'
+import { testCase2 } from '../support/outputvalidation'
 import { triggerBroadCaster } from '../support/broadcaster.api'
 import {
   subscribeToProductAlerts,
@@ -9,19 +9,22 @@ import {
   updateProductStatus,
   updateAppSettings,
   configureBroadcasterAdapter,
+  generateEmailId,
 } from '../support/availability-notify.apis'
 import availbalityNotifyProducts from '../support/products'
 
-const { data1, name, email } = testCase1
+const { name, warehouseId, skuId } = testCase2
 const workspace = Cypress.env().workspace.name
 const prefix = 'Availability notify'
 
 describe('Test availability notify scenarios', () => {
   loginViaCookies()
 
+  const email = generateEmailId()
+
   updateAppSettings(prefix, true)
 
-  updateProductStatus(prefix, data1, false)
+  updateProductStatus({ prefix, warehouseId, skuId, unlimited: false })
 
   subscribeToProductAlerts({
     prefix,
@@ -34,9 +37,9 @@ describe('Test availability notify scenarios', () => {
 
   updateAppSettings(prefix, false)
 
-  updateProductStatus(prefix, data1, true)
+  updateProductStatus({ prefix, warehouseId, skuId, unlimited: true })
 
-  triggerBroadCaster(prefix, data1.skuId)
+  triggerBroadCaster(prefix, skuId)
 
   verifyEmail(prefix)
 

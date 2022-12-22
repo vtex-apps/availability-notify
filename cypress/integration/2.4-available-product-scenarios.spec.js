@@ -7,7 +7,7 @@ import { testCase1 } from '../support/outputvalidation'
 import { triggerBroadCaster } from '../support/broadcaster.api'
 import { verifyEmail } from '../support/availability-notify'
 
-const { data1 } = testCase1
+const { skuId, warehouseId } = testCase1
 const workspace = Cypress.env().workspace.name
 const prefix = 'Update product as available'
 
@@ -16,9 +16,9 @@ describe('Update product as available and validate', () => {
 
   configureBroadcasterAdapter(prefix, workspace)
 
-  updateProductStatus(prefix, data1, true)
+  updateProductStatus({ prefix, warehouseId, skuId, unlimited: true })
 
-  triggerBroadCaster(prefix, data1.skuId)
+  triggerBroadCaster(prefix, skuId)
 
   verifyEmail(prefix)
 
