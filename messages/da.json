@@ -1,0 +1,22 @@
+{
+  "store/availability-notify.title": "Dette produkt er ikke tilgængeligt lige nu",
+  "store/availability-notify.notify-label": "Jeg vil gerne vide, hvornår dette produkt bliver tilgængeligt",
+  "store/availability-notify.email-placeholder": "E-mail",
+  "store/availability-notify.name-placeholder": "Navn",
+  "store/availability-notify.send-label": "Send",
+  "store/availability-notify.invalid-email": "Ugyldig e-mail",
+  "store/availability-notify.added-message": "E-mail blev registreret",
+  "store/availability-notify.error-register": "E-mail eksisterer allerede",
+  "store/availability-notify.error-message": "Mislykkedes, prøv igen",
+  "admin/availability-notify.menu.label": "Meddelelse om tilgængelighed",
+  "admin/request.menu.label": "Meddelelse om tilgængelighed",
+  "admin/settings.download": "Download forespørgsler",
+  "admin/settings.process-unsent": "Behandl alle ikke afsendte",
+  "admin/settings.verify-availability": "Bekræft tilgængelighed",
+  "admin/settings.marketplace-to-notify": "Markedsplads(er), der skal underrettes",
+  "admin/settings.download-helptext": "Download en XLS-fil med alle anmodninger om at give besked.",
+  "admin/settings.process-unsent-helptext": "Behandl alle ikke afsendte anmodninger om at give besked og download en XLS-fil med resultaterne.",
+  "admin/settings.verify-availability-helptext": "Kører en forsendelsessimulering for at bekræfte, at varen kan sendes til kunden, før der sendes en meddelelse.",
+  "admin/settings.marketplace-to-notify-helptext": "Giver en sælgerkonto mulighed for at angive en kommasepareret liste over kontonavne på markedspladsen, der skal underrettes om lageropdateringer.",
+  "admin/settings.label": "Indstillinger"
+}
