@@ -1,0 +1,22 @@
+{
+  "store/availability-notify.title": "Ta izdelek zdaj ni na voljo",
+  "store/availability-notify.notify-label": "Rad bi vedel, kdaj bo ta izdelek spet na voljo",
+  "store/availability-notify.email-placeholder": "E-pošta",
+  "store/availability-notify.name-placeholder": "Ime",
+  "store/availability-notify.send-label": "Pošlji",
+  "store/availability-notify.invalid-email": "Neveljavna e-pošta",
+  "store/availability-notify.added-message": "E-pošta je bila uspešno registrirana",
+  "store/availability-notify.error-register": "E-pošta že obstaja",
+  "store/availability-notify.error-message": "Ni uspelo, poskusite znova",
+  "admin/availability-notify.menu.label": "Obvestilo o razpoložljivosti",
+  "admin/request.menu.label": "Obvestilo o razpoložljivosti",
+  "admin/settings.download": "Prošnje za prenos",
+  "admin/settings.process-unsent": "Postopek ni bil poslan",
+  "admin/settings.verify-availability": "Preverite razpoložljivost",
+  "admin/settings.marketplace-to-notify": "Tržnica(-e), ki jo(-e) je treba obvestiti",
+  "admin/settings.download-helptext": "Prenesite datoteko XLS z vsemi zapisi zahtevkov za prijavo.",
+  "admin/settings.process-unsent-helptext": "Obdelajte vse neodposlane zahteve za obveščanje in prenesite datoteko XLS z rezultati.",
+  "admin/settings.verify-availability-helptext": "Izvede simulacijo pošiljanja, da preveri, ali je izdelek mogoče poslati kupcu, preden pošlje obvestilo.",
+  "admin/settings.marketplace-to-notify-helptext": "Računu prodajalca omogoča, da določi z vejico ločen seznam imen računov na tržnici, ki jih bo obveščal o posodobitvah zaloge.",
+  "admin/settings.label": "Nastavitve"
+}
