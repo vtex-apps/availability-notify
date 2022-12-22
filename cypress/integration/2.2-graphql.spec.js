@@ -12,7 +12,7 @@ import {
   validateProcessUnsentRequestResponse,
 } from '../support/availability-notify.graphql'
 import { loginViaCookies, updateRetry } from '../support/common/support'
-import { availabilityDatas } from '../support/outputvalidation'
+import { testCase1 } from '../support/outputvalidation'
 
 describe('Graphql queries', () => {
   loginViaCookies()
@@ -23,7 +23,7 @@ describe('Graphql queries', () => {
 
   it('Availability Subscriber Request', () => {
     graphql(
-      availabilitySubscribe(availabilityDatas),
+      availabilitySubscribe(testCase1),
       validateAvailabilitySubscribeRequestResponse
     )
   })

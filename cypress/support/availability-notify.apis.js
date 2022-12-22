@@ -28,13 +28,18 @@ export function processAllRequest() {
   })
 }
 
-export function updateProductStatus(prefix, data1, unlimited = false) {
+export function updateProductStatus({
+  prefix,
+  warehouseId,
+  skuId,
+  unlimited = false,
+}) {
   it(`${prefix} - update the product status`, updateRetry(3), () => {
     cy.addDelayBetweenRetries(2000)
     cy.getVtexItems().then(vtex => {
       cy.request({
         method: 'PUT',
-        url: updateProductStatusAPI(data1),
+        url: updateProductStatusAPI(warehouseId, skuId),
         headers: VTEX_AUTH_HEADER(vtex.apiKey, vtex.apiToken),
         ...FAIL_ON_STATUS_CODE,
         body: { unlimitedQuantity: unlimited, quantity: 0 },
