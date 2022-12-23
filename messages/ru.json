@@ -1,0 +1,22 @@
+{
+  "store/availability-notify.title": "В настоящий момент этот товар недоступен",
+  "store/availability-notify.notify-label": "Уведомите меня, когда этот товар появится в продаже",
+  "store/availability-notify.email-placeholder": "Эл. почта",
+  "store/availability-notify.name-placeholder": "Имя",
+  "store/availability-notify.send-label": "Отправить",
+  "store/availability-notify.invalid-email": "Недействительный адрес эл. почты",
+  "store/availability-notify.added-message": "Электронная почта зарегистрирована",
+  "store/availability-notify.error-register": "Такой адрес эл. почты уже зарегистрирован",
+  "store/availability-notify.error-message": "Ошибка. Повторите попытку.",
+  "admin/availability-notify.menu.label": "Уведомитель о наличии",
+  "admin/request.menu.label": "Уведомитель о наличии",
+  "admin/settings.download": "Загрузить запросы",
+  "admin/settings.process-unsent": "Обработать неотправленные",
+  "admin/settings.verify-availability": "Проверить наличие",
+  "admin/settings.marketplace-to-notify": "Торговые площадки, которые нужно уведомить",
+  "admin/settings.download-helptext": "Скачать файл XLS со всеми записями запросов об уведомлении.",
+  "admin/settings.process-unsent-helptext": "Обработать все неотправленные запросы и скачать файл XLS с результатами.",
+  "admin/settings.verify-availability-helptext": "Выполняет имитацию отправки для проверки возможности доставки товара покупателю прежде, чем отправлять уведомление.",
+  "admin/settings.marketplace-to-notify-helptext": "Позволяет продавцу указать разделённый запятыми список имён учётных записей торговой площадки, которые нужно уведомлять об обновлении запасов.",
+  "admin/settings.label": "Настройки"
+}
