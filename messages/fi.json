@@ -1,0 +1,22 @@
+{
+  "store/availability-notify.title": "Tämä tuote ei ole saatavilla juuri nyt",
+  "store/availability-notify.notify-label": "Haluan tietää, milloin tämä tuote tulee saataville",
+  "store/availability-notify.email-placeholder": "Sähköposti",
+  "store/availability-notify.name-placeholder": "Nimi",
+  "store/availability-notify.send-label": "Lähetä",
+  "store/availability-notify.invalid-email": "Virheellinen sähköpostiosoite",
+  "store/availability-notify.added-message": "Sähköpostiosoitteen rekisteröinti onnistui",
+  "store/availability-notify.error-register": "Sähköposti jo olemassa",
+  "store/availability-notify.error-message": "Epäonnistui, yritä uudelleen",
+  "admin/availability-notify.menu.label": "Saatavuusilmoittaja",
+  "admin/request.menu.label": "Saatavuusilmoittaja",
+  "admin/settings.download": "Latauspyynnöt",
+  "admin/settings.process-unsent": "Prosessi ei lähetetty",
+  "admin/settings.verify-availability": "Vahvista saatavuus",
+  "admin/settings.marketplace-to-notify": "Ilmoitettavat markkinapaikat",
+  "admin/settings.download-helptext": "Lataa XLS-tiedosto kaikista ilmoituspyyntötietueista.",
+  "admin/settings.process-unsent-helptext": "Käsittele kaikki lähettämättömät ilmoituspyynnöt ja lataa XLS-tiedosto tuloksista.",
+  "admin/settings.verify-availability-helptext": "Suorittaa toimitussimulaation varmistaakseen, että tuote voidaan lähettää ostajalle ennen ilmoituksen lähettämistä.",
+  "admin/settings.marketplace-to-notify-helptext": "Myyjätili voi määrittää pilkulla erotetun luettelon markkinapaikan tilien nimistä, joille ilmoitetaan varastopäivityksistä.",
+  "admin/settings.label": "Asetukset"
+}

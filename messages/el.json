@@ -1,0 +1,22 @@
+{
+  "store/availability-notify.title": "Αυτό το προϊόν δεν είναι διαθέσιμο αυτή τη στιγμή",
+  "store/availability-notify.notify-label": "Θέλω να γνωρίζω πότε θα είναι διαθέσιμο αυτό το προϊόν",
+  "store/availability-notify.email-placeholder": "Email",
+  "store/availability-notify.name-placeholder": "Όνομα",
+  "store/availability-notify.send-label": "Αποστολή",
+  "store/availability-notify.invalid-email": "Άκυρο email",
+  "store/availability-notify.added-message": "Το email καταχωρήθηκε με επιτυχία",
+  "store/availability-notify.error-register": "Το email υπάρχει ήδη",
+  "store/availability-notify.error-message": "Αποτυχία, δοκιμάστε ξανά",
+  "admin/availability-notify.menu.label": "Ειδοποιητής διαθεσιμότητας",
+  "admin/request.menu.label": "Ειδοποιητής διαθεσιμότητας",
+  "admin/settings.download": "Λήψη αιτημάτων",
+  "admin/settings.process-unsent": "Διαδικασία μη απεσταλμένων",
+  "admin/settings.verify-availability": "Επαλήθευση διαθεσιμότητας",
+  "admin/settings.marketplace-to-notify": "Αγορά(ες) προς ειδοποίηση",
+  "admin/settings.download-helptext": "Λήψη ενός αρχείου XLS όλων των αρχείων αιτημάτων ειδοποίησης.",
+  "admin/settings.process-unsent-helptext": "Επεξεργασία όλων των αιτημάτων μη απεσταλμένων προς ειδοποίηση και λήψη ενός αρχείου XLS των αποτελεσμάτων.",
+  "admin/settings.verify-availability-helptext": "Εκτελεί μια προσομοίωση αποστολής για να επαληθεύσει ότι το προϊόν μπορεί να αποσταλεί στον αγοραστή πριν από την αποστολή ειδοποίησης.",
+  "admin/settings.marketplace-to-notify-helptext": "Επιτρέπει σε έναν λογαριασμό πωλητή να καθορίσει μια λίστα που διαχωρίζεται με κόμμα των ονομάτων λογαριασμών της αγοράς για ειδοποίηση σχετικά με τις ενημερώσεις αποθεμάτων.",
+  "admin/settings.label": "Ρυθμίσεις"
+}

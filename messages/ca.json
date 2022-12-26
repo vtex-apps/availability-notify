@@ -1,0 +1,22 @@
+{
+  "store/availability-notify.title": "Ara mateix, aquest producte no està disponible",
+  "store/availability-notify.notify-label": "Vull saber quan estarà disponible aquest producte",
+  "store/availability-notify.email-placeholder": "Adreça electrònica",
+  "store/availability-notify.name-placeholder": "Nom",
+  "store/availability-notify.send-label": "Envia",
+  "store/availability-notify.invalid-email": "L'adreça electrònica no és vàlida",
+  "store/availability-notify.added-message": "S'ha registrat correctament l'adreça electrònica",
+  "store/availability-notify.error-register": "L'adreça electrònica ja està registrada",
+  "store/availability-notify.error-message": "No s'ha pogut completar l'operació. Torneu-ho a provar.",
+  "admin/availability-notify.menu.label": "Notificador de disponibilitat",
+  "admin/request.menu.label": "Notificador de disponibilitat",
+  "admin/settings.download": "Sol·licituds de baixada",
+  "admin/settings.process-unsent": "No s'ha enviat el procés",
+  "admin/settings.verify-availability": "Verifiqueu la disponibilitat",
+  "admin/settings.marketplace-to-notify": "Mercats virtuals als quals s'ha d'enviar una notificació",
+  "admin/settings.download-helptext": "Baixeu un fitxer XLS de tots els registres de sol·licitud de notificació.",
+  "admin/settings.process-unsent-helptext": "Processeu totes les sol·licituds de notificació que no s'hagin enviat i baixeu un fitxer XLS dels resultats.",
+  "admin/settings.verify-availability-helptext": "Realitza una simulació d'enviament per verificar que l'article es pot enviar a la botiga abans d'enviar una notificació.",
+  "admin/settings.marketplace-to-notify-helptext": "Permet que un compte de venedor especifiqui una llista separada per comes de noms de comptes de mercats virtuals als quals s'han de notificar les actualitzacions de l'inventari.",
+  "admin/settings.label": "Configuració"
+}

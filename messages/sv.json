@@ -1,0 +1,22 @@
+{
+  "store/availability-notify.title": "Denna produkt är inte tillgänglig just nu",
+  "store/availability-notify.notify-label": "Jag vill veta när denna produkten blir tillgänglig",
+  "store/availability-notify.email-placeholder": "E-postadress",
+  "store/availability-notify.name-placeholder": "Namn",
+  "store/availability-notify.send-label": "Skicka",
+  "store/availability-notify.invalid-email": "Ogiltig e-post",
+  "store/availability-notify.added-message": "E-postadressen registrerades framgångsrikt",
+  "store/availability-notify.error-register": "E-postadressen finns redan registrerad",
+  "store/availability-notify.error-message": "Misslyckades, vänligen försök igen",
+  "admin/availability-notify.menu.label": "Tillgänglighetsavisering",
+  "admin/request.menu.label": "Tillgänglighetsavisering",
+  "admin/settings.download": "Ladda ned Begäran",
+  "admin/settings.process-unsent": "Behandling oavsänd",
+  "admin/settings.verify-availability": "Verifiera tillgänglighet",
+  "admin/settings.marketplace-to-notify": "Marknadsplats(er) att avisera",
+  "admin/settings.download-helptext": "Ladda ner en XLS-fil med samtliga aviseringsbegäran.",
+  "admin/settings.process-unsent-helptext": "Behandla alla oavsända aviseringsbegäran och ladda ner en XLS-fil med resultaten.",
+  "admin/settings.verify-availability-helptext": "Kör en fraktsimulering för att verifiera att varan kan skickas till kunden innan du skickar ett meddelande.",
+  "admin/settings.marketplace-to-notify-helptext": "Tillåter ett säljarkonto att ange en kommaseparerad lista över marknadsplatskontonamn att meddela om lageruppdateringar.",
+  "admin/settings.label": "Inställningar"
+}
