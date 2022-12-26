@@ -1,0 +1,22 @@
+{
+  "store/availability-notify.title": "Saat ini printer ini tidak tersedia saat ini",
+  "store/availability-notify.notify-label": "Saya ingin tahu kapan produk ini menjadi tersedia",
+  "store/availability-notify.email-placeholder": "Email",
+  "store/availability-notify.name-placeholder": "Nama",
+  "store/availability-notify.send-label": "Kirim",
+  "store/availability-notify.invalid-email": "Email tidak valid",
+  "store/availability-notify.added-message": "Email berhasil didaftarkan",
+  "store/availability-notify.error-register": "Email sudah ada",
+  "store/availability-notify.error-message": "Gagal, silakan coba lagi",
+  "admin/availability-notify.menu.label": "Pemberi Tahu Ketersediaan",
+  "admin/request.menu.label": "Pemberi Tahu Ketersediaan",
+  "admin/settings.download": "Unduh Permintaan",
+  "admin/settings.process-unsent": "Proses Tidak Terkirim",
+  "admin/settings.verify-availability": "Verifikasi Ketersediaan",
+  "admin/settings.marketplace-to-notify": "Marketplace yang Akan Diberi Tahu",
+  "admin/settings.download-helptext": "Unduh file XLS dari semua data permintaan notifikasi.",
+  "admin/settings.process-unsent-helptext": "Proses semua permintaan pemberitahuan yang tidak terkirim dan unduh file XLS berisi hasilnya.",
+  "admin/settings.verify-availability-helptext": "Menjalankan simulasi pengiriman untuk memverifikasi bahwa item dapat dikirimkan ke pembeli sebelum mengirim pemberitahuan.",
+  "admin/settings.marketplace-to-notify-helptext": "Mengizinkan akun penjual untuk mencantumkan daftar yang dipisah koma berisi nama akun marketplace untuk memberi tahu pembaruan stok.",
+  "admin/settings.label": "Pengaturan"
+}

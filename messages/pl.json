@@ -1,0 +1,22 @@
+{
+  "store/availability-notify.title": "Ten produkt nie jest obecnie dostępny",
+  "store/availability-notify.notify-label": "Chcę wiedzieć, kiedy ten produkt będzie dostępny",
+  "store/availability-notify.email-placeholder": "E-mail",
+  "store/availability-notify.name-placeholder": "Nazwa",
+  "store/availability-notify.send-label": "Wyślij",
+  "store/availability-notify.invalid-email": "Niepoprawny e-mail",
+  "store/availability-notify.added-message": "E-mail pomyślnie zarejestrowany",
+  "store/availability-notify.error-register": "E-mail już istnieje",
+  "store/availability-notify.error-message": "Niepowodzenie, spróbuj ponownie",
+  "admin/availability-notify.menu.label": "Powiadomienie o dostępności",
+  "admin/request.menu.label": "Powiadomienie o dostępności",
+  "admin/settings.download": "Pobierz żądania",
+  "admin/settings.process-unsent": "Proces niewysłany",
+  "admin/settings.verify-availability": "Sprawdź dostępność",
+  "admin/settings.marketplace-to-notify": "Rynek (rynki), które należy powiadomić",
+  "admin/settings.download-helptext": "Pobierz plik XLS wszystkich rekordów żądania powiadomienia.",
+  "admin/settings.process-unsent-helptext": "Przetwarzaj wszystkie niewysłane żądania powiadomienia i pobierz plik XLS z wynikami.",
+  "admin/settings.verify-availability-helptext": "Uruchamia symulację wysyłki w celu sprawdzenia, czy przedmiot może być wysłany do kupującego przed wysłaniem powiadomienia.",
+  "admin/settings.marketplace-to-notify-helptext": "Pozwala kontu sprzedawcy na określenie oddzielonej przecinkami listy nazw kont na rynku, które mają być powiadamiane o aktualizacjach zapasów.",
+  "admin/settings.label": "Ustawienia"
+}

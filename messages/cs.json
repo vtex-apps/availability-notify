@@ -1,0 +1,22 @@
+{
+  "store/availability-notify.title": "Tento produkt není momentálně dostupný.",
+  "store/availability-notify.notify-label": "Chci dostat upozornění, až bude tento produkt dostupný",
+  "store/availability-notify.email-placeholder": "E-mail",
+  "store/availability-notify.name-placeholder": "Jméno",
+  "store/availability-notify.send-label": "Odeslat",
+  "store/availability-notify.invalid-email": "Neplatný e-mail",
+  "store/availability-notify.added-message": "E-mail byl úspěšně zaregistrován",
+  "store/availability-notify.error-register": "E-mail již existuje",
+  "store/availability-notify.error-message": "Registrace selhala, zkuste to prosím znovu",
+  "admin/availability-notify.menu.label": "Upozornění na dostupnost",
+  "admin/request.menu.label": "Upozornění na dostupnost",
+  "admin/settings.download": "Stáhnout požadavky",
+  "admin/settings.process-unsent": "Zpracovat neodeslané",
+  "admin/settings.verify-availability": "Ověřit dostupnost",
+  "admin/settings.marketplace-to-notify": "Tržiště, kterým bude odesláno upozornění",
+  "admin/settings.download-helptext": "Stáhnout všechny požadavky na upozornění ve formátu xls.",
+  "admin/settings.process-unsent-helptext": "Zpracovat všechny neodeslané požadavky na upozornění a stáhnout výsledky ve formátu xls.",
+  "admin/settings.verify-availability-helptext": "Před odesláním upozornění provede simulaci expedice pro ověření, že lze položku expedovat zákazníkovi.",
+  "admin/settings.marketplace-to-notify-helptext": "Umožňuje účtu prodejce vytvořit seznam čárkou oddělených názvů účtů na tržištích, které mají být upozorněny na změnu stavu zásob.",
+  "admin/settings.label": "Nastavení"
+}

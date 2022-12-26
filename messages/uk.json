@@ -1,0 +1,22 @@
+{
+  "store/availability-notify.title": "Наразі цей товар недоступний",
+  "store/availability-notify.notify-label": "Повідомте, коли цей товар з’явиться у продажу",
+  "store/availability-notify.email-placeholder": "Ел. пошта",
+  "store/availability-notify.name-placeholder": "Ім’я",
+  "store/availability-notify.send-label": "Надіслати",
+  "store/availability-notify.invalid-email": "Недійсна ел. пошта",
+  "store/availability-notify.added-message": "Ел. пошту зареєстровано",
+  "store/availability-notify.error-register": "Така ел. пошта вже існує",
+  "store/availability-notify.error-message": "Помилка. Повторіть спробу.",
+  "admin/availability-notify.menu.label": "Сповіщувач про наявність",
+  "admin/request.menu.label": "Сповіщувач про наявність",
+  "admin/settings.download": "Завантажити запити",
+  "admin/settings.process-unsent": "Обробити ненадіслані",
+  "admin/settings.verify-availability": "Перевірити наявність",
+  "admin/settings.marketplace-to-notify": "Торгові майданчики, які потрібно сповістити",
+  "admin/settings.download-helptext": "Завантажити файл XLS з усіма записами запитів про сповіщення.",
+  "admin/settings.process-unsent-helptext": "Обробити всі невідправлені запити та завантажити файл XLS із результатами.",
+  "admin/settings.verify-availability-helptext": "Виконує імітацію відправлення для перевірки можливості доставки товару покупцеві перш, ніж надсилати повідомлення.",
+  "admin/settings.marketplace-to-notify-helptext": "Дозволяє продавцю вказати розділений комами список імен облікових записів торгового майданчика, які потрібно повідомляти про оновлення запасів.",
+  "admin/settings.label": "Налаштування"
+}
