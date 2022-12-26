@@ -45,14 +45,12 @@ Cypress.Commands.add('openProduct', (product, detailPage = false) => {
   }
 })
 
-Cypress.Commands.add(
-  'setavailabilitySubscribeId',
-  (email, availabilityValue) => {
-    const data = availabilityValue.filter(a => a.email === email)
-
-    cy.writeFile(availabilityJson, data)
-  }
-)
+Cypress.Commands.add('setavailabilitySubscribeId', (item, itemValue) => {
+  cy.readFile(availabilityJson).then(items => {
+    items[item] = itemValue
+    cy.writeFile(availabilityJson, items)
+  })
+})
 
 Cypress.Commands.add('saveEmailId', email => {
   cy.writeFile(emailsJson, { email })
@@ -79,6 +77,6 @@ Cypress.Commands.add('subscribeToProduct', data => {
 
 Cypress.Commands.add('getRequests', () => {
   cy.readFile(availabilityJson).then(items => {
-    return items.listRequests
+    return items
   })
 })

@@ -33,10 +33,16 @@ describe('Graphql queries', () => {
   it('List Requests', updateRetry(3), () => {
     graphql(AVAILABILITY_NOTIFY_APP, listRequests(), response => {
       validateListRequestResponse(response)
-      cy.setavailabilitySubscribeId(
-        testCase1.email,
-        response.body.data.listRequests
-      )
+      cy.getRequests().then(request => {
+        const subscribedRequest = response.body.data.listRequests.filter(
+          r => r.email === request.subscribed_email
+        )
+
+        cy.setavailabilitySubscribeId(
+          'subscribed_request',
+          subscribedRequest[0]
+        )
+      })
     })
   })
 
@@ -52,7 +58,7 @@ describe('Graphql queries', () => {
     cy.getRequests().then(request => {
       graphql(
         AVAILABILITY_NOTIFY_APP,
-        deleteRequest(request[0].id),
+        deleteRequest(request.subscribed_request.id),
         validateDeleteRequestResponse
       )
     })

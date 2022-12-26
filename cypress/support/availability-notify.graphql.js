@@ -43,6 +43,7 @@ export function availabilitySubscribe(availabilityData) {
     },
   }
 
+  cy.setavailabilitySubscribeId('subscribed_email', availabilityData.email)
   const query =
     'mutation' +
     '($name: String, $email: String, $skuId: String, $sellerObj: SellerObjInputType!)' +
