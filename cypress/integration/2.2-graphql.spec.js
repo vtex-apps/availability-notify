@@ -33,7 +33,10 @@ describe('Graphql queries', () => {
   it('List Requests', updateRetry(3), () => {
     graphql(AVAILABILITY_NOTIFY_APP, listRequests(), response => {
       validateListRequestResponse(response)
-      cy.setavailabilitySubscribeId(response.body.data.listRequests)
+      cy.setavailabilitySubscribeId(
+        testCase1.email,
+        response.body.data.listRequests
+      )
     })
   })
 
