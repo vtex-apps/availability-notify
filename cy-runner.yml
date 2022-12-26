@@ -1,0 +1,107 @@
+---
+base:
+  secrets:
+    enabled: true
+    name: VTEX_QE
+  vtex:
+    account: productusqa
+    id: 2001459804
+    domain: myvtex.com
+    vtexIdUrl: https://vtexid.vtex.com.br/api/vtexid/pub/authenticate/default
+  jira:
+    enabled: true
+    account: vtex-dev
+    board: NOTIFIER
+    issueType: Bug
+    priority: High
+    testing: true
+  slack:
+    enabled: false
+    channel: some-channel
+  cypress:
+    devMode: false
+    runHeaded: false
+    enabled: false
+    projectId: wnpzgv
+    getCookies: true
+    maxJobs: 3
+    quiet: true
+    video: false
+    videoCompression: false
+    videoUploadOnPasses: false
+    screenshotOnRunFailure: true
+    trashAssetsBeforeRuns: false
+    viewportWidth: 1440
+    viewportHeight: 1500
+    defaultCommandTimeout: 25000
+    requestTimeout: 25000
+    watchForFileChanges: false
+    pageLoadTimeout: 45000
+    browser: chrome
+    chromeWebSecurity: false
+  stateFiles: ['.orders.json', '.emails.json', '.availability.json']
+workspace:
+  name: random
+  prefix: availabilitynotify
+  linkApp:
+    enabled: true
+    logOutput:
+      enabled: false
+  installApps:
+    # availability-notify theme will work only when its peer dependency availability-notify is added in the workspace
+    # So, installing availability-notify@1.x version
+    - vtex.availability-notify@1.x
+    # Published a new theme for store-theme E2E test
+    - vtex.availability-notify-qa-theme@0.0.2
+  removeApps:
+    - vtex.bitcot-qa-theme
+  wipe:
+    enabled: true
+    stopOnFail: false
+    specs:
+      - cypress/integration/wipe.spec.js
+  teardown:
+    enabled: true
+strategy:
+  api_testcase:
+    enabled: true
+    sendDashboard: true
+    hardTries: 1
+    stopOnFail: false
+    parallel: true
+    specs:
+      - cypress/integration/2.1-rest.apis.spec.js
+      - cypress/integration/2.2-graphql.spec.js
+  unavailable_product_testcases:
+    enabled: true
+    sendDashboard: true
+    hardTries: 1
+    stopOnFail: true
+    parallel: true
+    specs:
+      - cypress/integration/2.3-unavailable-product-scenarios.spec.js
+      - cypress/integration/2.5-external-product-unavailable-scenarios.spec.js
+  available_product_testcases:
+    enabled: true
+    sendDashboard: true
+    hardTries: 1
+    stopOnFail: true
+    parallel: true
+    specs:
+      - cypress/integration/2.4-available-product-scenarios.spec.js
+      - cypress/integration/2.6-external-product-available-scenario.spec.js
+    dependency:
+      - cypress/integration/2.3-unavailable-product-scenarios.spec.js
+      - cypress/integration/2.5-external-product-unavailable-scenarios.spec.js
+  configuration_testcase:
+    enabled: true
+    sendDashboard: true
+    hardTries: 1
+    stopOnFail: false
+    parallel: true
+    specs:
+      - cypress/integration/2.7-marketplace-to-notify-and-validate.spec.js
+      - cypress/integration/2.8-availability-notify-validate.spec.js
+    dependency:
+      - cypress/integration/2.4-available-product-scenarios.spec.js
+      - cypress/integration/2.6-external-product-available-scenario.spec.js

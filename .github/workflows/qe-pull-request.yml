@@ -27,7 +27,7 @@ jobs:
       dotnetSonar: true
       dotnetSonarProjectKey: vtex-apps_availability-notify-dotnet
       dotnetSonarOrganization: vtex-apps
-      cypress: false
+      cypress: true
     secrets:
       githubToken: ${{ secrets.GITHUB_TOKEN }}
       sonarToken: ${{ secrets.SONAR_TOKEN }}
