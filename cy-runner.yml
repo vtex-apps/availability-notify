@@ -19,7 +19,7 @@ base:
     enabled: false
     channel: some-channel
   cypress:
-    devMode: false
+    devMode: true
     runHeaded: false
     enabled: false
     projectId: wnpzgv
@@ -39,7 +39,7 @@ base:
     pageLoadTimeout: 45000
     browser: chrome
     chromeWebSecurity: false
-  stateFiles: ['.orders.json', '.emails.json']
+  stateFiles: ['.orders.json', '.emails.json', '.availability.json']
 workspace:
   name: random
   prefix: availabilitynotify
