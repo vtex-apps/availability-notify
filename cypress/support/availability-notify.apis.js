@@ -12,7 +12,7 @@ const app = 'vtex.availability-notify'
 const version = '1.x'
 
 export function processAllRequest() {
-  it('process all the requests', updateRetry(3), () => {
+  it('Process all the requests', updateRetry(3), () => {
     cy.addDelayBetweenRetries(2000)
     cy.getVtexItems(vtex => {
       cy.request({
