@@ -129,10 +129,18 @@ namespace AvailabilityNotify.Services
                 try
                 {
                     List<string> activeWarehouseIds = listAllWarehouses.Where(w => w.IsActive).Select(w => w.Id).ToList();
-                    long totalQuantity = inventoryBySku.Balance.Where(i => !i.HasUnlimitedQuantity && activeWarehouseIds.Contains(i.WarehouseId)).Sum(i => i.TotalQuantity);
-                    long totalReseved = inventoryBySku.Balance.Where(i => !i.HasUnlimitedQuantity && activeWarehouseIds.Contains(i.WarehouseId)).Sum(i => i.ReservedQuantity);
-                    totalAvailable = totalQuantity - totalReseved;
-                    _context.Vtex.Logger.Debug("GetTotalAvailableForSku", null, $"Sku '{sku}' {totalQuantity} - {totalReseved} = {totalAvailable}");
+                    if (inventoryBySku.Balance.Any(i => i.HasUnlimitedQuantity && activeWarehouseIds.Contains(i.WarehouseId)))
+                    {
+                        totalAvailable = 1; // We only need available to be greater than zero to be in stock
+                        _context.Vtex.Logger.Debug("GetTotalAvailableForSku", null, $"Sku '{sku}' Has Unlimited Quantity.");
+                    }
+                    else
+                    {
+                        long totalQuantity = inventoryBySku.Balance.Where(i => activeWarehouseIds.Contains(i.WarehouseId)).Sum(i => i.TotalQuantity);
+                        long totalReseved = inventoryBySku.Balance.Where(i => activeWarehouseIds.Contains(i.WarehouseId)).Sum(i => i.ReservedQuantity);
+                        totalAvailable = totalQuantity - totalReseved;
+                        _context.Vtex.Logger.Debug("GetTotalAvailableForSku", null, $"Sku '{sku}' {totalQuantity} - {totalReseved} = {totalAvailable}");
+                    }
                 }
                 catch (Exception ex)
                 {
