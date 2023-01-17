@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [1.10.0] - 2023-01-17
+
 ### Changed
 
 - Consider unlimited inventory as in-stock
