@@ -8,7 +8,7 @@ const emailsJson = '.emails.json'
 Cypress.Commands.add('gotoProductDetailPage', () => {
   cy.get(selectors.ProductAnchorElement)
     .should('have.attr', 'href')
-    .then((href) => {
+    .then(href => {
       cy.get(generateAddtoCartCardSelector(href)).first().click()
     })
 })
@@ -46,13 +46,13 @@ Cypress.Commands.add('openProduct', (product, detailPage = false) => {
 })
 
 Cypress.Commands.add('setavailabilitySubscribeId', (item, itemValue) => {
-  cy.readFile(availabilityJson).then((items) => {
+  cy.readFile(availabilityJson).then(items => {
     items[item] = itemValue
     cy.writeFile(availabilityJson, items)
   })
 })
 
-Cypress.Commands.add('saveEmailId', (email) => {
+Cypress.Commands.add('saveEmailId', email => {
   cy.writeFile(emailsJson, { email })
 })
 
@@ -61,12 +61,12 @@ Cypress.Commands.add('getGmailItems', () => {
 })
 
 Cypress.Commands.add('getEmailItems', () => {
-  cy.readFile(emailsJson).then((email) => {
+  cy.readFile(emailsJson).then(email => {
     return email
   })
 })
 
-Cypress.Commands.add('subscribeToProduct', (data) => {
+Cypress.Commands.add('subscribeToProduct', data => {
   cy.saveEmailId(data.email)
   cy.get(availabilityNotifySelectors.name).type(data.name)
   cy.get(availabilityNotifySelectors.email).type(data.email)
@@ -76,7 +76,7 @@ Cypress.Commands.add('subscribeToProduct', (data) => {
 })
 
 Cypress.Commands.add('getRequests', () => {
-  cy.readFile(availabilityJson).then((items) => {
+  cy.readFile(availabilityJson).then(items => {
     return items
   })
 })
