@@ -1,6 +1,5 @@
 import { loginViaCookies, preserveCookie } from '../support/common/support'
 import { testCase1 } from '../support/outputvalidation'
-import { triggerBroadCaster } from '../support/broadcaster.api'
 import {
   subscribeToProductAlerts,
   verifyEmail,
@@ -32,8 +31,6 @@ describe('Testing market place to notify', () => {
   updateAppSettings(prefix, false)
 
   updateProductStatus({ prefix, warehouseId, skuId, unlimited: true })
-
-  triggerBroadCaster(prefix, skuId)
 
   verifyEmail(prefix)
 

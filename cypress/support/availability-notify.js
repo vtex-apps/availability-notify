@@ -10,18 +10,18 @@ import { MESSAGES } from './utils'
 import { AVAILABILITY_NOTIFY_APP } from './graphql_apps'
 
 export function verifyEmail(prefix) {
-  it.skip(`${prefix} - Verifying email`, updateRetry(5), () => {
+  it(`${prefix} - Verifying email`, updateRetry(5), () => {
     cy.addDelayBetweenRetries(30000)
-    cy.getEmailItems().then(e => {
-      graphql(AVAILABILITY_NOTIFY_APP, listRequests(), response => {
+    cy.getEmailItems().then((e) => {
+      graphql(AVAILABILITY_NOTIFY_APP, listRequests(), (response) => {
         validateListRequestResponse(response)
         const list = response.body.data.listRequests
-        const request = list.filter(req => req.email === e.email)
+        const request = list.filter((req) => req.email === e.email)
         const notification = request[0].notificationSent !== 'false'
 
         expect(notification).to.be.true
       })
-      cy.getGmailItems().then(async gmail => {
+      cy.getGmailItems().then(async (gmail) => {
         const gmailCreds = {
           clientId: gmail.clientId,
           clientSecret: gmail.clientSecret,

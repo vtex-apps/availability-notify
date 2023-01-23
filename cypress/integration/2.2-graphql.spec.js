@@ -31,11 +31,11 @@ describe('Graphql queries', () => {
   })
 
   it('List Requests', updateRetry(3), () => {
-    graphql(AVAILABILITY_NOTIFY_APP, listRequests(), response => {
+    graphql(AVAILABILITY_NOTIFY_APP, listRequests(), (response) => {
       validateListRequestResponse(response)
-      cy.getRequests().then(request => {
+      cy.getRequests().then((request) => {
         const subscribedRequest = response.body.data.listRequests.filter(
-          r => r.email === request.subscribed_email
+          (r) => r.email === request.subscribed_email
         )
 
         cy.setavailabilitySubscribeId(
@@ -55,7 +55,7 @@ describe('Graphql queries', () => {
   })
 
   it('Delete Request', () => {
-    cy.getRequests().then(request => {
+    cy.getRequests().then((request) => {
       graphql(
         AVAILABILITY_NOTIFY_APP,
         deleteRequest(request.subscribed_request.id),

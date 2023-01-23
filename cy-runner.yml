@@ -63,7 +63,7 @@ workspace:
   teardown:
     enabled: true
 strategy:
-  api_testcase:
+  post_setup_api_graphql_testcase:
     enabled: true
     sendDashboard: true
     hardTries: 1
@@ -72,6 +72,7 @@ strategy:
     specs:
       - cypress/integration/2.1-rest.apis.spec.js
       - cypress/integration/2.2-graphql.spec.js
+      - cypress/integration/post_setup.spec.js
   unavailable_product_testcases:
     enabled: true
     sendDashboard: true
