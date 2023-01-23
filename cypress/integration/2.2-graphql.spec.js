@@ -30,28 +30,23 @@ describe('Graphql queries', () => {
     )
   })
 
-  it('List Requests', updateRetry(3), () => {
-    graphql(AVAILABILITY_NOTIFY_APP, listRequests(), (response) => {
-      validateListRequestResponse(response)
-      cy.getRequests().then((request) => {
-        const subscribedRequest = response.body.data.listRequests.filter(
-          (r) => r.email === request.subscribed_email
-        )
-
-        cy.setavailabilitySubscribeId(
-          'subscribed_request',
-          subscribedRequest[0]
-        )
-      })
-    })
-  })
-
   it('Process Unsent Requests', updateRetry(3), () => {
     graphql(
       AVAILABILITY_NOTIFY_APP,
       processUnsentRequest(),
       validateProcessUnsentRequestResponse
     )
+  })
+
+  it('List Requests', updateRetry(3), () => {
+    graphql(AVAILABILITY_NOTIFY_APP, listRequests(), (response) => {
+      validateListRequestResponse(response)
+      const subscribedRequest = response.body.data.listRequests.filter(
+        (r) => r.email === testCase1.email
+      )
+
+      cy.setavailabilitySubscribeId('subscribed_request', subscribedRequest[0])
+    })
   })
 
   it('Delete Request', () => {
