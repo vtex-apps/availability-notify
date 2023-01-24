@@ -12,7 +12,6 @@ import {
 import availbalityNotifyProducts from '../support/products'
 
 const { name, warehouseId, skuId } = testCase2
-const workspace = Cypress.env().workspace.name
 const prefix = 'Availability notify'
 
 describe('Test availability notify scenarios', () => {

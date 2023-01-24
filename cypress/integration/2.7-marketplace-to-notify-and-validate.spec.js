@@ -11,7 +11,6 @@ import {
 } from '../support/availability-notify.apis'
 
 const { name, product, warehouseId, skuId } = testCase1
-const workspace = Cypress.env().workspace.name
 const prefix = 'Marketplace to notify'
 
 describe('Testing market place to notify', () => {
