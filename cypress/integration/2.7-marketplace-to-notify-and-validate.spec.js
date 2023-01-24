@@ -7,7 +7,6 @@ import {
 import {
   updateProductStatus,
   updateAppSettings,
-  configureBroadcasterAdapter,
   generateEmailId,
 } from '../support/availability-notify.apis'
 
@@ -19,8 +18,6 @@ describe('Testing market place to notify', () => {
   loginViaCookies()
 
   const email = generateEmailId()
-
-  configureBroadcasterAdapter(prefix, workspace)
 
   updateAppSettings(prefix, true)
 

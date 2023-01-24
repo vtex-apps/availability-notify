@@ -7,7 +7,6 @@ import {
 import {
   updateProductStatus,
   updateAppSettings,
-  configureBroadcasterAdapter,
   generateEmailId,
 } from '../support/availability-notify.apis'
 import availbalityNotifyProducts from '../support/products'
@@ -31,8 +30,6 @@ describe('Test availability notify scenarios', () => {
     email,
     name,
   })
-
-  configureBroadcasterAdapter(prefix, workspace)
 
   updateAppSettings(prefix, false)
 

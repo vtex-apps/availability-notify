@@ -77,7 +77,7 @@ strategy:
     enabled: true
     sendDashboard: true
     hardTries: 1
-    stopOnFail: true
+    stopOnFail: false
     parallel: true
     specs:
       - cypress/integration/2.3-unavailable-product-scenarios.spec.js
@@ -86,7 +86,7 @@ strategy:
     enabled: true
     sendDashboard: true
     hardTries: 1
-    stopOnFail: true
+    stopOnFail: false
     parallel: true
     specs:
       - cypress/integration/2.4-available-product-scenarios.spec.js
