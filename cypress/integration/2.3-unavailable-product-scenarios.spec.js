@@ -1,5 +1,5 @@
 import availabilityNotifySelectors from '../support/selectors'
-import { loginViaCookies, updateRetry } from '../support/common/support'
+import { loginViaAPI, updateRetry } from '../support/common/support'
 import { testCase1 } from '../support/outputvalidation'
 import {
   generateEmailId,
@@ -9,10 +9,11 @@ import { subscribeToProductAlerts } from '../support/availability-notify'
 import { MESSAGES } from '../support/utils'
 
 const { name, product, warehouseId, skuId } = testCase1
+
 const prefix = 'Update product as unavailable'
 
 describe('Updating product as unavailable', () => {
-  loginViaCookies()
+  loginViaAPI()
 
   const email = generateEmailId()
 

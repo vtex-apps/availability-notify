@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added
+
+- [ENGINEERS-282] - Verify user gets email on product availability
+
 ## [1.10.0] - 2023-01-17
 
 ### Changed

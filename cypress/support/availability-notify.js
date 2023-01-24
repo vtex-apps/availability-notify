@@ -10,7 +10,7 @@ import { MESSAGES } from './utils'
 import { AVAILABILITY_NOTIFY_APP } from './graphql_apps'
 
 export function verifyEmail(prefix) {
-  it.skip(`${prefix} - Verifying email`, updateRetry(5), () => {
+  it(`${prefix} - Verifying email`, updateRetry(5), () => {
     cy.addDelayBetweenRetries(30000)
     cy.getEmailItems().then(e => {
       graphql(AVAILABILITY_NOTIFY_APP, listRequests(), response => {
