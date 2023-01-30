@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 
 ### Added
+- Added check for admin token to list requests
+
+### Added
 
 - [ENGINEERS-282] - Verify user gets email on product availability
 
