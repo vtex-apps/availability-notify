@@ -2,6 +2,7 @@ namespace service.Controllers
 {
     using System;
     using System.Collections.Generic;
+    using System.Net;
     using System.Threading.Tasks;
     using AvailabilityNotify.Models;
     using AvailabilityNotify.Services;
@@ -71,8 +72,16 @@ namespace service.Controllers
 
         public async Task<IActionResult> ListNotifyRequests()
         {
-            NotifyRequest[] results = await _vtexAPIService.ListNotifyRequests();
-            return Json(results);
+            HttpStatusCode isValidAdminToken = await _vtexAPIService.IsValidAuthUser();
+            if (isValidAdminToken.Equals(HttpStatusCode.OK))
+            {
+                NotifyRequest[] results = await _vtexAPIService.ListNotifyRequests();
+                return Json(results);
+            }
+            else
+            {
+                return Unauthorized();
+            }
         }
     }
 }
