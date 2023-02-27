@@ -1,6 +1,6 @@
 /* eslint-disable */
 import { updateProductStatusAPI, getProcessAllRequestAPI } from './product.api'
-import { VTEX_AUTH_HEADER, FAIL_ON_STATUS_CODE } from './common/constants'
+import { VTEX_AUTH_HEADER, FAIL_ON_STATUS_CODE,FAIL_ON_STATUS_CODE_STRING} from './common/constants'
 import { updateRetry } from './common/support'
 
 const config = Cypress.env()
@@ -35,8 +35,16 @@ export function updateProductStatus({
   unlimited = false,
 }) {
   it(`${prefix} - Update the product status`, updateRetry(3), () => {
+    cy.qe( `Updating the product status`)
     cy.addDelayBetweenRetries(2000)
     cy.getVtexItems().then(vtex => {
+      cy.qe(`cy.request({
+        method: 'PUT',
+        url: https://productusqa.vtexcommercestable.com.br/api/logistics/pvt/inventory/skus/${skuId}/warehouses/${warehouseId},
+        ${`headers: ${VTEX_AUTH_HEADER(vtex.apiKey, vtex.apiToken)}`},
+        ${FAIL_ON_STATUS_CODE_STRING},
+        body: { unlimitedQuantity: unlimited, quantity: 0 },
+      })`)
       cy.request({
         method: 'PUT',
         url: updateProductStatusAPI(warehouseId, skuId),
@@ -55,6 +63,13 @@ export function notifySearch(prefix) {
     cy.addDelayBetweenRetries(2000)
 
     cy.getVtexItems().then(vtex => {
+     
+      cy.qe(`cy.request({
+        method: 'GET',
+        url: https://${vtex.account}.myvtex.com/api/dataentities/notify/search?_schema=reviewsSchema&_fields=email,skuId,name,createdAt,
+        ${`headers: ${VTEX_AUTH_HEADER(vtex.apiKey, vtex.apiToken)}`},
+        ${FAIL_ON_STATUS_CODE_STRING},
+      })`)
       cy.request({
         method: 'GET',
         url: `https://${vtex.account}.myvtex.com/api/dataentities/notify/search?_schema=reviewsSchema&_fields=email,skuId,name,createdAt`,
@@ -76,16 +91,34 @@ export function updateAppSettings(prefix, doShippingSim = false) {
       const APP = `${APP_NAME}@${APP_VERSION}`
       const CUSTOM_URL = `${vtex.baseUrl}/_v/private/admin-graphql-ide/v0/${APP}`
 
+      cy.qe('Configuting app settings')
+
+
       const GRAPHQL_MUTATION =
         'mutation' +
         '($app:String,$version:String,$settings:String)' +
         '{saveAppSettings(app:$app,version:$version,settings:$settings){message}}'
+
+        
 
       const QUERY_VARIABLES = {
         app,
         version,
         settings: `{\"doShippingSim\":${doShippingSim},\"notifyMarketplace\":\"productusqaseller\"}`,
       }
+      cy.addGraphqlLogs({query :GRAPHQL_MUTATION , QUERY_VARIABLES})
+
+      cy.qe(`cy.request({
+        method:'POST',
+        url:${CUSTOM_URL},
+        ${FAIL_ON_STATUS_CODE_STRING},
+        body:{
+          query: ${GRAPHQL_MUTATION},
+          variables: ${QUERY_VARIABLES}
+        }
+      })`)
+
+
       // Mutating it to the new workspace
       cy.request({
         method: 'POST',
@@ -106,6 +139,7 @@ export function configureBroadcasterAdapter(prefix, workspace = 'master') {
     `${prefix} - Register target workspace as ${workspace} in ${BROADCASTER_APP}`,
     updateRetry(2),
     () => {
+      cy.qe(`Register target workspace as ${workspace} in ${BROADCASTER_APP}`)
       cy.getVtexItems().then(vtex => {
         // Define constants
         const APP_NAME = 'vtex.apps-graphql'
@@ -123,6 +157,19 @@ export function configureBroadcasterAdapter(prefix, workspace = 'master') {
           version: '0.x',
           settings: `{"targetWorkspace":"${workspace}"}`,
         }
+        cy.addGraphqlLogs({query :GRAPHQL_MUTATION , QUERY_VARIABLES})
+
+
+        cy.qe(`cy.request({
+          method:'POST',
+          url:${CUSTOM_URL},
+          ${FAIL_ON_STATUS_CODE_STRING},
+          body:{
+            query: ${GRAPHQL_MUTATION},
+            variables: ${QUERY_VARIABLES}
+          }
+        })`)
+
 
         // Mutating it to the new workspace
         cy.request({

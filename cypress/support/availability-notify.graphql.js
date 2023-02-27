@@ -1,4 +1,9 @@
 export function version() {
+  cy.qe(`Get version via graphql`)
+  const query = 'query' + '{version}'
+
+  cy.addGraphqlLogs(query)
+
   return {
     query: 'query' + '{version}',
     queryVariables: {},
@@ -7,6 +12,8 @@ export function version() {
 
 export function deleteRequest(deleteId) {
   const query = 'mutation' + '($id: String)' + '{deleteRequest(id: $id)}'
+
+  cy.addGraphqlLogs(query, deleteId)
 
   return {
     query,
@@ -17,6 +24,12 @@ export function deleteRequest(deleteId) {
 }
 
 export function listRequests() {
+  const query =
+    'query' +
+    '{listRequests{id,name,email,skuId, notificationSent, notificationSentAt}}'
+
+  cy.addGraphqlLogs(query)
+
   return {
     query:
       'query' +
@@ -27,6 +40,10 @@ export function listRequests() {
 }
 
 export function processUnsentRequest() {
+  const query = 'mutation' + '{processUnsentRequests{email,skuId,sent}}'
+
+  cy.addGraphqlLogs(query)
+
   return {
     query: 'mutation' + '{processUnsentRequests{email,skuId,sent}}',
     queryVariables: {},
@@ -48,6 +65,8 @@ export function availabilitySubscribe(availabilityData) {
     'mutation' +
     '($name: String, $email: String, $skuId: String, $sellerObj: SellerObjInputType!)' +
     '{availabilitySubscribe(name: $name, email: $email, skuId: $skuId, sellerObj: $sellerObj)}'
+
+  cy.addGraphqlLogs(query, data)
 
   return {
     query,
