@@ -80,8 +80,6 @@ export function updateAppSettings(prefix, doShippingSim = false) {
       const APP = `${APP_NAME}@${APP_VERSION}`
       const CUSTOM_URL = `${vtex.baseUrl}/_v/private/admin-graphql-ide/v0/${APP}`
 
-      cy.qe('Configuting app settings')
-
       const GRAPHQL_MUTATION =
         'mutation' +
         '($app:String,$version:String,$settings:String)' +
@@ -103,8 +101,7 @@ export function updateAppSettings(prefix, doShippingSim = false) {
           query: GRAPHQL_MUTATION,
           variables: QUERY_VARIABLES,
         },
-      })
-      .its('body.data.saveAppSettings.message', { timeout: 10000 })
+      }).its('body.data.saveAppSettings.message', { timeout: 10000 })
     })
   })
 }
