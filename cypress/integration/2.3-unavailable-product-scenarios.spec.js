@@ -26,6 +26,7 @@ describe('Updating product as unavailable', () => {
     updateRetry(3),
     () => {
       cy.subscribeToProduct({ email, name })
+      cy.qe(`Verify email existance ${MESSAGES.EmailAlreadyExist}`)
       cy.get(availabilityNotifySelectors.AvailabilityNotifyAlert).should(
         'have.text',
         MESSAGES.EmailAlreadyExist

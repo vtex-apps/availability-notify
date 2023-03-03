@@ -11,6 +11,7 @@ import { AVAILABILITY_NOTIFY_APP } from './graphql_apps'
 
 export function verifyEmail(prefix) {
   it(`${prefix} - Verifying email`, updateRetry(5), () => {
+    cy.qe('Verifying email')
     cy.addDelayBetweenRetries(30000)
     cy.getEmailItems().then(e => {
       graphql(AVAILABILITY_NOTIFY_APP, listRequests(), response => {
