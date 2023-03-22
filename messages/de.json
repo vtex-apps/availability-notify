@@ -13,10 +13,10 @@
   "admin/settings.download": "Download-Anfragen",
   "admin/settings.process-unsent": "Prozess nicht abgeschickt",
   "admin/settings.verify-availability": "Verfügbarkeit überprüfen",
-  "admin/settings.marketplace-to-notify": "Zu benachrichtigende(r) Marktplatz(e)",
+  "admin/settings.marketplace-to-notify": "Zu benachrichtigende Marketplaces",
   "admin/settings.download-helptext": "XLS-Datei mit allen Datensätzen von Notifizierungsanträgen herunterladen.",
   "admin/settings.process-unsent-helptext": "Verarbeiten Sie alle nicht gesendeten Anfragen, um sie zu benachrichtigen und eine XLS-Datei mit den Ergebnissen herunterzuladen.",
   "admin/settings.verify-availability-helptext": "Führt eine Versandsimulation durch, um zu prüfen, ob der Artikel an den Käufer versandt werden kann, bevor eine Benachrichtigung gesendet wird.",
-  "admin/settings.marketplace-to-notify-helptext": "Ermöglicht es einem Verkäuferkonto, eine durch Kommata getrennte Liste von Marktplatzkontonamen anzugeben, die über Bestandsaktualisierungen informiert werden sollen.",
+  "admin/settings.marketplace-to-notify-helptext": "Ermöglicht es einem Verkäuferkonto, eine durch Kommata getrennte Liste von Marketplacekontonamen anzugeben, die über Bestandsaktualisierungen informiert werden sollen.",
   "admin/settings.label": "Einstellungen"
 }
