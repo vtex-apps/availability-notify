@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Fixed
+
+- Change provider version to mutation SaveAppSettings
+
 ## [1.11.1] - 2023-03-30
 
 ### Fixed
