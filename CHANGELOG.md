@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Fixed
+
+- Discard catalog broadcaster events earlier if they are not inventory-related, avoiding unneccesary calls to vbase
+
 ## [1.11.1] - 2023-03-30
 
 ### Fixed
@@ -15,6 +19,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [1.11.0] - 2023-01-30
 
 ### Added
+
 - Added check for admin token to list requests
 
 ### Added
