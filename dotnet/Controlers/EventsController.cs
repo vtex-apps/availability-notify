@@ -60,7 +60,19 @@ namespace service.Controllers
                     _context.Vtex.Logger.Warn("BroadcasterNotification", null, "Empty Sku");
                     Interlocked.Decrement(ref Throttle.counter);
 
-                    return BadRequest();
+                    // return OK so that notification is not retried
+                    return Ok();
+                }
+
+                bool isActive = notification.IsActive;
+                bool inventoryUpdated = notification.StockModified;
+                if (!isActive || !inventoryUpdated)
+                {
+                    // If SKU is not active or inventory hasn't changed, notification is not relevant
+                    Interlocked.Decrement(ref Throttle.counter);
+
+                    // return OK so that notification is not retried
+                    return Ok();
                 }
 
                 DateTime processingStarted = _availabilityRepository.CheckImportLock(skuId).Result;
