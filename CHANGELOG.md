@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [1.11.2] - 2023-08-08
+
 ### Fixed
 
 - Discard catalog broadcaster events earlier if they are not inventory-related, avoiding unneccesary calls to vbase
