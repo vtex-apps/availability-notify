@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Fixed
+
+- Allow non VTEX emails to save app settings, as it was throwing a 403 error when trying to perform this operation
+
 ## [1.11.3] - 2023-08-17
 
 ### Changed
