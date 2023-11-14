@@ -189,7 +189,7 @@ namespace AvailabilityNotify.Services
                 searchFrom = 0;
             }
 
-            int searchTo = searchFrom + 99;
+            int searchTo = (searchFrom ?? 0) + 99;
 
             string url = $"http://{requestContext.Account}.vtexcommercestable.com.br/api/dataentities/{Constants.DATA_ENTITY}/search?_fields={Constants.FIELDS}&_schema={Constants.SCHEMA}&{searchString}";
             ResponseWrapper responseWrapper = await this.SendRequest(url, HttpMethod.Get, null, searchFrom.ToString(), searchTo.ToString());
