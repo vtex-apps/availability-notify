@@ -279,13 +279,8 @@ namespace AvailabilityNotify.Services
 
         public async Task ClearImportLock(string sku)
         {
-            var processingLock = new Lock
-            {
-                ProcessingStarted = new DateTime(),
-            };
-
             string url = $"http://infra.io.vtex.com/vbase/v2/{this._httpContextAccessor.HttpContext.Request.Headers[Constants.VTEX_ACCOUNT_HEADER_NAME]}/{this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_WORKSPACE]}/buckets/{this._applicationName}/{Constants.BUCKET}/files/{Constants.LOCK}-{sku}";
-            ResponseWrapper responseWrapper = await this.SendRequest(url, HttpMethod.Put, processingLock);
+            ResponseWrapper responseWrapper = await this.SendRequest(url, HttpMethod.Delete);
             if (!responseWrapper.IsSuccess)
             {
                 _context.Vtex.Logger.Error("ClearImportLock", null, $"Failed to clear lock. {responseWrapper.Message} Sku: {sku}");
