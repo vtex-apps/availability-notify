@@ -75,7 +75,7 @@ namespace service.Controllers
                     return Ok();
                 }
 
-                DateTime processingStarted = _availabilityRepository.CheckImportLock(skuId).Result;
+                DateTime processingStarted = await _availabilityRepository.CheckImportLock(skuId);
                 TimeSpan elapsedTime = DateTime.Now - processingStarted;
                 if (elapsedTime.TotalMinutes < 1)
                 {
