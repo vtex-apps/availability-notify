@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Changed
+- Skip call to delete lockfile
+
 ## [1.11.4] - 2023-11-14
 
 ### Changed
