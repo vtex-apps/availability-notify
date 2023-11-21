@@ -377,7 +377,7 @@ namespace AvailabilityNotify.Services
                 request.Headers.Add(Constants.PROXY_AUTHORIZATION_HEADER_NAME, authToken);
             }
 
-            request.Headers.TryAddWithoutValidation(Constants.VTEX_USER_AGENT_KEY , _context.Vtex.App.Vendor + "." + _context.Vtex.App.Name + "@" + _context.Vtex.App.Major);
+            request.Headers.TryAddWithoutValidation(Constants.VTEX_USER_AGENT_KEY , _context.Vtex.App.Vendor + "." + _context.Vtex.App.Name + "@" + _context.Vtex.App.Version);
 
             var client = _clientFactory.CreateClient();
 
