@@ -90,7 +90,7 @@ namespace service.Controllers
                 bool processed = _vtexAPIService.ProcessNotification(notification).Result;
                 _context.Vtex.Logger.Info("BroadcasterNotification", null, $"Processed Notification? {processed} : {bodyAsText}");
 
-                _ = _availabilityRepository.ClearImportLock(skuId);
+                // _ = _availabilityRepository.ClearImportLock(skuId);
             }
             catch (Exception ex)
             {
