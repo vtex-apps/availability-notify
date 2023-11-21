@@ -296,7 +296,7 @@ namespace AvailabilityNotify.Services
         {
             var account = _httpContextAccessor.HttpContext.Request.Headers[Constants.VTEX_ACCOUNT_HEADER_NAME];
             var workspace = _httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_WORKSPACE];
-            string url = $"http://{account}.vtexcommercestable.com.br/api/dataentities/{Constants.LOCK}-{workspace}/documents/{sku}";
+            string url = $"http://{account}.vtexcommercestable.com.br/api/dataentities/{Constants.LOCK}/documents/{workspace}-{sku}";
             return url;
         }
 
