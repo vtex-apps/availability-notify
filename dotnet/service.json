@@ -38,7 +38,8 @@
   },
   "events": {
     "broadcasterNotification": {
-      "keys": ["broadcaster.notification"]
+      "sender": "vtex.broadcast",
+      "keys": [ "broadcaster.notification" ]
     },
     "OnAppInstalled": {
       "sender": "apps",
