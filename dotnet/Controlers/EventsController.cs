@@ -80,7 +80,7 @@ namespace service.Controllers
                 if (elapsedTime.TotalMinutes < 1)
                 {
                     // Commenting this out to reduce noise
-                    //_context.Vtex.Logger.Warn("BroadcasterNotification", null, $"Sku {skuId} blocked by lock.  Processing started: {processingStarted}");
+                    _context.Vtex.Logger.Warn("BroadcasterNotification", null, $"Sku {skuId} blocked by lock.  Processing started: {processingStarted}");
                     Interlocked.Decrement(ref Throttle.counter);
                     return Ok();
                 }
