@@ -1,0 +1,22 @@
+{
+    "store/availability-notify.title": "Questo prodotto non è al momento disponibile",
+    "store/availability-notify.notify-label": "Voglio sapere quando sarà disponibile questo prodotto",
+    "store/availability-notify.email-placeholder": "Email",
+    "store/availability-notify.name-placeholder": "Nome",
+    "store/availability-notify.send-label": "Inviare",
+    "store/availability-notify.invalid-email": "Email non valido",
+    "store/availability-notify.added-message": "Email aggiunto con successo",
+    "store/availability-notify.error-register": "Email già esistente",
+    "store/availability-notify.error-message": "Fallito. Per favore riprova.",
+    "admin/availability-notify.menu.label": "Notificatore di disponibilità",
+    "admin/request.menu.label": "Notificatore di disponibilità",
+    "admin/settings.download": "Richieste di download",
+    "admin/settings.process-unsent": "Processo non inviato",
+    "admin/settings.verify-availability": "Verificare la disponibilità",
+    "admin/settings.marketplace-to-notify": "Marketplace da notificare",
+    "admin/settings.download-helptext": "Scarica un file XLS con tutti i record delle richieste di notifica.",
+    "admin/settings.process-unsent-helptext": "Elabora tutte le richieste non inviate per notificare e scaricare un file XLS dei risultati.",
+    "admin/settings.verify-availability-helptext": "Esegue una simulazione di spedizione per verificare che l'articolo possa essere spedito all'acquirente prima di inviare una notifica.",
+    "admin/settings.marketplace-to-notify-helptext": "Consente a un account venditore di specificare un elenco separato da virgole di nomi di account del marketplace per notificare gli aggiornamenti dell'inventario.",
+    "admin/settings.label": "Impostazioni"
+  }
