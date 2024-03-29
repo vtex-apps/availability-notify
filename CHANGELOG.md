@@ -6,6 +6,23 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [1.12.2] - 2024-01-24
+
+### Fixed
+- Fixed broadcaster filter
+
+## [1.12.1] - 2023-11-22
+
+## [1.12.0] - 2023-11-21
+
+### Changed
+- Skip call to delete lockfile
+
+## [1.11.4] - 2023-11-14
+
+### Changed
+- Delete lockfiles
+
 ## [1.11.3] - 2023-08-17
 
 ### Changed
