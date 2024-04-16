@@ -55,7 +55,7 @@
     "vtex.store-resources": "http://vtex.vtexassets.com/_v/public/typings/v1/vtex.store-resources@0.88.0/public/@types/vtex.store-resources",
     "vtex.styleguide": "http://vtex.vtexassets.com/_v/public/typings/v1/vtex.styleguide@9.146.1/public/@types/vtex.styleguide"
   },
-  "version": "1.12.2",
+  "version": "1.13.0",
   "dependencies": {
     "apollo-client": "^2.4.7",
     "graphql": "^15.3.0",
