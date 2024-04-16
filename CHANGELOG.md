@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Changed
+- Updated GraphQL dependency to 3
+
 ## [1.12.2] - 2024-01-24
 
 ### Fixed
