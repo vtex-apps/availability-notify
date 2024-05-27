@@ -25,6 +25,8 @@ interface Props {
   available?: boolean
   /* SKU id to notify to */
   skuId?: string
+  nameRequired: boolean
+  emailRequired: boolean
 }
 
 export interface SellerObj {
@@ -185,6 +187,7 @@ function AvailabilityNotifier(props: Props) {
               })}
               value={name}
               onChange={handleNameChange}
+              required={props.nameRequired}
             />
           </div>
           <div className={`${styles.input} ${styles.inputEmail} w-100 mr5 mb4`}>
@@ -199,6 +202,7 @@ function AvailabilityNotifier(props: Props) {
               onBlur={() => setDidBlurEmail(true)}
               error={didBlurEmail && emailError}
               errorMessage={emailErrorMessage}
+              required={props.emailRequired}
             />
           </div>
           <div className={`${styles.submit} flex items-center mb4`}>
@@ -239,6 +243,11 @@ function AvailabilityNotifier(props: Props) {
       </form>
     </div>
   )
+}
+
+AvailabilityNotifier.defaultProps = {
+  nameRequired: false,
+  emailRequired: false,
 }
 
 export default AvailabilityNotifier
