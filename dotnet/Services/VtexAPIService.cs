@@ -491,9 +491,88 @@ namespace AvailabilityNotify.Services
                 Seller = sellerObj
             };
 
+            Console.WriteLine("AvailabilitySubscribe notifyRequest");
+            Console.WriteLine(notifyRequest.Email);
+
             success = await _availabilityRepository.SaveNotifyRequest(notifyRequest, requestContext);
 
+            Console.WriteLine("AvailabilitySubscribe success");
+
+            Console.WriteLine(success);
+
             return success;
+        }
+
+        public async Task<SellerDataResponse> GetSellerName(string saleChannel)
+        {
+            Console.WriteLine("saleChannel GetSellerName");
+            Console.WriteLine(saleChannel);
+
+            SellerDataResponse sellerData = new SellerDataResponse
+            {
+                Id = "",
+                Name = ""
+            };
+
+            try
+            {
+                var request = new HttpRequestMessage
+                {
+                    Method = HttpMethod.Get,
+                    RequestUri = new Uri($"http://{_context.Vtex.Account}.{Constants.ENVIRONMENT}.com.br/api/seller-register/pvt/sellers?sc={saleChannel}")
+                };
+
+                request.Headers.Add(Constants.USE_HTTPS_HEADER_NAME, "true");
+                string authToken = _context.Vtex.AuthToken;
+                Console.WriteLine(authToken);
+                if (authToken != null)
+                {
+                    request.Headers.Add(Constants.AUTHORIZATION_HEADER_NAME, authToken);
+                    request.Headers.Add(Constants.VTEX_ID_HEADER_NAME, authToken);
+                    request.Headers.Add(Constants.PROXY_AUTHORIZATION_HEADER_NAME, authToken);
+                }
+
+                var client = _clientFactory.CreateClient();
+                var response = await client.SendAsync(request);
+                string responseContent = await response.Content.ReadAsStringAsync();
+                Console.WriteLine(response.IsSuccessStatusCode);
+                if (response.IsSuccessStatusCode)
+                {
+                    GetSellerNameResponse sellerNameResponse = JsonConvert.DeserializeObject<GetSellerNameResponse>(responseContent);
+                    Console.WriteLine("sellerNameResponse");
+                    Console.WriteLine(sellerNameResponse.Items[0].Id);
+
+                    var sellerBetterScope = sellerNameResponse.Items.Where(c => c.IsBetterScope).ToArray();
+                    Console.WriteLine(sellerBetterScope[0].Id);
+
+                    if( sellerBetterScope[0].Id != null && sellerBetterScope[0].Name != null) {
+                        sellerData.Id = sellerBetterScope[0].Id;
+                        sellerData.Name = sellerBetterScope[0].Name;
+                    }
+                    
+                    
+                }
+                else
+                {
+                    Console.WriteLine("Errorrr 1");
+                    _context.Vtex.Logger.Warn("Error getting seller 1");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error 2");
+                Console.WriteLine(ex);
+                _context.Vtex.Logger.Error("Error getting seller");
+            }
+
+            Console.WriteLine("sellerData response");
+            Console.WriteLine(sellerData.Id);
+            Console.WriteLine(sellerData.Name);
+
+
+            return sellerData;
+
         }
 
         public async Task<bool> ProcessNotification(AffiliateNotification notification)
