@@ -1,7 +1,7 @@
 {
   "name": "availability-notify",
   "vendor": "vtex",
-  "version": "1.13.1",
+  "version": "1.14.0",
   "title": "Availability Notify",
   "description": "Record and send notification when an item is back in stock",
   "scripts": {
