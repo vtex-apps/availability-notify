@@ -1,0 +1,22 @@
+{
+  "store/availability-notify.title": "Acest produs nu este disponibil în acest moment",
+  "store/availability-notify.notify-label": "Vreau să fiu anunțat când acest produs va deveni disponibil",
+  "store/availability-notify.email-placeholder": "Email",
+  "store/availability-notify.name-placeholder": "Nume",
+  "store/availability-notify.send-label": "Trimite",
+  "store/availability-notify.invalid-email": "Email invalid",
+  "store/availability-notify.added-message": "Email adăugat cu succes",
+  "store/availability-notify.error-register": "Email-ul există deja",
+  "store/availability-notify.error-message": "Eșuat. Te rugăm încearcă din nou.",
+  "admin/availability-notify.menu.label": "Alertă disponibilitate",
+  "admin/request.menu.label": "Alertă disponibilitate",
+  "admin/settings.download": "Descarcă cererile",
+  "admin/settings.process-unsent": "Procesează cererile netrimise",
+  "admin/settings.verify-availability": "Verifică disponibilitatea",
+  "admin/settings.marketplace-to-notify": "Marketplace-uri de notificat",
+  "admin/settings.download-helptext": "Descarcă un fișier XLS cu toate cererile de notificare.",
+  "admin/settings.process-unsent-helptext": "Procesează toate cererile netrimise și descarcă un fișier XLS cu rezultatele.",
+  "admin/settings.verify-availability-helptext": "Efectuează o simulare de transport ca să verifice dacă produsul poate fi livrat cumpărătorului înainte de a trimite notificarea.",
+  "admin/settings.marketplace-to-notify-helptext": "Permite expeditorului produsul să specifice o lista despărțită prin virgulă cu numele conturilor de marketplace pe care să le notifice cu modificările de inventar.",
+  "admin/settings.label": "Setări"
+}

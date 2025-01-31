@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added
+
+- Romanian translation.
+
 ## [1.13.1] - 2024-04-30
 
 ## [1.13.0] - 2024-04-16
