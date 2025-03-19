@@ -3,6 +3,7 @@ mutation AvailabilitySubscribe(
   $email: String
   $skuId: String
   $locale: String
+  $saleChannel: String
   $sellerObj: SellerObjInputType!
 ) {
   availabilitySubscribe(
@@ -10,6 +11,7 @@ mutation AvailabilitySubscribe(
     email: $email
     skuId: $skuId
     locale: $locale
+    saleChannel: $saleChannel
     sellerObj: $sellerObj
   )
 }
