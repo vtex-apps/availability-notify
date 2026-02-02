@@ -2,7 +2,7 @@
 
 # Availability Notify
 
-[<i class="fa-brands fa-github"></i> Source code](https://github.com/vtex-apps/store-locator)
+[<i class="fa-brands fa-github"></i> Source code](https://github.com/vtex-apps/availability-notify)
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 
