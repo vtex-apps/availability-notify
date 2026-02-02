@@ -4,12 +4,6 @@
 
 [<i class="fa-brands fa-github"></i> Source code](https://github.com/vtex-apps/availability-notify)
 
-<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-
-[![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors-)
-
-<!-- ALL-CONTRIBUTORS-BADGE:END -->
-
 > ⚠️ This app is no longer maintained by VTEX. This means support and maintenance are no longer provided.
 
 The Availability Notify component is responsible for showing a subscription form when a product SKU is not available. The form lets customers subscribe to get notified when that item gets restocked.
@@ -26,9 +20,7 @@ The app records the notification request and monitors inventory updates. This wa
 
 3. Open your app's `manifest.json file` and add the Availability Notify app under the `peerDependencies` field.
 
->⚠️ Warning
->
-> Due to changes in its peer dependencies you will need to release a new major version. Check the documentation on [How to migrate CMS settings after a theme major update](https://developers.vtex.com/vtex-developer-docs/docs/vtex-io-documentation-migrating-cms-settings-after-major-update).
+>⚠️ Due to changes in its peer dependencies, you will need to release a new major version. Check the documentation on [How to migrate CMS settings after a theme major update](https://developers.vtex.com/vtex-developer-docs/docs/vtex-io-documentation-migrating-cms-settings-after-major-update).
 
 ```json
   "peerDependencies": {
@@ -56,19 +48,19 @@ The app records the notification request and monitors inventory updates. This wa
 
 | Setting field           | Description                                                                                                            |
 |-------------------------|------------------------------------------------------------------------------------------------------------------------|
-| `Verify Availability`   | Runs a shipping simulation to verify that the item can be shipped to the shopper before sending a notificaiton.        |
-| `Marketplace to Notify` | Allows a seller account to specify a comma separated list of marketplace account names to notify of inventory updates. |
-| `Download Requests`     | Download an XLS file of all recquest records.                                                                          |
+| `Verify Availability`   | Runs a shipping simulation to verify that the item can be shipped to the shopper before sending a notification.        |
+| `Marketplace to Notify` | Allows a seller account to specify a comma-separated list of marketplace account names to notify of inventory updates. |
+| `Download Requests`     | Download an XLS file of all request records.                                                                          |
 | `Process Unsent`        | Process all unsent requests and download an XLS file of the results.                                                   |
 
-After making the desired settings in the app, set up its template according to your necessities. Check out more details about it in the next section, [Customizing the Back in stock template](#customizing-the-back-in-stock-template).
+After making the desired settings in the app, set up its template according to your needs. Check out more details about it in the next section, [Customizing the Back in stock template](#customizing-the-back-in-stock-template).
 
 ## Seller Configuration
 
-This app needs to also be installed on the seller account
+This app also needs to be installed on the seller account
 
 1. [Install](https://developers.vtex.com/vtex-developer-docs/docs/vtex-io-documentation-installing-an-app) the Availability Notify app in the desired VTEX SELLER account through the app store
-2. In the app configuration enter the name of the marketplace to notify when there are any inventory changes
+2. In the app configuration, enter the name of the marketplace to notify when there are any inventory changes
 
 This will forward the inventory change to the MARKETPLACE and then trigger the `Back In Stock` email to the subscribed users of that product. 
 ## Customizing the Back in stock template
@@ -76,21 +68,20 @@ This will forward the inventory change to the MARKETPLACE and then trigger the `
 Once you have installed the app, you can customize the email template to send to the shoppers who asked to be notified.
 
 1. Find the email template, named **BACK IN STOCK**, in your store's Admin in **Customer** > **Message center** > **Templates**.
-2. Search for the `availability-notify` component template, named **BACK IN STOCK** and click on it.
+2. Search for the `availability-notify` component template, named **BACK IN STOCK**, and click on it.
 3. After, you will see the email template and its configuration. For example:
 
 ![template-back-in-stock](https://user-images.githubusercontent.com/67270558/131547198-a4eb3f0e-5a20-4e63-9f1f-d3bb312fa621.gif)
 
 To edit the email template's field, check the documentation on [How to create and edit transactional email templates](https://help.vtex.com/en/tracks/transactional-emails--6IkJwttMw5T84mlY9RifRP/335JZKUYgvYlGOJgvJYxRO), and you will notice the **JSON Data** field, which is responsible for adding variables that allow you to dynamically add data to the email. These variables are JSON properties, and you can see more details about them in [Get SKU and context](https://developers.vtex.com/vtex-rest-api/reference/catalog-api-sku#catalog-api-get-sku-context) and in [Including order variables in email template](https://help.vtex.com/en/tracks/transactional-emails--6IkJwttMw5T84mlY9RifRP/fLMUCPArCYB9vcTZEZ6bi).
 
->⚠️ *JSON Data examples will only appear in templates when you complete the desired action in your store. If you have not transacted an order, recurrence or any other action, JSON Data will appear blank.*
-*NOTE: notification email is only triggered when on the `master` workspace*
+>⚠️ JSON Data examples will only appear in templates when you complete the desired action in your store. If you have not transacted an order, recurrence, or any other action, the JSON data will appear blank. NOTE: The notification email is only triggered when on the `master` workspace.
 
-## Searching and Processing Availability Notify data
+## Searching and processing availability notify data
 
 This app uses [Master Data V2](https://developers.vtex.com/vtex-rest-api/reference/master-data-api-v2-overview), to search for stored data you should use Master Data API - v2 endpoints with the variables `data_entity_name` and `schema` with the value `notify`.
 
-If you want to run the services manually you can use the two endpoints below: (An authentication token is required)
+If you want to run the services manually, you can use the two endpoints below: (An authentication token is required)
 
 - To process Unsent Requests:
 `https://app.io.vtex.com/vtex.availability-notify/v1/{{accountName}}/master/_v/availability-notify/process-unsent-requests`
@@ -98,7 +89,7 @@ If you want to run the services manually you can use the two endpoints below: (A
 - To process All Requests:
 `https://app.io.vtex.com/vtex.availability-notify/v1/{{accountName}}/master/_v/availability-notify/process-all-requests`
 
-Check out the [Open API Schemas repository](https://github.com/vtex/openapi-schemas) containing several VTEX Postman Collections including Master Data API - v2.
+Check out the [Open API Schemas repository](https://github.com/vtex/openapi-schemas) containing several VTEX Postman Collection,s including Master Data API - v2.
 
 ## Customization
 
