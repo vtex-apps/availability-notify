@@ -37,7 +37,6 @@ The app records the notification request and monitors inventory updates. This wa
       "availability-notify"
     ]
   },
-
 ```
 
 5. Once you have added the `availability-notify` component, access your store's Admin.
