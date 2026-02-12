@@ -6,7 +6,7 @@
 
 > ⚠️ This app is no longer maintained by VTEX. This means support and maintenance are no longer provided.
 
-The Availability Notify component is responsible for showing a subscription form when a product SKU is not available. The form lets customers subscribe to get notified when that item gets restocked.
+The Availability Notify component displays a subscription form when a product SKU is unavailable. The form lets customers subscribe to receive notifications when that item is restocked.
 
 ![store-notifier](https://user-images.githubusercontent.com/67270558/132012045-06c65073-2692-4827-b08a-7be5730b6422.png)
 
@@ -20,27 +20,27 @@ The app records the notification request and monitors inventory updates. This wa
 
 3. Open your app's `manifest.json file` and add the Availability Notify app under the `peerDependencies` field.
 
->⚠️ Due to changes in its peer dependencies, you will need to release a new major version. Check the documentation on [How to migrate CMS settings after a theme major update](https://developers.vtex.com/vtex-developer-docs/docs/vtex-io-documentation-migrating-cms-settings-after-major-update).
-
-```json
-  "peerDependencies": {
-    "vtex.availability-notify": "1.x"
-  }
-```
+    >⚠️ Due to changes in its peer dependencies, you will need to release a new major version. Check the documentation on [How to migrate CMS settings after a theme major update](https://developers.vtex.com/vtex-developer-docs/docs/vtex-io-documentation-migrating-cms-settings-after-major-update).
+    
+    ```json
+      "peerDependencies": {
+        "vtex.availability-notify": "1.x"
+      }
+    ```
 
 4. Add the `availability-notify` component block to your PDP in your store theme (`store.product`). For example:
 
-```json
-{
- "store.product": {
-    "children": [
-      "availability-notify"
-    ]
-  },
-```
+    ```json
+    {
+     "store.product": {
+        "children": [
+          "availability-notify"
+        ]
+      },
+    ```
 
 5. Once you have added the `availability-notify` component, access your store's Admin.
-6. Go to **Extensions Hub** > **Installed Apps** > **Availability Notifier**. You can also find it using the search bar on the top of the page.
+6. Go to **Extensions Hub** > **Installed Apps** > **Availability Notifier**. You can also find it using the search bar at the top of the page.
 7. Then, you will see the app's settings:
 
 ![app-settings](https://user-images.githubusercontent.com/47258865/177632798-1aa3b247-10fe-45e2-93a2-73527c19c0f9.png)
@@ -89,7 +89,7 @@ If you want to run the services manually, you can use the two endpoints below: (
 - To process All Requests:
 `https://app.io.vtex.com/vtex.availability-notify/v1/{{accountName}}/master/_v/availability-notify/process-all-requests`
 
-Check out the [Open API Schemas repository](https://github.com/vtex/openapi-schemas) containing several VTEX Postman Collection,s including Master Data API - v2.
+Check out the [Open API Schemas repository](https://github.com/vtex/openapi-schemas) containing several VTEX Postman Collections, including Master Data API - v2.
 
 ## Customization
 
