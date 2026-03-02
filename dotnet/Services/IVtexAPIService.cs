@@ -8,6 +8,7 @@ namespace AvailabilityNotify.Services
     public interface IVtexAPIService
     {
         Task<bool> AvailabilitySubscribe(string email, string sku, string name, string locale, SellerObj sellerObj);
+        Task<SellerDataResponse> GetSellerName(string saleChannel);
         Task<bool> ProcessNotification(AffiliateNotification notification);
         Task<bool> ProcessNotification(BroadcastNotification notification);
         Task ProcessNotification(AllStatesNotification notification);
