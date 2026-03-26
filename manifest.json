@@ -8,7 +8,7 @@
     "prereleasy": "bash pre.sh"
   },
   "builders": {
-    "dotnet": "2.x",
+    "node": "7.x",
     "graphql": "1.x",
     "store": "0.x",
     "docs": "0.x",
@@ -68,12 +68,6 @@
       }
     },
     {
-      "name": "outbound-access",
-      "attrs": {
-        "host": "nuget.org"
-      }
-    },
-    {
       "name": "ADMIN_DS"
     },
     {
@@ -121,6 +115,13 @@
       "attrs": {
         "host": "{{account}}.vtex.com.br",
         "path": "/api/mail-service/pvt/sendmail"
+      }
+    },
+    {
+      "name": "outbound-access",
+      "attrs": {
+        "host": "app.io.vtex.com",
+        "path": "/vtex.availability-notify/*"
       }
     },
     {
