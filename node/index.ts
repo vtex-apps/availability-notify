@@ -3,7 +3,6 @@ import type {
   ServiceContext,
   RecorderState,
   ParamsContext,
-  EventContext,
 } from '@vtex/api'
 import { Service, method } from '@vtex/api'
 

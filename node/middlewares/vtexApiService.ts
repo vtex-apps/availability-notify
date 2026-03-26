@@ -18,7 +18,6 @@ import {
   Availability,
   DEFAULT_TEMPLATE_NAME,
   VtexOrderStatus,
-  DATA_ENTITY,
 } from '../utils/constants'
 
 type Ctx = ServiceContext<Clients>
@@ -203,21 +202,8 @@ export async function getShopperByEmail(
   email: string
 ): Promise<ShopperRecord[] | null> {
   try {
-    const account = ctx.vtex.account
-
-    const response = await ctx.clients.mdClient.searchRequests(
-      account,
-      ''
-    )
-
-    // Use masterdata search on CL entity for shopper records
-    // This is a simplified approach - in the original .NET code, this was a direct HTTP call
-    // to /api/dataentities/CL/search?email=...
-    // We'll make the call through the JanusClient's http directly
-    // Since http is protected, we need a different approach
     const url = `/api/dataentities/CL/search?email=${email}`
 
-    // Use the masterdata built-in from IOClients which has http exposed
     const result = await (ctx.clients as any).mdClient.http.get(url, {
       metric: 'masterdata-search-shopper',
       headers: {
@@ -268,7 +254,7 @@ export async function getShopperAddressById(
 export async function canShipToShopper(
   ctx: Ctx,
   notifyRequest: NotifyRequest,
-  requestContext: RequestContext
+  _requestContext: RequestContext
 ): Promise<boolean> {
   let canSend = false
   const shopperRecord = await getShopperByEmail(ctx, notifyRequest.email)

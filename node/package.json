@@ -7,10 +7,10 @@
     "build": "tsc --noEmit"
   },
   "dependencies": {
-    "@vtex/api": "6.x"
+    "@vtex/api": "^7.0.0"
   },
   "devDependencies": {
-    "@types/node": "^20.x",
-    "typescript": "^5.x"
+    "@types/node": "^20.0.0",
+    "typescript": "5.5.3"
   }
 }
