@@ -1,8 +1,6 @@
 node_modules/
+node/node_modules/
 .editorconfig
 .eslintrc
 .gitignore
 README.md
-dotnet/obj/
-dotnet/bin/
-dotnet-wrapper/
