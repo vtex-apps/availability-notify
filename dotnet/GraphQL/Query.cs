@@ -5,6 +5,7 @@ using AvailabilityNotify.Services;
 using GraphQL;
 using GraphQL.Types;
 using Vtex.Api.Context;
+using System.Net;
 
 namespace AvailabilityNotify.GraphQL
 {
@@ -19,8 +20,21 @@ namespace AvailabilityNotify.GraphQL
                 "listRequests",
                 resolve: async context =>
                 {
+                    HttpStatusCode isValidAuthUser = await vtexApiService.IsValidAuthUser();
+
+                    if (isValidAuthUser != HttpStatusCode.OK)
+                    {
+                        context.Errors.Add(new ExecutionError(isValidAuthUser.ToString())
+                        {
+                            Code = isValidAuthUser.ToString()
+                        });
+
+                        return default;
+                    }
+
                     NotifyRequest[] notifyRequests = await availabilityRepository.ListNotifyRequests();
                     List<NotifyRequest> requestList = new List<NotifyRequest>(notifyRequests);
+
                     return requestList;
                 }
             );
