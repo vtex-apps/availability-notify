@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Fixed
+
+- Allow only Admin users to access certain APIs.
+
 ## [1.14.1] - 2026-02-19
 
 ### Fixed
