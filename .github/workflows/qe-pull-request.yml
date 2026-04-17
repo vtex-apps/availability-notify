@@ -24,8 +24,6 @@ jobs:
       nodeSonarProjectKey: vtex-apps_availability-notify-ts
       nodeSonarOrganization: vtex-apps
       dotnetLint: true
-      dotnetTest: true
-      dotnetVersion: "3.0"
       dotnetSonar: true
       dotnetSonarProjectKey: vtex-apps_availability-notify-dotnet
       dotnetSonarOrganization: vtex-apps
