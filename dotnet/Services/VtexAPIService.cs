@@ -1078,8 +1078,6 @@ namespace AvailabilityNotify.Services
                 Token = token
             };
 
-            Console.WriteLine("AdminUserToken: " + token);
-
             string account = this._httpContextAccessor.HttpContext.Request.Headers[Constants.VTEX_ACCOUNT_HEADER_NAME].ToString();
             string authToken = this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_CREDENTIAL];
 
@@ -1095,8 +1093,6 @@ namespace AvailabilityNotify.Services
             {
                 request.Headers.Add(Constants.AUTHORIZATION_HEADER_NAME, authToken);
             }
-
-            Console.WriteLine("AuthToken: " + authToken);
 
             var client = _clientFactory.CreateClient();
 
