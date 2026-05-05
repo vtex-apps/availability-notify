@@ -9,5 +9,6 @@ namespace AvailabilityNotify.Models
         public string AuthStatus { get; set; }
         public string Id { get; set; }
         public string User { get; set; }    // email
+        public string Audience { get; set; }
     }
 }

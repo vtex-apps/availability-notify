@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
+    <!-- Test project folder: without it, the SDK includes **/*.cs and the app compiles the tests without Moq/xUnit. -->
+    <DefaultItemExcludes>$(DefaultItemExcludes);AvailabilityNotify.Tests/**</DefaultItemExcludes>
   </PropertyGroup>
 
   <ItemGroup>

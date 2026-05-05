@@ -1078,15 +1078,16 @@ namespace AvailabilityNotify.Services
                 Token = token
             };
 
+            string account = this._httpContextAccessor.HttpContext.Request.Headers[Constants.VTEX_ACCOUNT_HEADER_NAME].ToString();
+            string authToken = this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_CREDENTIAL];
+
             var jsonSerializedToken = JsonConvert.SerializeObject(validateToken);
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
-                RequestUri = new Uri($"http://{this._httpContextAccessor.HttpContext.Request.Headers[Constants.VTEX_ACCOUNT_HEADER_NAME]}.vtexcommercestable.com.br/api/vtexid/credential/validate"),
+                RequestUri = new Uri($"http://{account}.vtexcommercestable.com.br/api/vtexid/credential/validate"),
                 Content = new StringContent(jsonSerializedToken, Encoding.UTF8, Constants.APPLICATION_JSON)
             };
-
-            string authToken = this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_CREDENTIAL];
 
             if (authToken != null)
             {
@@ -1103,6 +1104,19 @@ namespace AvailabilityNotify.Services
                 if (response.IsSuccessStatusCode)
                 {
                     validatedUser = JsonConvert.DeserializeObject<ValidatedUser>(responseContent);
+                    if (validatedUser != null && !string.IsNullOrEmpty(validatedUser.Id))
+                    {
+                        if (!await IsUserLoginGrantedInLicenseManagerAsync(account, validatedUser.Id, authToken))
+                        {
+                            _context.Vtex.Logger.Warn("ValidateUserToken", null, $"Login '{validatedUser.Id}' is not granted in License Manager for account '{account}'.");
+                            validatedUser = null;
+                        }
+                    }
+                    else if (validatedUser != null && string.IsNullOrEmpty(validatedUser.Id))
+                    {
+                        _context.Vtex.Logger.Warn("ValidateUserToken", null, "Credential validate succeeded but user Id is missing; License Manager check skipped.");
+                        validatedUser = null;
+                    }
                 }
             }
             catch (Exception ex)
@@ -1111,6 +1125,70 @@ namespace AvailabilityNotify.Services
             }
 
             return validatedUser;
+        }
+
+        private async Task<bool> IsUserLoginGrantedInLicenseManagerAsync(string account, string userId, string credentialHeader)
+        {
+            if (string.IsNullOrWhiteSpace(account) || string.IsNullOrWhiteSpace(userId))
+            {
+                return false;
+            }
+
+            var grantedRequest = new HttpRequestMessage
+            {
+                Method = HttpMethod.Get,
+                RequestUri = new Uri($"http://{account}.vtexcommercestable.com.br/api/pvt/accounts/{account}/logins/{Uri.EscapeDataString(userId)}/granted")
+            };
+
+            grantedRequest.Headers.Add(Constants.USE_HTTPS_HEADER_NAME, "true");
+            if (credentialHeader != null)
+            {
+                grantedRequest.Headers.Add(Constants.AUTHORIZATION_HEADER_NAME, credentialHeader);
+                grantedRequest.Headers.Add(Constants.VTEX_ID_HEADER_NAME, credentialHeader);
+                grantedRequest.Headers.Add(Constants.PROXY_AUTHORIZATION_HEADER_NAME, credentialHeader);
+            }
+
+            try
+            {
+                var client = _clientFactory.CreateClient();
+                var grantedResponse = await client.SendAsync(grantedRequest);
+                string body = (await grantedResponse.Content.ReadAsStringAsync()).Trim();
+
+                if (!grantedResponse.IsSuccessStatusCode)
+                {
+                    return false;
+                }
+
+                if (string.Equals(body, "true", StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+
+                if (string.Equals(body, "false", StringComparison.OrdinalIgnoreCase))
+                {
+                    return false;
+                }
+
+                try
+                {
+                    return JsonConvert.DeserializeObject<bool>(body);
+                }
+                catch (JsonException)
+                {
+                    if (bool.TryParse(body, out bool parsed))
+                    {
+                        return parsed;
+                    }
+
+                    _context.Vtex.Logger.Warn("IsUserLoginGrantedInLicenseManagerAsync", null, $"Unexpected License Manager granted body for login '{userId}': '{body}'");
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                _context.Vtex.Logger.Error("IsUserLoginGrantedInLicenseManagerAsync", null, $"Error checking License Manager grant for login '{userId}'", ex);
+                return false;
+            }
         }
 
         public async Task<HttpStatusCode> IsValidAuthUser()
@@ -1133,7 +1211,9 @@ namespace AvailabilityNotify.Services
                 return HttpStatusCode.BadRequest;
             }
 
-            bool hasPermission = validatedUser != null && validatedUser.AuthStatus.Equals("Success");
+            bool hasPermission = validatedUser != null && 
+                     "Success".Equals(validatedUser.AuthStatus, StringComparison.OrdinalIgnoreCase) && 
+                     "admin".Equals(validatedUser.Audience, StringComparison.OrdinalIgnoreCase);
 
             if (!hasPermission)
             {
