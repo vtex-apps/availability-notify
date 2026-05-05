@@ -1211,7 +1211,9 @@ namespace AvailabilityNotify.Services
                 return HttpStatusCode.BadRequest;
             }
 
-            bool hasPermission = validatedUser != null && validatedUser.AuthStatus.Equals("Success") && validatedUser.Audience.Equals("admin");
+            bool hasPermission = validatedUser != null && 
+                     "Success".Equals(validatedUser.AuthStatus, StringComparison.OrdinalIgnoreCase) && 
+                     "admin".Equals(validatedUser.Audience, StringComparison.OrdinalIgnoreCase);
 
             if (!hasPermission)
             {
