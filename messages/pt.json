@@ -18,5 +18,6 @@
   "admin/settings.process-unsent-helptext": "Process all unsent requests to notify and download an XLS file of the results.",
   "admin/settings.verify-availability-helptext": "Runs a shipping simulation to verify that the item can be shipped to the shopper before sending a notificaiton.",
   "admin/settings.marketplace-to-notify-helptext": "Allows a seller account to specify a comma separated list of marketplace account names to notify of inventory updates.",
-  "admin/settings.label": "Settings"
+  "admin/settings.label": "Settings",
+  "admin/settings.permission-warning": "A partir de dd/mm/yyyy, o acesso ao Download Requests e ao Process Unsent exigirá o recurso [resource-name] no License Manager. Certifique-se de que os usuários que precisam dessa funcionalidade tenham a role adequada atribuída."
 }

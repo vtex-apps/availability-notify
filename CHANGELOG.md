@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added
+
+- Warning message in the admin panel informing that Download Requests and Process Unsent will require a License Manager resource starting on a date to be defined.
+
 ## [1.14.2] - 2026-05-05
 
 ### Fixed
