@@ -1211,13 +1211,9 @@ namespace AvailabilityNotify.Services
                 return HttpStatusCode.BadRequest;
             }
 
-            bool isAdmin = validatedUser != null &&
-                     "Success".Equals(validatedUser.AuthStatus, StringComparison.OrdinalIgnoreCase) &&
-                     "admin".Equals(validatedUser.Audience, StringComparison.OrdinalIgnoreCase);
-
-            if (!isAdmin)
+            if (validatedUser == null || string.IsNullOrEmpty(validatedUser.User))
             {
-                _context.Vtex.Logger.Warn("IsValidAuthUser", null, "User Does Not Have Permission");
+                _context.Vtex.Logger.Warn("IsValidAuthUser", null, "Could not resolve user from token");
 
                 return HttpStatusCode.Forbidden;
             }
