@@ -1211,18 +1211,82 @@ namespace AvailabilityNotify.Services
                 return HttpStatusCode.BadRequest;
             }
 
-            bool hasPermission = validatedUser != null && 
-                     "Success".Equals(validatedUser.AuthStatus, StringComparison.OrdinalIgnoreCase) && 
+            bool isAdmin = validatedUser != null &&
+                     "Success".Equals(validatedUser.AuthStatus, StringComparison.OrdinalIgnoreCase) &&
                      "admin".Equals(validatedUser.Audience, StringComparison.OrdinalIgnoreCase);
 
-            if (!hasPermission)
+            if (!isAdmin)
             {
                 _context.Vtex.Logger.Warn("IsValidAuthUser", null, "User Does Not Have Permission");
 
                 return HttpStatusCode.Forbidden;
             }
 
+            string account = this._httpContextAccessor.HttpContext.Request.Headers[Constants.VTEX_ACCOUNT_HEADER_NAME].ToString();
+            string authToken = this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_CREDENTIAL];
+
+            bool hasResource = await HasLicenseManagerResourceAsync(account, validatedUser.Id, authToken, Constants.REQUIRED_ADMIN_RESOURCE);
+
+            if (!hasResource)
+            {
+                _context.Vtex.Logger.Warn("IsValidAuthUser", null, $"User '{validatedUser.Id}' does not have required LM resource '{Constants.REQUIRED_ADMIN_RESOURCE}'");
+
+                return HttpStatusCode.Forbidden;
+            }
+
             return HttpStatusCode.OK;
+        }
+
+        private async Task<bool> HasLicenseManagerResourceAsync(string account, string userId, string credentialHeader, string resourceKey)
+        {
+            if (string.IsNullOrWhiteSpace(account) || string.IsNullOrWhiteSpace(userId))
+            {
+                return false;
+            }
+
+            var request = new HttpRequestMessage
+            {
+                Method = HttpMethod.Get,
+                RequestUri = new Uri($"http://{account}.vtexcommercestable.com.br/api/license-manager/users/{Uri.EscapeDataString(userId)}/roles")
+            };
+
+            request.Headers.Add(Constants.USE_HTTPS_HEADER_NAME, "true");
+
+            if (credentialHeader != null)
+            {
+                request.Headers.Add(Constants.AUTHORIZATION_HEADER_NAME, credentialHeader);
+                request.Headers.Add(Constants.VTEX_ID_HEADER_NAME, credentialHeader);
+                request.Headers.Add(Constants.PROXY_AUTHORIZATION_HEADER_NAME, credentialHeader);
+            }
+
+            try
+            {
+                var client = _clientFactory.CreateClient();
+                var response = await client.SendAsync(request);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    return false;
+                }
+
+                string body = await response.Content.ReadAsStringAsync();
+                var roles = JsonConvert.DeserializeObject<List<LmRole>>(body);
+
+                if (roles == null)
+                {
+                    return false;
+                }
+
+                return roles.Any(role =>
+                    role.Resources != null &&
+                    role.Resources.Any(r => string.Equals(r.Key, resourceKey, StringComparison.OrdinalIgnoreCase)));
+            }
+            catch (Exception ex)
+            {
+                _context.Vtex.Logger.Error("HasLicenseManagerResourceAsync", null, $"Error checking LM resource for user '{userId}'", ex);
+
+                return false;
+            }
         }
     }
 }

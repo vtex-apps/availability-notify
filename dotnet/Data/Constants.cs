@@ -31,6 +31,9 @@ namespace AvailabilityNotify.Data
         public const string HTTP_FORWARDED_HEADER = "HTTP_X_FORWARDED_FOR";
         public const string API_VERSION_HEADER = "'x-api-version";
 
+        // TODO: Replace "vbase-read-write" with the actual LM resource key once the new resource is created in License Manager.
+        public const string REQUIRED_ADMIN_RESOURCE = "vbase-read-write";
+
         public const string BUCKET = "availability-notify";
         public const string LOCK = "availability-notify-lock";
         public const string UNSENT_CHECK = "check-unsent";
