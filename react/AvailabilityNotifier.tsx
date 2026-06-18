@@ -5,6 +5,7 @@ import { useMutation } from 'react-apollo'
 import { Button, Input } from 'vtex.styleguide'
 import { useProduct } from 'vtex.product-context'
 import { useRuntime } from 'vtex.render-runtime'
+import { useRenderSession } from 'vtex.session-client'
 
 import type { Seller } from './utils/sellers'
 import ADD_TO_AVAILABILITY_SUBSCRIBER_MUTATION from './graphql/addToAvailabilityNotifierMutation.gql'
@@ -18,6 +19,7 @@ interface MutationVariables {
   email: string
   locale: string
   sellerObj: SellerObj
+  saleChannel: string
 }
 
 interface Props {
@@ -69,6 +71,8 @@ function AvailabilityNotifier(props: Props) {
   const available = props.available ?? isAvailable(seller?.commertialOffer)
   const skuId = props.skuId ?? productContext?.selectedItem?.itemId
   const { locale } = useRuntime().culture
+  const { session } = useRenderSession()
+  let  saleChannel = session?.namespaces?.store?.channel?.value
   // console.log('Seller =>', seller)
   // const sellerObj = seller as SellerObj
   const sellerObj = {
@@ -91,6 +95,7 @@ function AvailabilityNotifier(props: Props) {
       name,
       email,
       locale,
+      saleChannel,
       sellerObj: {
         sellerId: sellerObj.sellerId,
         sellerName: sellerObj.sellerName,

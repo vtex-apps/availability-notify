@@ -99,10 +99,18 @@ namespace AvailabilityNotify.Services
         {
             // PATCH https://{{accountName}}.vtexcommercestable.com.br/api/dataentities/{{data_entity_name}}/documents
 
+            Console.WriteLine("SaveNotifyRequest");
+
+
             string url = $"http://{requestContext.Account}.vtexcommercestable.com.br/api/dataentities/{Constants.DATA_ENTITY}/documents";
             ResponseWrapper responseWrapper = await this.SendRequest(url, HttpMethod.Put, notifyRequest);
+
+            Console.WriteLine(responseWrapper.IsSuccess);
+
             if (!responseWrapper.IsSuccess)
             {
+                Console.WriteLine("errrorrrrrr save");
+                Console.WriteLine(responseWrapper.IsSuccess);
                 _context.Vtex.Logger.Error("SaveNotifyRequest", null, $"Failed to save '{JsonConvert.SerializeObject(notifyRequest)}' ");
             }
 
