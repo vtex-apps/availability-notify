@@ -31,6 +31,9 @@ namespace AvailabilityNotify.Data
         public const string HTTP_FORWARDED_HEADER = "HTTP_X_FORWARDED_FOR";
         public const string API_VERSION_HEADER = "'x-api-version";
 
+        public const string REQUIRED_LM_PRODUCT_CODE = "2156515";
+        public const string REQUIRED_LM_RESOURCE_CODE = "downloadNotificationRequests";
+
         public const string BUCKET = "availability-notify";
         public const string LOCK = "availability-notify-lock";
         public const string UNSENT_CHECK = "check-unsent";

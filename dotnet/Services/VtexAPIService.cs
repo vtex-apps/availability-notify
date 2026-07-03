@@ -1211,18 +1211,70 @@ namespace AvailabilityNotify.Services
                 return HttpStatusCode.BadRequest;
             }
 
-            bool hasPermission = validatedUser != null && 
-                     "Success".Equals(validatedUser.AuthStatus, StringComparison.OrdinalIgnoreCase) && 
-                     "admin".Equals(validatedUser.Audience, StringComparison.OrdinalIgnoreCase);
-
-            if (!hasPermission)
+            if (validatedUser == null || string.IsNullOrEmpty(validatedUser.User))
             {
-                _context.Vtex.Logger.Warn("IsValidAuthUser", null, "User Does Not Have Permission");
+                _context.Vtex.Logger.Warn("IsValidAuthUser", null, "Could not resolve user from token");
+
+                return HttpStatusCode.Forbidden;
+            }
+
+            string account = this._httpContextAccessor.HttpContext.Request.Headers[Constants.VTEX_ACCOUNT_HEADER_NAME].ToString();
+            string authToken = this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_CREDENTIAL];
+
+            bool hasResource = await HasLicenseManagerResourceAsync(account, validatedUser.User, authToken, Constants.REQUIRED_LM_PRODUCT_CODE, Constants.REQUIRED_LM_RESOURCE_CODE);
+
+            if (!hasResource)
+            {
+                _context.Vtex.Logger.Warn("IsValidAuthUser", null, $"User '{validatedUser.User}' does not have required LM resource '{Constants.REQUIRED_LM_RESOURCE_CODE}'");
 
                 return HttpStatusCode.Forbidden;
             }
 
             return HttpStatusCode.OK;
+        }
+
+        private async Task<bool> HasLicenseManagerResourceAsync(string account, string userEmail, string credentialHeader, string productCode, string resourceCode)
+        {
+            if (string.IsNullOrWhiteSpace(account) || string.IsNullOrWhiteSpace(userEmail))
+            {
+                return false;
+            }
+
+            var request = new HttpRequestMessage
+            {
+                Method = HttpMethod.Get,
+                RequestUri = new Uri($"http://{account}.vtexcommercestable.com.br/api/license-manager/pvt/accounts/{account}/products/{productCode}/logins/{Uri.EscapeDataString(userEmail)}/resources/{resourceCode}/granted")
+            };
+
+            request.Headers.Add(Constants.USE_HTTPS_HEADER_NAME, "true");
+
+            if (credentialHeader != null)
+            {
+                request.Headers.Add(Constants.AUTHORIZATION_HEADER_NAME, credentialHeader);
+                request.Headers.Add(Constants.VTEX_ID_HEADER_NAME, credentialHeader);
+                request.Headers.Add(Constants.PROXY_AUTHORIZATION_HEADER_NAME, credentialHeader);
+            }
+
+            try
+            {
+                var client = _clientFactory.CreateClient();
+                var response = await client.SendAsync(request);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    return false;
+                }
+
+                string body = await response.Content.ReadAsStringAsync();
+
+                return bool.TryParse(body.Trim(), out bool granted) && granted;
+            }
+            catch (Exception ex)
+            {
+                _context.Vtex.Logger.Error("HasLicenseManagerResourceAsync", null, $"Error checking LM resource for user '{userEmail}'", ex);
+
+                return false;
+            }
         }
     }
 }
