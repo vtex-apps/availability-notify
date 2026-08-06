@@ -68,7 +68,7 @@ const messages = defineMessages({
   permissionWarning: {
     id: 'admin/settings.permission-warning',
     defaultMessage:
-      'Starting dd/mm/yyyy, accessing Download Requests and Process Unsent will require the Download Notification Requests resource in License Manager. Make sure the users who need this feature have the appropriate role assigned.',
+      'Starting 09/21/2026, accessing Download Requests and Process Unsent will require the Download Notification Requests resource in License Manager. Make sure the users who need this feature have the appropriate role assigned.',
   },
   downloadHelptext: {
     id: 'admin/settings.download-helptext',
