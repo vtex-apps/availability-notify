@@ -1,0 +1,22 @@
+{
+    "store/availability-notify.title": "Le produit n'est pas disponible en ce moment",
+    "store/availability-notify.notify-label": "Je veux savoir quand ce produit sera disponible",
+    "store/availability-notify.email-placeholder": "Email",
+    "store/availability-notify.name-placeholder": "Nom",
+    "store/availability-notify.send-label": "Envoyer",
+    "store/availability-notify.invalid-email": "Email invalide",
+    "store/availability-notify.added-message": "Email ajouté avec succès",
+    "store/availability-notify.error-register": "Email déjà existant",
+    "store/availability-notify.error-message": "Échec. Veuillez réessayer.",
+    "admin/availability-notify.menu.label": "Notification de disponibilité",
+    "admin/request.menu.label": "Notification de disponibilité",
+    "admin/settings.download": "Demande de téléchargement",
+    "admin/settings.process-unsent": "Processus non envoyé",
+    "admin/settings.verify-availability": "Vérifier la disponibilité",
+    "admin/settings.marketplace-to-notify": "Marketplaces à notifier",
+    "admin/settings.download-helptext": "Télécharger un fichier Excel contenant tous les enregistrements de demande de notification.",
+    "admin/settings.process-unsent-helptext": "Traiter toutes les demandes non envoyées pour notifier et télécharger un fichier Excel des résultats.",
+    "admin/settings.verify-availability-helptext": "Effectuer une simulation d'expédition pour vérifier que l'article peut être expédié au client avant d'envoyer une notification.",
+    "admin/settings.marketplace-to-notify-helptext": "Permet à un compte vendeur de spécifier une liste de noms de comptes de marché séparés par des virgules pour notifier les mises à jour des stocks.",
+    "admin/settings.label": "Paramètres"
+  }
