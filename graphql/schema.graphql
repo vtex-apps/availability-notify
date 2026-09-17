@@ -6,6 +6,7 @@ type Mutation {
     email: String
     skuId: String
     locale: String
+    saleChannel: String
     sellerObj: SellerObjInputType!
   ): Boolean
 
