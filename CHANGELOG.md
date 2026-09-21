@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Require the `downloadNotificationRequests` License Manager resource in addition to admin role to access Download Requests, Process Unsent and Delete Request APIs.
 
+### Fixed
+
+- Missing `outbound-access` policies for `/api/license-manager/*` and `/api/pvt/accounts/*`, which caused the License Manager grant checks to be silently denied by the IO outbound proxy.
+
 ## [1.14.3] - 2026-08-24
 
 ### Added
