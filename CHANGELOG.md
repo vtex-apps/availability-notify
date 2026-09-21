@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 
 - Require a License Manager resource (placeholder: `vbase-read-write`) in addition to admin role to access Download Requests, Process Unsent and Delete Request APIs.
+## [1.14.3] - 2026-08-24
+
+### Added
+
+- Warning message in the admin panel informing that Download Requests and Process Unsent will require a License Manager resource starting on a date to be defined.
 
 ## [1.14.2] - 2026-05-05
 
