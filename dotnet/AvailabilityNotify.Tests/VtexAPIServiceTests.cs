@@ -185,38 +185,6 @@ namespace AvailabilityNotify.Tests
         }
 
         [Fact]
-        public async Task ValidateUserToken_WhenLicenseManagerReturnsFalse_ReturnsNull()
-        {
-            var httpContext = CreateHttpContext();
-            var service = CreateService(
-                httpContext,
-                req =>
-                {
-                    var url = req.RequestUri?.ToString() ?? string.Empty;
-                    if (url.Contains("credential/validate", StringComparison.Ordinal))
-                    {
-                        return VtexApiTestHttpMessageHandler.Ok(ValidatedUserJson());
-                    }
-
-                    if (url.Contains("/granted", StringComparison.Ordinal))
-                    {
-                        return VtexApiTestHttpMessageHandler.Ok("false");
-                    }
-
-                    if (url.Contains("template-render", StringComparison.Ordinal))
-                    {
-                        return VtexApiTestHttpMessageHandler.Ok();
-                    }
-
-                    return VtexApiTestHttpMessageHandler.Status(HttpStatusCode.NotFound);
-                });
-
-            var user = await service.ValidateUserToken("cookie");
-
-            Assert.Null(user);
-        }
-
-        [Fact]
         public async Task ValidateUserToken_WhenCredentialValidateFails_ReturnsNull()
         {
             var httpContext = CreateHttpContext();
@@ -244,7 +212,7 @@ namespace AvailabilityNotify.Tests
         }
 
         [Fact]
-        public async Task ValidateUserToken_WhenGrantedReturnsTrueText_ReturnsUser()
+        public async Task ValidateUserToken_WhenCredentialValidateSucceeds_ReturnsUser()
         {
             var httpContext = CreateHttpContext();
             var service = CreateService(
@@ -255,11 +223,6 @@ namespace AvailabilityNotify.Tests
                     if (url.Contains("credential/validate", StringComparison.Ordinal))
                     {
                         return VtexApiTestHttpMessageHandler.Ok(ValidatedUserJson());
-                    }
-
-                    if (url.Contains("/granted", StringComparison.Ordinal))
-                    {
-                        return VtexApiTestHttpMessageHandler.Ok("true");
                     }
 
                     if (url.Contains("template-render", StringComparison.Ordinal))

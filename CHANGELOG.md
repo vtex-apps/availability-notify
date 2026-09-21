@@ -12,7 +12,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
-- Missing `outbound-access` policies for `/api/license-manager/*` and `/api/pvt/accounts/*`, which caused the License Manager grant checks to be silently denied by the IO outbound proxy.
+- Missing `outbound-access` policy for `/api/license-manager/*`, which caused the License Manager resource check to be silently denied by the IO outbound proxy.
+- Restored the admin audience check dropped in an earlier commit of this change, so it is enforced together with (not replaced by) the License Manager resource check. Removed the now-redundant legacy login-grant check from `ValidateUserToken` in favor of the resource-specific check.
 
 ## [1.14.3] - 2026-08-24
 

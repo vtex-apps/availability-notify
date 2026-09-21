@@ -1104,19 +1104,6 @@ namespace AvailabilityNotify.Services
                 if (response.IsSuccessStatusCode)
                 {
                     validatedUser = JsonConvert.DeserializeObject<ValidatedUser>(responseContent);
-                    if (validatedUser != null && !string.IsNullOrEmpty(validatedUser.Id))
-                    {
-                        if (!await IsUserLoginGrantedInLicenseManagerAsync(account, validatedUser.Id, authToken))
-                        {
-                            _context.Vtex.Logger.Warn("ValidateUserToken", null, $"Login '{validatedUser.Id}' is not granted in License Manager for account '{account}'.");
-                            validatedUser = null;
-                        }
-                    }
-                    else if (validatedUser != null && string.IsNullOrEmpty(validatedUser.Id))
-                    {
-                        _context.Vtex.Logger.Warn("ValidateUserToken", null, "Credential validate succeeded but user Id is missing; License Manager check skipped.");
-                        validatedUser = null;
-                    }
                 }
             }
             catch (Exception ex)
@@ -1125,18 +1112,6 @@ namespace AvailabilityNotify.Services
             }
 
             return validatedUser;
-        }
-
-        private async Task<bool> IsUserLoginGrantedInLicenseManagerAsync(string account, string userId, string credentialHeader)
-        {
-            if (string.IsNullOrWhiteSpace(account) || string.IsNullOrWhiteSpace(userId))
-            {
-                return false;
-            }
-
-            var uri = new Uri($"http://{account}.{Constants.ENVIRONMENT}.com.br/api/pvt/accounts/{account}/logins/{Uri.EscapeDataString(userId)}/granted");
-
-            return await IsGrantedInLicenseManagerAsync("IsUserLoginGrantedInLicenseManagerAsync", uri, credentialHeader);
         }
 
         public async Task<HttpStatusCode> IsValidAuthUser()
@@ -1159,9 +1134,14 @@ namespace AvailabilityNotify.Services
                 return HttpStatusCode.BadRequest;
             }
 
-            if (validatedUser == null || string.IsNullOrEmpty(validatedUser.User))
+            bool hasAdminPermission = validatedUser != null &&
+                     "Success".Equals(validatedUser.AuthStatus, StringComparison.OrdinalIgnoreCase) &&
+                     "admin".Equals(validatedUser.Audience, StringComparison.OrdinalIgnoreCase) &&
+                     !string.IsNullOrEmpty(validatedUser.User);
+
+            if (!hasAdminPermission)
             {
-                _context.Vtex.Logger.Warn("IsValidAuthUser", null, "Could not resolve user from token");
+                _context.Vtex.Logger.Warn("IsValidAuthUser", null, "User Does Not Have Permission");
 
                 return HttpStatusCode.Forbidden;
             }
