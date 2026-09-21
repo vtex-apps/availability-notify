@@ -1136,8 +1136,7 @@ namespace AvailabilityNotify.Services
 
             bool hasAdminPermission = validatedUser != null &&
                      "Success".Equals(validatedUser.AuthStatus, StringComparison.OrdinalIgnoreCase) &&
-                     "admin".Equals(validatedUser.Audience, StringComparison.OrdinalIgnoreCase) &&
-                     !string.IsNullOrEmpty(validatedUser.User);
+                     "admin".Equals(validatedUser.Audience, StringComparison.OrdinalIgnoreCase);
 
             if (!hasAdminPermission)
             {
@@ -1147,13 +1146,12 @@ namespace AvailabilityNotify.Services
             }
 
             string account = this._httpContextAccessor.HttpContext.Request.Headers[Constants.VTEX_ACCOUNT_HEADER_NAME].ToString();
-            string authToken = this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_CREDENTIAL];
 
-            bool hasResource = await HasLicenseManagerResourceAsync(account, validatedUser.User, authToken, Constants.REQUIRED_LM_PRODUCT_CODE, Constants.REQUIRED_LM_RESOURCE_CODE);
+            bool hasResource = await HasLicenseManagerResourceAsync(account, _context.Vtex.AdminUserAuthToken, Constants.REQUIRED_LM_RESOURCE_CODE);
 
             if (!hasResource)
             {
-                _context.Vtex.Logger.Warn("IsValidAuthUser", null, $"User '{validatedUser.User}' does not have required LM resource '{Constants.REQUIRED_LM_RESOURCE_CODE}'");
+                _context.Vtex.Logger.Warn("IsValidAuthUser", null, $"User does not have required LM resource '{Constants.REQUIRED_LM_RESOURCE_CODE}'");
 
                 return HttpStatusCode.Forbidden;
             }
@@ -1161,71 +1159,38 @@ namespace AvailabilityNotify.Services
             return HttpStatusCode.OK;
         }
 
-        private async Task<bool> HasLicenseManagerResourceAsync(string account, string userEmail, string credentialHeader, string productCode, string resourceCode)
+        private async Task<bool> HasLicenseManagerResourceAsync(string account, string adminUserAuthToken, string resourceCode)
         {
-            if (string.IsNullOrWhiteSpace(account) || string.IsNullOrWhiteSpace(userEmail))
+            if (string.IsNullOrWhiteSpace(account) || string.IsNullOrWhiteSpace(adminUserAuthToken))
             {
                 return false;
             }
 
-            var uri = new Uri($"http://{account}.{Constants.ENVIRONMENT}.com.br/api/license-manager/pvt/accounts/{account}/products/{productCode}/logins/{Uri.EscapeDataString(userEmail)}/resources/{resourceCode}/granted");
-
-            return await IsGrantedInLicenseManagerAsync("HasLicenseManagerResourceAsync", uri, credentialHeader);
-        }
-
-        private async Task<bool> IsGrantedInLicenseManagerAsync(string caller, Uri uri, string credentialHeader)
-        {
+            var uri = new Uri($"http://{account}.{Constants.ENVIRONMENT}.com.br/api/license-manager/resources/{Uri.EscapeDataString(resourceCode)}/access");
             var request = new HttpRequestMessage(HttpMethod.Get, uri);
+            request.Headers.TryAddWithoutValidation(Constants.VTEX_ID_HEADER_NAME, adminUserAuthToken);
             request.Headers.TryAddWithoutValidation(Constants.USE_HTTPS_HEADER_NAME, "true");
             request.Headers.TryAddWithoutValidation(Constants.ACCEPT, Constants.APPLICATION_JSON);
-
-            if (credentialHeader != null)
-            {
-                request.Headers.TryAddWithoutValidation(Constants.AUTHORIZATION_HEADER_NAME, credentialHeader);
-                request.Headers.TryAddWithoutValidation(Constants.VTEX_ID_HEADER_NAME, credentialHeader);
-                request.Headers.TryAddWithoutValidation(Constants.PROXY_AUTHORIZATION_HEADER_NAME, credentialHeader);
-            }
 
             try
             {
                 var client = _clientFactory.CreateClient();
                 var response = await client.SendAsync(request);
-                string body = (await response.Content.ReadAsStringAsync()).Trim();
 
+                // CheckAccessInResourceKeyNew (License Manager) signals the decision purely
+                // through the status code - 2xx granted, anything else (typically 403) denied.
+                // There is no boolean/JSON body to parse.
                 if (!response.IsSuccessStatusCode)
                 {
-                    _context.Vtex.Logger.Warn(caller, null, $"License Manager returned [{(int)response.StatusCode}] for '{uri.AbsolutePath}': '{body}'");
+                    _context.Vtex.Logger.Warn("HasLicenseManagerResourceAsync", null, $"License Manager returned [{(int)response.StatusCode}] for resource '{resourceCode}' on account '{account}'");
                     return false;
                 }
 
-                if (string.Equals(body, "true", StringComparison.OrdinalIgnoreCase))
-                {
-                    return true;
-                }
-
-                if (string.Equals(body, "false", StringComparison.OrdinalIgnoreCase))
-                {
-                    return false;
-                }
-
-                try
-                {
-                    return JsonConvert.DeserializeObject<bool>(body);
-                }
-                catch (JsonException)
-                {
-                    if (bool.TryParse(body, out bool parsed))
-                    {
-                        return parsed;
-                    }
-
-                    _context.Vtex.Logger.Warn(caller, null, $"Unexpected License Manager body for '{uri.AbsolutePath}': '{body}'");
-                    return false;
-                }
+                return true;
             }
             catch (Exception ex)
             {
-                _context.Vtex.Logger.Error(caller, null, $"Error calling License Manager '{uri.AbsolutePath}'", ex);
+                _context.Vtex.Logger.Error("HasLicenseManagerResourceAsync", null, $"Error checking License Manager resource '{resourceCode}' on account '{account}'", ex);
                 return false;
             }
         }

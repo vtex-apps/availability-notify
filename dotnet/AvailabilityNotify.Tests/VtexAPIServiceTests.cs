@@ -99,9 +99,9 @@ namespace AvailabilityNotify.Tests
                         return VtexApiTestHttpMessageHandler.Ok(ValidatedUserJson());
                     }
 
-                    if (url.Contains("/logins/", StringComparison.Ordinal) && url.Contains("/granted", StringComparison.Ordinal))
+                    if (url.Contains("/license-manager/resources/", StringComparison.Ordinal) && url.Contains("/access", StringComparison.Ordinal))
                     {
-                        return VtexApiTestHttpMessageHandler.Ok("true");
+                        return VtexApiTestHttpMessageHandler.Ok();
                     }
 
                     if (url.Contains("template-render", StringComparison.Ordinal))
@@ -119,7 +119,7 @@ namespace AvailabilityNotify.Tests
         }
 
         [Fact]
-        public async Task IsValidAuthUser_WhenLicenseManagerReturnsFalse_ReturnsForbidden()
+        public async Task IsValidAuthUser_WhenLicenseManagerDeniesAccess_ReturnsForbidden()
         {
             var httpContext = CreateHttpContext();
             var service = CreateService(
@@ -132,9 +132,9 @@ namespace AvailabilityNotify.Tests
                         return VtexApiTestHttpMessageHandler.Ok(ValidatedUserJson());
                     }
 
-                    if (url.Contains("/granted", StringComparison.Ordinal))
+                    if (url.Contains("/license-manager/resources/", StringComparison.Ordinal) && url.Contains("/access", StringComparison.Ordinal))
                     {
-                        return VtexApiTestHttpMessageHandler.Ok("false");
+                        return VtexApiTestHttpMessageHandler.Status(HttpStatusCode.Forbidden);
                     }
 
                     if (url.Contains("template-render", StringComparison.Ordinal))
@@ -165,9 +165,9 @@ namespace AvailabilityNotify.Tests
                         return VtexApiTestHttpMessageHandler.Ok(ValidatedUserJson(audience: "store"));
                     }
 
-                    if (url.Contains("/granted", StringComparison.Ordinal))
+                    if (url.Contains("/license-manager/resources/", StringComparison.Ordinal) && url.Contains("/access", StringComparison.Ordinal))
                     {
-                        return VtexApiTestHttpMessageHandler.Ok("true");
+                        return VtexApiTestHttpMessageHandler.Ok();
                     }
 
                     if (url.Contains("template-render", StringComparison.Ordinal))

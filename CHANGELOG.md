@@ -15,6 +15,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Missing `outbound-access` policy for `/api/license-manager/*`, which caused the License Manager resource check to be silently denied by the IO outbound proxy.
 - Restored the admin audience check dropped in an earlier commit of this change, so it is enforced together with (not replaced by) the License Manager resource check. Removed the now-redundant legacy login-grant check from `ValidateUserToken` in favor of the resource-specific check.
 
+### Changed
+
+- Switched the License Manager resource check to `GET /api/license-manager/resources/{resourceKey}/access`, authenticated with the admin user's own `VtexIdclientAutCookie` instead of the product/login-keyed endpoint. This drops the product id constant and keeps the user's email out of the request path.
+
 ## [1.14.3] - 2026-08-24
 
 ### Added
