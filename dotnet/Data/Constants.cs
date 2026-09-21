@@ -31,6 +31,7 @@ namespace AvailabilityNotify.Data
         public const string HTTP_FORWARDED_HEADER = "HTTP_X_FORWARDED_FOR";
         public const string API_VERSION_HEADER = "'x-api-version";
 
+        // VTEX Admin product id in License Manager
         public const string REQUIRED_LM_PRODUCT_CODE = "2156515";
         public const string REQUIRED_LM_RESOURCE_CODE = "downloadNotificationRequests";
 

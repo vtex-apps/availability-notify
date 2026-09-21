@@ -20,5 +20,6 @@
   "admin/settings.marketplace-to-notify-helptext": "Allows a seller account to specify a comma separated list of marketplace account names to notify of inventory updates.",
   "admin/settings.label": "Settings",
   "admin/settings.noPermission.error": "You do not have permission to perform this action.",
+  "admin/settings.generic.error": "Something went wrong. Please try again.",
   "admin/settings.permission-warning": "Starting 09/21/2026, accessing Download Requests and Process Unsent will require the Download Notification Requests resource in License Manager. Make sure the users who need this feature have the appropriate role assigned."
 }

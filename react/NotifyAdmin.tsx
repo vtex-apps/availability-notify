@@ -65,6 +65,10 @@ const messages = defineMessages({
     id: 'admin/settings.noPermission.error',
     defaultMessage: 'You do not have permission to perform this action.',
   },
+  genericError: {
+    id: 'admin/settings.generic.error',
+    defaultMessage: 'Something went wrong. Please try again.',
+  },
   settingsLabel: {
     id: 'admin/settings.label',
     defaultMessage: 'Settings',
@@ -218,21 +222,39 @@ const NotifyAdmin: FC<any> = ({ intl }: Props) => {
   const getAllRequests = async (showToast: any) => {
     setState({ ...state, loading: true })
 
-    const response = await fetch(`/_v/availability-notify/list-requests`)
+    try {
+      const response = await fetch(`/_v/availability-notify/list-requests`)
 
-    if (response.status === 401 || response.status === 403) {
-      showToast({
-        message: intl.formatMessage(messages.noPermissionError),
-        duration: 5000,
-      })
+      if (response.status === 401 || response.status === 403) {
+        showToast({
+          message: intl.formatMessage(messages.noPermissionError),
+          duration: 5000,
+        })
+        return
+      }
+
+      if (!response.ok) {
+        showToast({
+          message: intl.formatMessage(messages.genericError),
+          duration: 5000,
+        })
+        return
+      }
+
+      const requestArr = await response.json()
+
+      downloadRequests(requestArr)
+    } finally {
       setState({ ...state, loading: false })
-      return
     }
+  }
 
-    const requestArr = await response.json()
+  const isPermissionError = (error: any) => {
+    const codes = (error?.graphQLErrors ?? []).map(
+      (graphQLError: any) => graphQLError?.extensions?.code ?? graphQLError?.message
+    )
 
-    downloadRequests(requestArr)
-    setState({ ...state, loading: false })
+    return codes.includes('Forbidden') || codes.includes('Unauthorized')
   }
 
   const processUnsentRequests = async (showToast: any) => {
@@ -246,7 +268,11 @@ const NotifyAdmin: FC<any> = ({ intl }: Props) => {
       processRequestsResults(requestArr)
     } catch (error) {
       showToast({
-        message: intl.formatMessage(messages.noPermissionError),
+        message: intl.formatMessage(
+          isPermissionError(error)
+            ? messages.noPermissionError
+            : messages.genericError
+        ),
         duration: 5000,
       })
     }

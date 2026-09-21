@@ -1091,7 +1091,7 @@ namespace AvailabilityNotify.Services
 
             if (authToken != null)
             {
-                request.Headers.Add(Constants.AUTHORIZATION_HEADER_NAME, authToken);
+                request.Headers.TryAddWithoutValidation(Constants.AUTHORIZATION_HEADER_NAME, authToken);
             }
 
             var client = _clientFactory.CreateClient();
@@ -1134,61 +1134,9 @@ namespace AvailabilityNotify.Services
                 return false;
             }
 
-            var grantedRequest = new HttpRequestMessage
-            {
-                Method = HttpMethod.Get,
-                RequestUri = new Uri($"http://{account}.vtexcommercestable.com.br/api/pvt/accounts/{account}/logins/{Uri.EscapeDataString(userId)}/granted")
-            };
+            var uri = new Uri($"http://{account}.{Constants.ENVIRONMENT}.com.br/api/pvt/accounts/{account}/logins/{Uri.EscapeDataString(userId)}/granted");
 
-            grantedRequest.Headers.Add(Constants.USE_HTTPS_HEADER_NAME, "true");
-            if (credentialHeader != null)
-            {
-                grantedRequest.Headers.Add(Constants.AUTHORIZATION_HEADER_NAME, credentialHeader);
-                grantedRequest.Headers.Add(Constants.VTEX_ID_HEADER_NAME, credentialHeader);
-                grantedRequest.Headers.Add(Constants.PROXY_AUTHORIZATION_HEADER_NAME, credentialHeader);
-            }
-
-            try
-            {
-                var client = _clientFactory.CreateClient();
-                var grantedResponse = await client.SendAsync(grantedRequest);
-                string body = (await grantedResponse.Content.ReadAsStringAsync()).Trim();
-
-                if (!grantedResponse.IsSuccessStatusCode)
-                {
-                    return false;
-                }
-
-                if (string.Equals(body, "true", StringComparison.OrdinalIgnoreCase))
-                {
-                    return true;
-                }
-
-                if (string.Equals(body, "false", StringComparison.OrdinalIgnoreCase))
-                {
-                    return false;
-                }
-
-                try
-                {
-                    return JsonConvert.DeserializeObject<bool>(body);
-                }
-                catch (JsonException)
-                {
-                    if (bool.TryParse(body, out bool parsed))
-                    {
-                        return parsed;
-                    }
-
-                    _context.Vtex.Logger.Warn("IsUserLoginGrantedInLicenseManagerAsync", null, $"Unexpected License Manager granted body for login '{userId}': '{body}'");
-                    return false;
-                }
-            }
-            catch (Exception ex)
-            {
-                _context.Vtex.Logger.Error("IsUserLoginGrantedInLicenseManagerAsync", null, $"Error checking License Manager grant for login '{userId}'", ex);
-                return false;
-            }
+            return await IsGrantedInLicenseManagerAsync("IsUserLoginGrantedInLicenseManagerAsync", uri, credentialHeader);
         }
 
         public async Task<HttpStatusCode> IsValidAuthUser()
@@ -1240,39 +1188,64 @@ namespace AvailabilityNotify.Services
                 return false;
             }
 
-            var request = new HttpRequestMessage
-            {
-                Method = HttpMethod.Get,
-                RequestUri = new Uri($"http://{account}.vtexcommercestable.com.br/api/license-manager/pvt/accounts/{account}/products/{productCode}/logins/{Uri.EscapeDataString(userEmail)}/resources/{resourceCode}/granted")
-            };
+            var uri = new Uri($"http://{account}.{Constants.ENVIRONMENT}.com.br/api/license-manager/pvt/accounts/{account}/products/{productCode}/logins/{Uri.EscapeDataString(userEmail)}/resources/{resourceCode}/granted");
 
-            request.Headers.Add(Constants.USE_HTTPS_HEADER_NAME, "true");
+            return await IsGrantedInLicenseManagerAsync("HasLicenseManagerResourceAsync", uri, credentialHeader);
+        }
+
+        private async Task<bool> IsGrantedInLicenseManagerAsync(string caller, Uri uri, string credentialHeader)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, uri);
+            request.Headers.TryAddWithoutValidation(Constants.USE_HTTPS_HEADER_NAME, "true");
+            request.Headers.TryAddWithoutValidation(Constants.ACCEPT, Constants.APPLICATION_JSON);
 
             if (credentialHeader != null)
             {
-                request.Headers.Add(Constants.AUTHORIZATION_HEADER_NAME, credentialHeader);
-                request.Headers.Add(Constants.VTEX_ID_HEADER_NAME, credentialHeader);
-                request.Headers.Add(Constants.PROXY_AUTHORIZATION_HEADER_NAME, credentialHeader);
+                request.Headers.TryAddWithoutValidation(Constants.AUTHORIZATION_HEADER_NAME, credentialHeader);
+                request.Headers.TryAddWithoutValidation(Constants.VTEX_ID_HEADER_NAME, credentialHeader);
+                request.Headers.TryAddWithoutValidation(Constants.PROXY_AUTHORIZATION_HEADER_NAME, credentialHeader);
             }
 
             try
             {
                 var client = _clientFactory.CreateClient();
                 var response = await client.SendAsync(request);
+                string body = (await response.Content.ReadAsStringAsync()).Trim();
 
                 if (!response.IsSuccessStatusCode)
+                {
+                    _context.Vtex.Logger.Warn(caller, null, $"License Manager returned [{(int)response.StatusCode}] for '{uri.AbsolutePath}': '{body}'");
+                    return false;
+                }
+
+                if (string.Equals(body, "true", StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+
+                if (string.Equals(body, "false", StringComparison.OrdinalIgnoreCase))
                 {
                     return false;
                 }
 
-                string body = await response.Content.ReadAsStringAsync();
+                try
+                {
+                    return JsonConvert.DeserializeObject<bool>(body);
+                }
+                catch (JsonException)
+                {
+                    if (bool.TryParse(body, out bool parsed))
+                    {
+                        return parsed;
+                    }
 
-                return bool.TryParse(body.Trim(), out bool granted) && granted;
+                    _context.Vtex.Logger.Warn(caller, null, $"Unexpected License Manager body for '{uri.AbsolutePath}': '{body}'");
+                    return false;
+                }
             }
             catch (Exception ex)
             {
-                _context.Vtex.Logger.Error("HasLicenseManagerResourceAsync", null, $"Error checking LM resource for user '{userEmail}'", ex);
-
+                _context.Vtex.Logger.Error(caller, null, $"Error calling License Manager '{uri.AbsolutePath}'", ex);
                 return false;
             }
         }
