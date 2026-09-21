@@ -251,7 +251,8 @@ const NotifyAdmin: FC<any> = ({ intl }: Props) => {
 
   const isPermissionError = (error: any) => {
     const codes = (error?.graphQLErrors ?? []).map(
-      (graphQLError: any) => graphQLError?.extensions?.code ?? graphQLError?.message
+      (graphQLError: any) =>
+        graphQLError?.extensions?.code ?? graphQLError?.message
     )
 
     return codes.includes('Forbidden') || codes.includes('Unauthorized')
