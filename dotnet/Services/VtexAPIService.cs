@@ -1172,9 +1172,24 @@ namespace AvailabilityNotify.Services
                 return false;
             }
 
+            string appCredential = this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_CREDENTIAL];
+
             var uri = new Uri($"http://{account}.{Constants.ENVIRONMENT}.com.br/api/license-manager/resources/{Uri.EscapeDataString(resourceCode)}/access");
             var request = new HttpRequestMessage(HttpMethod.Get, uri);
+
+            // Proxy-Authorization carries the app's own credential, which is what the IO
+            // outbound proxy / router authorizes the call against (mirrors node-vtex-api's
+            // ExternalClient). VtexIdclientAutCookie carries the admin user's token, which is
+            // the identity License Manager evaluates the resource against. Sending the app
+            // credential as Authorization instead would let the router resolve the app as the
+            // current user, checking the wrong identity's permissions.
             request.Headers.TryAddWithoutValidation(Constants.VTEX_ID_HEADER_NAME, adminUserAuthToken);
+
+            if (!string.IsNullOrWhiteSpace(appCredential))
+            {
+                request.Headers.TryAddWithoutValidation(Constants.PROXY_AUTHORIZATION_HEADER_NAME, appCredential);
+            }
+
             request.Headers.TryAddWithoutValidation(Constants.USE_HTTPS_HEADER_NAME, "true");
             request.Headers.TryAddWithoutValidation(Constants.ACCEPT, Constants.APPLICATION_JSON);
 
@@ -1185,10 +1200,19 @@ namespace AvailabilityNotify.Services
 
                 // CheckAccessInResourceKeyNew (License Manager) signals the decision purely
                 // through the status code - 2xx granted, anything else (typically 403) denied.
-                // There is no boolean/JSON body to parse.
-                _context.Vtex.Logger.Info("HasLicenseManagerResourceAsync", null, $"License Manager responded [{(int)response.StatusCode}] for resource '{resourceCode}' on account '{account}' (url='{uri}')");
+                // There is no boolean/JSON body to parse, but a denial body is still worth
+                // logging: a rejection from the IO router (source "Vtex.Kube.Router") means the
+                // call never reached License Manager, which is a different problem from the
+                // user genuinely lacking the resource.
+                if (response.IsSuccessStatusCode)
+                {
+                    return true;
+                }
 
-                return response.IsSuccessStatusCode;
+                string body = (await response.Content.ReadAsStringAsync()).Trim();
+                _context.Vtex.Logger.Warn("HasLicenseManagerResourceAsync", null, $"License Manager returned [{(int)response.StatusCode}] for resource '{resourceCode}' on account '{account}': '{body}'");
+
+                return false;
             }
             catch (Exception ex)
             {
