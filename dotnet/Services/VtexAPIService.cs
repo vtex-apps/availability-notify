@@ -1116,8 +1116,12 @@ namespace AvailabilityNotify.Services
 
         public async Task<HttpStatusCode> IsValidAuthUser()
         {
+            string account = this._httpContextAccessor.HttpContext.Request.Headers[Constants.VTEX_ACCOUNT_HEADER_NAME].ToString();
+
             if (string.IsNullOrEmpty(_context.Vtex.AdminUserAuthToken))
             {
+                _context.Vtex.Logger.Warn("IsValidAuthUser", null, $"AdminUserAuthToken is empty (account='{account}')");
+
                 return HttpStatusCode.Unauthorized;
             }
 
@@ -1140,21 +1144,21 @@ namespace AvailabilityNotify.Services
 
             if (!hasAdminPermission)
             {
-                _context.Vtex.Logger.Warn("IsValidAuthUser", null, "User Does Not Have Permission");
+                _context.Vtex.Logger.Warn("IsValidAuthUser", null, $"User Does Not Have Permission (account='{account}', user='{validatedUser?.User}', authStatus='{validatedUser?.AuthStatus}', audience='{validatedUser?.Audience}')");
 
                 return HttpStatusCode.Forbidden;
             }
-
-            string account = this._httpContextAccessor.HttpContext.Request.Headers[Constants.VTEX_ACCOUNT_HEADER_NAME].ToString();
 
             bool hasResource = await HasLicenseManagerResourceAsync(account, _context.Vtex.AdminUserAuthToken, Constants.REQUIRED_LM_RESOURCE_CODE);
 
             if (!hasResource)
             {
-                _context.Vtex.Logger.Warn("IsValidAuthUser", null, $"User does not have required LM resource '{Constants.REQUIRED_LM_RESOURCE_CODE}'");
+                _context.Vtex.Logger.Warn("IsValidAuthUser", null, $"User '{validatedUser.User}' does not have required LM resource '{Constants.REQUIRED_LM_RESOURCE_CODE}' (account='{account}')");
 
                 return HttpStatusCode.Forbidden;
             }
+
+            _context.Vtex.Logger.Info("IsValidAuthUser", null, $"User '{validatedUser.User}' authorized (account='{account}')");
 
             return HttpStatusCode.OK;
         }
@@ -1163,6 +1167,8 @@ namespace AvailabilityNotify.Services
         {
             if (string.IsNullOrWhiteSpace(account) || string.IsNullOrWhiteSpace(adminUserAuthToken))
             {
+                _context.Vtex.Logger.Warn("HasLicenseManagerResourceAsync", null, $"Missing account or admin token (account='{account}', hasToken={!string.IsNullOrWhiteSpace(adminUserAuthToken)})");
+
                 return false;
             }
 
@@ -1180,13 +1186,9 @@ namespace AvailabilityNotify.Services
                 // CheckAccessInResourceKeyNew (License Manager) signals the decision purely
                 // through the status code - 2xx granted, anything else (typically 403) denied.
                 // There is no boolean/JSON body to parse.
-                if (!response.IsSuccessStatusCode)
-                {
-                    _context.Vtex.Logger.Warn("HasLicenseManagerResourceAsync", null, $"License Manager returned [{(int)response.StatusCode}] for resource '{resourceCode}' on account '{account}'");
-                    return false;
-                }
+                _context.Vtex.Logger.Info("HasLicenseManagerResourceAsync", null, $"License Manager responded [{(int)response.StatusCode}] for resource '{resourceCode}' on account '{account}' (url='{uri}')");
 
-                return true;
+                return response.IsSuccessStatusCode;
             }
             catch (Exception ex)
             {
