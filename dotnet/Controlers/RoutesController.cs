@@ -80,7 +80,7 @@ namespace service.Controllers
             }
             else
             {
-                return Unauthorized();
+                return StatusCode((int)isValidAdminToken);
             }
         }
     }

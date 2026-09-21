@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Missing `outbound-access` policy for `/api/license-manager/*`, which caused the License Manager resource check to be silently denied by the IO outbound proxy.
 - Restored the admin audience check dropped in an earlier commit of this change, so it is enforced together with (not replaced by) the License Manager resource check. Removed the now-redundant legacy login-grant check from `ValidateUserToken` in favor of the resource-specific check.
+- Missing `Proxy-Authorization` (app credential) on the License Manager call, which made the IO router reject any non-VTEX-employee admin user before the request ever reached License Manager.
+- A License Manager outage (429/5xx/timeout) was indistinguishable from a real permission denial: both returned 403 and showed "You do not have permission" to the user. Now returns 503 instead, which the admin already renders as a generic retry message rather than a permission error.
 
 ### Changed
 

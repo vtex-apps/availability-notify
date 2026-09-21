@@ -1149,9 +1149,16 @@ namespace AvailabilityNotify.Services
                 return HttpStatusCode.Forbidden;
             }
 
-            bool hasResource = await HasLicenseManagerResourceAsync(account, _context.Vtex.AdminUserAuthToken, Constants.REQUIRED_LM_RESOURCE_CODE);
+            LicenseManagerAccessResult lmResult = await HasLicenseManagerResourceAsync(account, _context.Vtex.AdminUserAuthToken, Constants.REQUIRED_LM_RESOURCE_CODE);
 
-            if (!hasResource)
+            if (lmResult == LicenseManagerAccessResult.Error)
+            {
+                _context.Vtex.Logger.Warn("IsValidAuthUser", null, $"Could not determine LM resource '{Constants.REQUIRED_LM_RESOURCE_CODE}' for user '{validatedUser.User}' (account='{account}')");
+
+                return HttpStatusCode.ServiceUnavailable;
+            }
+
+            if (lmResult == LicenseManagerAccessResult.Denied)
             {
                 _context.Vtex.Logger.Warn("IsValidAuthUser", null, $"User '{validatedUser.User}' does not have required LM resource '{Constants.REQUIRED_LM_RESOURCE_CODE}' (account='{account}')");
 
@@ -1163,13 +1170,20 @@ namespace AvailabilityNotify.Services
             return HttpStatusCode.OK;
         }
 
-        private async Task<bool> HasLicenseManagerResourceAsync(string account, string adminUserAuthToken, string resourceCode)
+        private enum LicenseManagerAccessResult
+        {
+            Granted,
+            Denied,
+            Error
+        }
+
+        private async Task<LicenseManagerAccessResult> HasLicenseManagerResourceAsync(string account, string adminUserAuthToken, string resourceCode)
         {
             if (string.IsNullOrWhiteSpace(account) || string.IsNullOrWhiteSpace(adminUserAuthToken))
             {
                 _context.Vtex.Logger.Warn("HasLicenseManagerResourceAsync", null, $"Missing account or admin token (account='{account}', hasToken={!string.IsNullOrWhiteSpace(adminUserAuthToken)})");
 
-                return false;
+                return LicenseManagerAccessResult.Error;
             }
 
             string appCredential = this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_CREDENTIAL];
@@ -1199,25 +1213,34 @@ namespace AvailabilityNotify.Services
                 var response = await client.SendAsync(request);
 
                 // CheckAccessInResourceKeyNew (License Manager) signals the decision purely
-                // through the status code - 2xx granted, anything else (typically 403) denied.
-                // There is no boolean/JSON body to parse, but a denial body is still worth
-                // logging: a rejection from the IO router (source "Vtex.Kube.Router") means the
-                // call never reached License Manager, which is a different problem from the
-                // user genuinely lacking the resource.
+                // through the status code: 2xx granted, 403 denied - that is its whole
+                // contract, so it is the only status treated as a real decision. Anything
+                // else (429/5xx/an unexpected code, or a rejection from the IO router itself,
+                // e.g. source "Vtex.Kube.Router", which means the call never reached License
+                // Manager at all) is an LM/infra problem, not evidence the user lacks the
+                // resource, so it must not be reported to the caller as a denial.
                 if (response.IsSuccessStatusCode)
                 {
-                    return true;
+                    return LicenseManagerAccessResult.Granted;
                 }
 
                 string body = (await response.Content.ReadAsStringAsync()).Trim();
-                _context.Vtex.Logger.Warn("HasLicenseManagerResourceAsync", null, $"License Manager returned [{(int)response.StatusCode}] for resource '{resourceCode}' on account '{account}': '{body}'");
 
-                return false;
+                if (response.StatusCode == HttpStatusCode.Forbidden)
+                {
+                    _context.Vtex.Logger.Warn("HasLicenseManagerResourceAsync", null, $"License Manager denied resource '{resourceCode}' on account '{account}': '{body}'");
+
+                    return LicenseManagerAccessResult.Denied;
+                }
+
+                _context.Vtex.Logger.Warn("HasLicenseManagerResourceAsync", null, $"License Manager returned unexpected status [{(int)response.StatusCode}] for resource '{resourceCode}' on account '{account}': '{body}'");
+
+                return LicenseManagerAccessResult.Error;
             }
             catch (Exception ex)
             {
                 _context.Vtex.Logger.Error("HasLicenseManagerResourceAsync", null, $"Error checking License Manager resource '{resourceCode}' on account '{account}'", ex);
-                return false;
+                return LicenseManagerAccessResult.Error;
             }
         }
     }

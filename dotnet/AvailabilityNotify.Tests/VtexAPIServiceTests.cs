@@ -152,6 +152,39 @@ namespace AvailabilityNotify.Tests
         }
 
         [Fact]
+        public async Task IsValidAuthUser_WhenLicenseManagerErrors_ReturnsServiceUnavailable()
+        {
+            var httpContext = CreateHttpContext();
+            var service = CreateService(
+                httpContext,
+                req =>
+                {
+                    var url = req.RequestUri?.ToString() ?? string.Empty;
+                    if (url.Contains("credential/validate", StringComparison.Ordinal))
+                    {
+                        return VtexApiTestHttpMessageHandler.Ok(ValidatedUserJson());
+                    }
+
+                    if (url.Contains("/license-manager/resources/", StringComparison.Ordinal) && url.Contains("/access", StringComparison.Ordinal))
+                    {
+                        return VtexApiTestHttpMessageHandler.Status(HttpStatusCode.InternalServerError);
+                    }
+
+                    if (url.Contains("template-render", StringComparison.Ordinal))
+                    {
+                        return VtexApiTestHttpMessageHandler.Ok();
+                    }
+
+                    return VtexApiTestHttpMessageHandler.Status(HttpStatusCode.NotFound);
+                },
+                vtex => vtex.SetupGet(v => v.AdminUserAuthToken).Returns("admin-cookie"));
+
+            var result = await service.IsValidAuthUser();
+
+            Assert.Equal(HttpStatusCode.ServiceUnavailable, result);
+        }
+
+        [Fact]
         public async Task IsValidAuthUser_WhenAudienceIsNotAdmin_ReturnsForbidden()
         {
             var httpContext = CreateHttpContext();
