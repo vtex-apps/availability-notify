@@ -1091,7 +1091,7 @@ namespace AvailabilityNotify.Services
 
             if (authToken != null)
             {
-                request.Headers.Add(Constants.AUTHORIZATION_HEADER_NAME, authToken);
+                request.Headers.TryAddWithoutValidation(Constants.AUTHORIZATION_HEADER_NAME, authToken);
             }
 
             var client = _clientFactory.CreateClient();
@@ -1104,19 +1104,6 @@ namespace AvailabilityNotify.Services
                 if (response.IsSuccessStatusCode)
                 {
                     validatedUser = JsonConvert.DeserializeObject<ValidatedUser>(responseContent);
-                    if (validatedUser != null && !string.IsNullOrEmpty(validatedUser.Id))
-                    {
-                        if (!await IsUserLoginGrantedInLicenseManagerAsync(account, validatedUser.Id, authToken))
-                        {
-                            _context.Vtex.Logger.Warn("ValidateUserToken", null, $"Login '{validatedUser.Id}' is not granted in License Manager for account '{account}'.");
-                            validatedUser = null;
-                        }
-                    }
-                    else if (validatedUser != null && string.IsNullOrEmpty(validatedUser.Id))
-                    {
-                        _context.Vtex.Logger.Warn("ValidateUserToken", null, "Credential validate succeeded but user Id is missing; License Manager check skipped.");
-                        validatedUser = null;
-                    }
                 }
             }
             catch (Exception ex)
@@ -1127,74 +1114,14 @@ namespace AvailabilityNotify.Services
             return validatedUser;
         }
 
-        private async Task<bool> IsUserLoginGrantedInLicenseManagerAsync(string account, string userId, string credentialHeader)
-        {
-            if (string.IsNullOrWhiteSpace(account) || string.IsNullOrWhiteSpace(userId))
-            {
-                return false;
-            }
-
-            var grantedRequest = new HttpRequestMessage
-            {
-                Method = HttpMethod.Get,
-                RequestUri = new Uri($"http://{account}.vtexcommercestable.com.br/api/pvt/accounts/{account}/logins/{Uri.EscapeDataString(userId)}/granted")
-            };
-
-            grantedRequest.Headers.Add(Constants.USE_HTTPS_HEADER_NAME, "true");
-            if (credentialHeader != null)
-            {
-                grantedRequest.Headers.Add(Constants.AUTHORIZATION_HEADER_NAME, credentialHeader);
-                grantedRequest.Headers.Add(Constants.VTEX_ID_HEADER_NAME, credentialHeader);
-                grantedRequest.Headers.Add(Constants.PROXY_AUTHORIZATION_HEADER_NAME, credentialHeader);
-            }
-
-            try
-            {
-                var client = _clientFactory.CreateClient();
-                var grantedResponse = await client.SendAsync(grantedRequest);
-                string body = (await grantedResponse.Content.ReadAsStringAsync()).Trim();
-
-                if (!grantedResponse.IsSuccessStatusCode)
-                {
-                    return false;
-                }
-
-                if (string.Equals(body, "true", StringComparison.OrdinalIgnoreCase))
-                {
-                    return true;
-                }
-
-                if (string.Equals(body, "false", StringComparison.OrdinalIgnoreCase))
-                {
-                    return false;
-                }
-
-                try
-                {
-                    return JsonConvert.DeserializeObject<bool>(body);
-                }
-                catch (JsonException)
-                {
-                    if (bool.TryParse(body, out bool parsed))
-                    {
-                        return parsed;
-                    }
-
-                    _context.Vtex.Logger.Warn("IsUserLoginGrantedInLicenseManagerAsync", null, $"Unexpected License Manager granted body for login '{userId}': '{body}'");
-                    return false;
-                }
-            }
-            catch (Exception ex)
-            {
-                _context.Vtex.Logger.Error("IsUserLoginGrantedInLicenseManagerAsync", null, $"Error checking License Manager grant for login '{userId}'", ex);
-                return false;
-            }
-        }
-
         public async Task<HttpStatusCode> IsValidAuthUser()
         {
+            string account = this._httpContextAccessor.HttpContext.Request.Headers[Constants.VTEX_ACCOUNT_HEADER_NAME].ToString();
+
             if (string.IsNullOrEmpty(_context.Vtex.AdminUserAuthToken))
             {
+                _context.Vtex.Logger.Warn("IsValidAuthUser", null, $"AdminUserAuthToken is empty (account='{account}')");
+
                 return HttpStatusCode.Unauthorized;
             }
 
@@ -1211,18 +1138,110 @@ namespace AvailabilityNotify.Services
                 return HttpStatusCode.BadRequest;
             }
 
-            bool hasPermission = validatedUser != null && 
-                     "Success".Equals(validatedUser.AuthStatus, StringComparison.OrdinalIgnoreCase) && 
+            bool hasAdminPermission = validatedUser != null &&
+                     "Success".Equals(validatedUser.AuthStatus, StringComparison.OrdinalIgnoreCase) &&
                      "admin".Equals(validatedUser.Audience, StringComparison.OrdinalIgnoreCase);
 
-            if (!hasPermission)
+            if (!hasAdminPermission)
             {
-                _context.Vtex.Logger.Warn("IsValidAuthUser", null, "User Does Not Have Permission");
+                _context.Vtex.Logger.Warn("IsValidAuthUser", null, $"User Does Not Have Permission (account='{account}', user='{validatedUser?.User}', authStatus='{validatedUser?.AuthStatus}', audience='{validatedUser?.Audience}')");
 
                 return HttpStatusCode.Forbidden;
             }
 
+            LicenseManagerAccessResult lmResult = await HasLicenseManagerResourceAsync(account, _context.Vtex.AdminUserAuthToken, Constants.REQUIRED_LM_RESOURCE_CODE);
+
+            if (lmResult == LicenseManagerAccessResult.Error)
+            {
+                _context.Vtex.Logger.Warn("IsValidAuthUser", null, $"Could not determine LM resource '{Constants.REQUIRED_LM_RESOURCE_CODE}' for user '{validatedUser.User}' (account='{account}')");
+
+                return HttpStatusCode.ServiceUnavailable;
+            }
+
+            if (lmResult == LicenseManagerAccessResult.Denied)
+            {
+                _context.Vtex.Logger.Warn("IsValidAuthUser", null, $"User '{validatedUser.User}' does not have required LM resource '{Constants.REQUIRED_LM_RESOURCE_CODE}' (account='{account}')");
+
+                return HttpStatusCode.Forbidden;
+            }
+
+            _context.Vtex.Logger.Info("IsValidAuthUser", null, $"User '{validatedUser.User}' authorized (account='{account}')");
+
             return HttpStatusCode.OK;
+        }
+
+        private enum LicenseManagerAccessResult
+        {
+            Granted,
+            Denied,
+            Error
+        }
+
+        private async Task<LicenseManagerAccessResult> HasLicenseManagerResourceAsync(string account, string adminUserAuthToken, string resourceCode)
+        {
+            if (string.IsNullOrWhiteSpace(account) || string.IsNullOrWhiteSpace(adminUserAuthToken))
+            {
+                _context.Vtex.Logger.Warn("HasLicenseManagerResourceAsync", null, $"Missing account or admin token (account='{account}', hasToken={!string.IsNullOrWhiteSpace(adminUserAuthToken)})");
+
+                return LicenseManagerAccessResult.Error;
+            }
+
+            string appCredential = this._httpContextAccessor.HttpContext.Request.Headers[Constants.HEADER_VTEX_CREDENTIAL];
+
+            var uri = new Uri($"http://{account}.{Constants.ENVIRONMENT}.com.br/api/license-manager/resources/{Uri.EscapeDataString(resourceCode)}/access");
+            var request = new HttpRequestMessage(HttpMethod.Get, uri);
+
+            // Proxy-Authorization carries the app's own credential, which is what the IO
+            // outbound proxy / router authorizes the call against (mirrors node-vtex-api's
+            // ExternalClient). VtexIdclientAutCookie carries the admin user's token, which is
+            // the identity License Manager evaluates the resource against. Sending the app
+            // credential as Authorization instead would let the router resolve the app as the
+            // current user, checking the wrong identity's permissions.
+            request.Headers.TryAddWithoutValidation(Constants.VTEX_ID_HEADER_NAME, adminUserAuthToken);
+
+            if (!string.IsNullOrWhiteSpace(appCredential))
+            {
+                request.Headers.TryAddWithoutValidation(Constants.PROXY_AUTHORIZATION_HEADER_NAME, appCredential);
+            }
+
+            request.Headers.TryAddWithoutValidation(Constants.USE_HTTPS_HEADER_NAME, "true");
+            request.Headers.TryAddWithoutValidation(Constants.ACCEPT, Constants.APPLICATION_JSON);
+
+            try
+            {
+                var client = _clientFactory.CreateClient();
+                var response = await client.SendAsync(request);
+
+                // CheckAccessInResourceKeyNew (License Manager) signals the decision purely
+                // through the status code: 2xx granted, 403 denied - that is its whole
+                // contract, so it is the only status treated as a real decision. Anything
+                // else (429/5xx/an unexpected code, or a rejection from the IO router itself,
+                // e.g. source "Vtex.Kube.Router", which means the call never reached License
+                // Manager at all) is an LM/infra problem, not evidence the user lacks the
+                // resource, so it must not be reported to the caller as a denial.
+                if (response.IsSuccessStatusCode)
+                {
+                    return LicenseManagerAccessResult.Granted;
+                }
+
+                string body = (await response.Content.ReadAsStringAsync()).Trim();
+
+                if (response.StatusCode == HttpStatusCode.Forbidden)
+                {
+                    _context.Vtex.Logger.Warn("HasLicenseManagerResourceAsync", null, $"License Manager denied resource '{resourceCode}' on account '{account}': '{body}'");
+
+                    return LicenseManagerAccessResult.Denied;
+                }
+
+                _context.Vtex.Logger.Warn("HasLicenseManagerResourceAsync", null, $"License Manager returned unexpected status [{(int)response.StatusCode}] for resource '{resourceCode}' on account '{account}': '{body}'");
+
+                return LicenseManagerAccessResult.Error;
+            }
+            catch (Exception ex)
+            {
+                _context.Vtex.Logger.Error("HasLicenseManagerResourceAsync", null, $"Error checking License Manager resource '{resourceCode}' on account '{account}'", ex);
+                return LicenseManagerAccessResult.Error;
+            }
         }
     }
 }

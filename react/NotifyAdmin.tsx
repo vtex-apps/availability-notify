@@ -4,6 +4,7 @@ import type { FC } from 'react'
 import React, { useState, useEffect } from 'react'
 import { injectIntl, defineMessages } from 'react-intl'
 import {
+  Alert,
   ToastProvider,
   ToastConsumer,
   Layout,
@@ -60,9 +61,22 @@ const messages = defineMessages({
     id: 'admin/settings.saveSettings.button',
     defaultMessage: 'Save',
   },
+  noPermissionError: {
+    id: 'admin/settings.noPermission.error',
+    defaultMessage: 'You do not have permission to perform this action.',
+  },
+  genericError: {
+    id: 'admin/settings.generic.error',
+    defaultMessage: 'Something went wrong. Please try again.',
+  },
   settingsLabel: {
     id: 'admin/settings.label',
     defaultMessage: 'Settings',
+  },
+  permissionWarning: {
+    id: 'admin/settings.permission-warning',
+    defaultMessage:
+      'Starting 09/21/2026, accessing Download Requests and Process Unsent will require the Download Notification Requests resource in License Manager. Make sure the users who need this feature have the appropriate role assigned.',
   },
   downloadHelptext: {
     id: 'admin/settings.download-helptext',
@@ -205,20 +219,46 @@ const NotifyAdmin: FC<any> = ({ intl }: Props) => {
     XLSX.writeFile(wb, exportFileName)
   }
 
-  const getAllRequests = async () => {
+  const getAllRequests = async (showToast: any) => {
     setState({ ...state, loading: true })
 
-    const result: any = await fetch(
-      `/_v/availability-notify/list-requests`
-    ).then(response => response.json())
+    try {
+      const response = await fetch(`/_v/availability-notify/list-requests`)
 
-    const requestArr = result
+      if (response.status === 401 || response.status === 403) {
+        showToast({
+          message: intl.formatMessage(messages.noPermissionError),
+          duration: 5000,
+        })
+        return
+      }
 
-    downloadRequests(requestArr)
-    setState({ ...state, loading: false })
+      if (!response.ok) {
+        showToast({
+          message: intl.formatMessage(messages.genericError),
+          duration: 5000,
+        })
+        return
+      }
+
+      const requestArr = await response.json()
+
+      downloadRequests(requestArr)
+    } finally {
+      setState({ ...state, loading: false })
+    }
   }
 
-  const processUnsentRequests = async () => {
+  const isPermissionError = (error: any) => {
+    const codes = (error?.graphQLErrors ?? []).map(
+      (graphQLError: any) =>
+        graphQLError?.extensions?.code ?? graphQLError?.message
+    )
+
+    return codes.includes('Forbidden') || codes.includes('Unauthorized')
+  }
+
+  const processUnsentRequests = async (showToast: any) => {
     setState({ ...state, processing: true })
 
     try {
@@ -228,7 +268,14 @@ const NotifyAdmin: FC<any> = ({ intl }: Props) => {
 
       processRequestsResults(requestArr)
     } catch (error) {
-      throw new Error(`processUnsentRequests-error: ${error.message}`)
+      showToast({
+        message: intl.formatMessage(
+          isPermissionError(error)
+            ? messages.noPermissionError
+            : messages.genericError
+        ),
+        duration: 5000,
+      })
     }
 
     setState({ ...state, processing: false })
@@ -297,6 +344,11 @@ const NotifyAdmin: FC<any> = ({ intl }: Props) => {
             </div>
 
             <div className="bg-muted-5 pa8">
+              <div className="mb5">
+                <Alert type="warning">
+                  {intl.formatMessage(messages.permissionWarning)}
+                </Alert>
+              </div>
               <PageBlock
                 variation="annotated"
                 title={intl.formatMessage(messages.download)}
@@ -307,7 +359,7 @@ const NotifyAdmin: FC<any> = ({ intl }: Props) => {
                     icon={download}
                     isLoading={loading}
                     onClick={() => {
-                      getAllRequests()
+                      getAllRequests(showToast)
                     }}
                   >
                     {intl.formatMessage(messages.download)}
@@ -324,7 +376,7 @@ const NotifyAdmin: FC<any> = ({ intl }: Props) => {
                     icon={download}
                     isLoading={processing}
                     onClick={() => {
-                      processUnsentRequests()
+                      processUnsentRequests(showToast)
                     }}
                   >
                     {intl.formatMessage(messages.processUnsent)}

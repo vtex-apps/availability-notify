@@ -10,6 +10,29 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Update README for "Download Notification Requests" LM resource requirement (breaking change).
 
+## [1.15.0] - 2026-09-22
+
+### Added
+
+- Require the `downloadNotificationRequests` License Manager resource in addition to admin role to access Download Requests, Process Unsent and Delete Request APIs.
+
+### Fixed
+
+- Missing `outbound-access` policy for `/api/license-manager/*`, which caused the License Manager resource check to be silently denied by the IO outbound proxy.
+- Restored the admin audience check dropped in an earlier commit of this change, so it is enforced together with (not replaced by) the License Manager resource check. Removed the now-redundant legacy login-grant check from `ValidateUserToken` in favor of the resource-specific check.
+- Missing `Proxy-Authorization` (app credential) on the License Manager call, which made the IO router reject any non-VTEX-employee admin user before the request ever reached License Manager.
+- A License Manager outage (429/5xx/timeout) was indistinguishable from a real permission denial: both returned 403 and showed "You do not have permission" to the user. Now returns 503 instead, which the admin already renders as a generic retry message rather than a permission error.
+
+### Changed
+
+- Switched the License Manager resource check to `GET /api/license-manager/resources/{resourceKey}/access`, authenticated with the admin user's own `VtexIdclientAutCookie` instead of the product/login-keyed endpoint. This drops the product id constant and keeps the user's email out of the request path.
+
+## [1.14.3] - 2026-08-24
+
+### Added
+
+- Warning message in the admin panel informing that Download Requests and Process Unsent will require a License Manager resource starting on a date to be defined.
+
 ## [1.14.2] - 2026-05-05
 
 ### Fixed

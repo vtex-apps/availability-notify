@@ -1,7 +1,7 @@
 {
   "name": "availability-notify",
   "vendor": "vtex",
-  "version": "1.14.2",
+  "version": "1.15.0",
   "title": "Availability Notify",
   "description": "Record and send notification when an item is back in stock",
   "scripts": {
@@ -102,6 +102,13 @@
       "attrs": {
         "host": "{{account}}.vtexcommercestable.com.br",
         "path": "/_v/availability-notify/notify"
+      }
+    },
+    {
+      "name": "outbound-access",
+      "attrs": {
+        "host": "{{account}}.vtexcommercestable.com.br",
+        "path": "/api/license-manager/*"
       }
     },
     {
