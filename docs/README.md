@@ -6,6 +6,8 @@
 
 > ⚠️ This app is no longer maintained by VTEX. This means support and maintenance are no longer provided.
 
+> ⚠️ **For forked apps:** This app received a [breaking change](https://help.vtex.com/announcements/2026-08-17-breaking-change-availability-notify-new-required-permission) that applies only to the official app. For security reasons, VTEX strongly recommends applying this change to forks of this app as well. It adds the **Download Notification Requests** License Manager resource as a requirement for administrative operations. To include them in your fork, follow the implementation in the app update to [version `v1.15.0`](https://github.com/vtex-apps/availability-notify/compare/v1.14.3...v1.15.0).
+
 The Availability Notify component displays a subscription form when a product SKU is unavailable. The form lets customers subscribe to receive notifications when that item is restocked.
 
 ![store-notifier](https://user-images.githubusercontent.com/67270558/132012045-06c65073-2692-4827-b08a-7be5730b6422.png)
@@ -20,7 +22,7 @@ The app records the notification request and monitors inventory updates. This wa
 
 3. Open your app's `manifest.json` file and add the Availability Notify app under the `peerDependencies` field.
 
-    >⚠️ Due to changes in its peer dependencies, you will need to release a new major version. Check the documentation on [How to migrate CMS settings after a theme major update](https://developers.vtex.com/vtex-developer-docs/docs/vtex-io-documentation-migrating-cms-settings-after-major-update).
+    >⚠️ Due to changes in its peer dependencies, you will need to release a new major version. Check the documentation on [How to migrate CMS settings after a theme major update](https://developers.vtex.com/docs/guides/vtex-io-documentation-migrating-cms-settings-after-major-update).
 
     ```json
       "peerDependencies": {
@@ -42,7 +44,7 @@ The app records the notification request and monitors inventory updates. This wa
     ```
 
 5. Once you have added the availability-notify component, access your store's Admin.
-6. Go to **Extensions Hub > Installed Apps > Availability Notify**. You can also find it using the search bar at the top of the page.
+6. Go to **Extensions Hub > Installed Apps > Availability Notifier**. You can also find it using the search bar at the top of the page.
 7. Then, you will see the app's settings:
 
     ![app-settings](https://user-images.githubusercontent.com/47258865/177632798-1aa3b247-10fe-45e2-93a2-73527c19c0f9.png)
@@ -58,7 +60,7 @@ After making the desired settings in the app, set up its template according to y
 
 ## Required permissions for request management
 
-**Breaking change:** Starting on [September 21st, 2026], **Download Requests**, **Process Unsent**, and deleting notification requests require the **Download Notification Requests** [License Manager resource](https://help.vtex.com/docs/tutorials/license-manager-resources). Users without this resource will see a permission error in Admin and receive HTTP 403 Forbidden from the related APIs. For more details, see the [breaking change announcement](https://help.vtex.com/announcements/2026-08-17-breaking-change-availability-notify-new-mandatory-permission).
+**Breaking change:** Starting on September 21st, 2026, **Download Requests**, **Process Unsent**, and deleting notification requests require the **Download Notification Requests** [License Manager resource](https://help.vtex.com/docs/tutorials/license-manager-resources). Users without this resource will see a permission error in Admin and receive HTTP 403 Forbidden from the related APIs. For more details, see the [breaking change announcement](https://help.vtex.com/announcements/2026-08-17-breaking-change-availability-notify-new-mandatory-permission).
 
 ## Seller Configuration
 
@@ -77,14 +79,14 @@ Once you have installed the app, you can customize the email template to send to
 3. After, you will see the email template and its configuration. For example:
 ![template-back-in-stock](https://user-images.githubusercontent.com/67270558/131547198-a4eb3f0e-5a20-4e63-9f1f-d3bb312fa621.gif)
 
-To edit the email template's field, check the documentation on [How to create and edit transactional email templates](https://help.vtex.com/en/tracks/transactional-emails--6IkJwttMw5T84mlY9RifRP/335JZKUYgvYlGOJgvJYxRO), and you will notice the **JSON Data** field, which is responsible for adding variables that allow you to dynamically add data to the email. These variables are JSON properties, and you can see more details about them in [Get SKU and context](https://developers.vtex.com/vtex-rest-api/reference/catalog-api-sku#catalog-api-get-sku-context) and in [Including order variables in email template](https://help.vtex.com/en/tracks/transactional-emails--6IkJwttMw5T84mlY9RifRP/fLMUCPArCYB9vcTZEZ6bi).
+To edit the email template's field, check the documentation on [How to create and edit transactional email templates](https://help.vtex.com/en/docs/tracks/how-to-create-and-edit-transactional-email-templates), and you will notice the **JSON Data** field, which is responsible for adding variables that allow you to dynamically add data to the email. These variables are JSON properties, and you can see more details about them in [Get SKU and context](https://developers.vtex.com/vtex-rest-api/reference/catalog-api-sku#catalog-api-get-sku-context) and in [Including order variables in email template](https://help.vtex.com/docs/tracks/including-order-variables-in-email-template).
 :warning: JSON Data examples will only appear in templates when you complete the desired action in your store. If you have not transacted an order, recurrence, or any other action, the JSON data will appear blank. NOTE: The notification email is only triggered when on the `master` workspace.
 
 ## Searching and processing availability notify data
 
 This app uses [Master Data V2](https://developers.vtex.com/vtex-rest-api/reference/master-data-api-v2-overview), to search for stored data you should use Master Data API - v2 endpoints with the variables `data_entity_name` and `schema` with the value `notify`.
 
-If you want to run the services manually, you can use the two endpoints below:
+If you want to run the services manually, you can use the endpoints below:
 
 To process Unsent Requests:
 
@@ -94,7 +96,25 @@ To process All Requests:
 
 `https://app.io.vtex.com/vtex.availability-notify/v1/{{accountName}}/master/_v/availability-notify/process-all-requests`.
 
-> ⚠️ To use these endpoints, an [API key](https://help.vtex.com/docs/tutorials/api-keys) is required and it must have the **Download Notification Requests** License Manager resource. For details, see the [breaking change announcement](https://help.vtex.com/announcements/2026-08-17-breaking-change-availability-notify-new-mandatory-permission).
+To delete a notification request, use the `deleteRequest` GraphQL mutation:
+
+```graphql
+mutation DeleteRequest($id: String) {
+  deleteRequest(id: $id)
+}
+```
+
+Also, pass the request ID in the `id` variable:
+
+```json
+{
+  "id": "{{requestId}}"
+}
+```
+
+The mutation returns `true` when the request is deleted successfully.
+
+> ⚠️ To use these endpoints and the mutation, an [API key](https://help.vtex.com/docs/tutorials/api-keys) is required, and it must have the **Download Notification Requests** License Manager resource. For details, see the [breaking change announcement](https://help.vtex.com/announcements/2026-08-17-breaking-change-availability-notify-new-mandatory-permission).
 
 Check out the [Open API Schemas repository](https://github.com/vtex/openapi-schemas) containing several VTEX Postman Collections, including Master Data API - v2.
 
