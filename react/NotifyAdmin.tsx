@@ -61,6 +61,14 @@ const messages = defineMessages({
     id: 'admin/settings.saveSettings.button',
     defaultMessage: 'Save',
   },
+  noPermissionError: {
+    id: 'admin/settings.noPermission.error',
+    defaultMessage: 'You do not have permission to perform this action.',
+  },
+  genericError: {
+    id: 'admin/settings.generic.error',
+    defaultMessage: 'Something went wrong. Please try again.',
+  },
   settingsLabel: {
     id: 'admin/settings.label',
     defaultMessage: 'Settings',
@@ -211,20 +219,46 @@ const NotifyAdmin: FC<any> = ({ intl }: Props) => {
     XLSX.writeFile(wb, exportFileName)
   }
 
-  const getAllRequests = async () => {
+  const getAllRequests = async (showToast: any) => {
     setState({ ...state, loading: true })
 
-    const result: any = await fetch(
-      `/_v/availability-notify/list-requests`
-    ).then(response => response.json())
+    try {
+      const response = await fetch(`/_v/availability-notify/list-requests`)
 
-    const requestArr = result
+      if (response.status === 401 || response.status === 403) {
+        showToast({
+          message: intl.formatMessage(messages.noPermissionError),
+          duration: 5000,
+        })
+        return
+      }
 
-    downloadRequests(requestArr)
-    setState({ ...state, loading: false })
+      if (!response.ok) {
+        showToast({
+          message: intl.formatMessage(messages.genericError),
+          duration: 5000,
+        })
+        return
+      }
+
+      const requestArr = await response.json()
+
+      downloadRequests(requestArr)
+    } finally {
+      setState({ ...state, loading: false })
+    }
   }
 
-  const processUnsentRequests = async () => {
+  const isPermissionError = (error: any) => {
+    const codes = (error?.graphQLErrors ?? []).map(
+      (graphQLError: any) =>
+        graphQLError?.extensions?.code ?? graphQLError?.message
+    )
+
+    return codes.includes('Forbidden') || codes.includes('Unauthorized')
+  }
+
+  const processUnsentRequests = async (showToast: any) => {
     setState({ ...state, processing: true })
 
     try {
@@ -234,7 +268,14 @@ const NotifyAdmin: FC<any> = ({ intl }: Props) => {
 
       processRequestsResults(requestArr)
     } catch (error) {
-      throw new Error(`processUnsentRequests-error: ${error.message}`)
+      showToast({
+        message: intl.formatMessage(
+          isPermissionError(error)
+            ? messages.noPermissionError
+            : messages.genericError
+        ),
+        duration: 5000,
+      })
     }
 
     setState({ ...state, processing: false })
@@ -318,7 +359,7 @@ const NotifyAdmin: FC<any> = ({ intl }: Props) => {
                     icon={download}
                     isLoading={loading}
                     onClick={() => {
-                      getAllRequests()
+                      getAllRequests(showToast)
                     }}
                   >
                     {intl.formatMessage(messages.download)}
@@ -335,7 +376,7 @@ const NotifyAdmin: FC<any> = ({ intl }: Props) => {
                     icon={download}
                     isLoading={processing}
                     onClick={() => {
-                      processUnsentRequests()
+                      processUnsentRequests(showToast)
                     }}
                   >
                     {intl.formatMessage(messages.processUnsent)}

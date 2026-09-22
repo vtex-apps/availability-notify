@@ -107,6 +107,13 @@
     {
       "name": "outbound-access",
       "attrs": {
+        "host": "{{account}}.vtexcommercestable.com.br",
+        "path": "/api/license-manager/*"
+      }
+    },
+    {
+      "name": "outbound-access",
+      "attrs": {
         "host": "raw.githubusercontent.com",
         "path": "/vtex-apps/availability-notify/*"
       }

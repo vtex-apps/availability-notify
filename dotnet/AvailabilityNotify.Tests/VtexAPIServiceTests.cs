@@ -99,9 +99,9 @@ namespace AvailabilityNotify.Tests
                         return VtexApiTestHttpMessageHandler.Ok(ValidatedUserJson());
                     }
 
-                    if (url.Contains("/logins/", StringComparison.Ordinal) && url.Contains("/granted", StringComparison.Ordinal))
+                    if (url.Contains("/license-manager/resources/", StringComparison.Ordinal) && url.Contains("/access", StringComparison.Ordinal))
                     {
-                        return VtexApiTestHttpMessageHandler.Ok("true");
+                        return VtexApiTestHttpMessageHandler.Ok();
                     }
 
                     if (url.Contains("template-render", StringComparison.Ordinal))
@@ -119,7 +119,7 @@ namespace AvailabilityNotify.Tests
         }
 
         [Fact]
-        public async Task IsValidAuthUser_WhenLicenseManagerReturnsFalse_ReturnsForbidden()
+        public async Task IsValidAuthUser_WhenLicenseManagerDeniesAccess_ReturnsForbidden()
         {
             var httpContext = CreateHttpContext();
             var service = CreateService(
@@ -132,9 +132,9 @@ namespace AvailabilityNotify.Tests
                         return VtexApiTestHttpMessageHandler.Ok(ValidatedUserJson());
                     }
 
-                    if (url.Contains("/granted", StringComparison.Ordinal))
+                    if (url.Contains("/license-manager/resources/", StringComparison.Ordinal) && url.Contains("/access", StringComparison.Ordinal))
                     {
-                        return VtexApiTestHttpMessageHandler.Ok("false");
+                        return VtexApiTestHttpMessageHandler.Status(HttpStatusCode.Forbidden);
                     }
 
                     if (url.Contains("template-render", StringComparison.Ordinal))
@@ -149,6 +149,39 @@ namespace AvailabilityNotify.Tests
             var result = await service.IsValidAuthUser();
 
             Assert.Equal(HttpStatusCode.Forbidden, result);
+        }
+
+        [Fact]
+        public async Task IsValidAuthUser_WhenLicenseManagerErrors_ReturnsServiceUnavailable()
+        {
+            var httpContext = CreateHttpContext();
+            var service = CreateService(
+                httpContext,
+                req =>
+                {
+                    var url = req.RequestUri?.ToString() ?? string.Empty;
+                    if (url.Contains("credential/validate", StringComparison.Ordinal))
+                    {
+                        return VtexApiTestHttpMessageHandler.Ok(ValidatedUserJson());
+                    }
+
+                    if (url.Contains("/license-manager/resources/", StringComparison.Ordinal) && url.Contains("/access", StringComparison.Ordinal))
+                    {
+                        return VtexApiTestHttpMessageHandler.Status(HttpStatusCode.InternalServerError);
+                    }
+
+                    if (url.Contains("template-render", StringComparison.Ordinal))
+                    {
+                        return VtexApiTestHttpMessageHandler.Ok();
+                    }
+
+                    return VtexApiTestHttpMessageHandler.Status(HttpStatusCode.NotFound);
+                },
+                vtex => vtex.SetupGet(v => v.AdminUserAuthToken).Returns("admin-cookie"));
+
+            var result = await service.IsValidAuthUser();
+
+            Assert.Equal(HttpStatusCode.ServiceUnavailable, result);
         }
 
         [Fact]
@@ -165,9 +198,9 @@ namespace AvailabilityNotify.Tests
                         return VtexApiTestHttpMessageHandler.Ok(ValidatedUserJson(audience: "store"));
                     }
 
-                    if (url.Contains("/granted", StringComparison.Ordinal))
+                    if (url.Contains("/license-manager/resources/", StringComparison.Ordinal) && url.Contains("/access", StringComparison.Ordinal))
                     {
-                        return VtexApiTestHttpMessageHandler.Ok("true");
+                        return VtexApiTestHttpMessageHandler.Ok();
                     }
 
                     if (url.Contains("template-render", StringComparison.Ordinal))
@@ -182,38 +215,6 @@ namespace AvailabilityNotify.Tests
             var result = await service.IsValidAuthUser();
 
             Assert.Equal(HttpStatusCode.Forbidden, result);
-        }
-
-        [Fact]
-        public async Task ValidateUserToken_WhenLicenseManagerReturnsFalse_ReturnsNull()
-        {
-            var httpContext = CreateHttpContext();
-            var service = CreateService(
-                httpContext,
-                req =>
-                {
-                    var url = req.RequestUri?.ToString() ?? string.Empty;
-                    if (url.Contains("credential/validate", StringComparison.Ordinal))
-                    {
-                        return VtexApiTestHttpMessageHandler.Ok(ValidatedUserJson());
-                    }
-
-                    if (url.Contains("/granted", StringComparison.Ordinal))
-                    {
-                        return VtexApiTestHttpMessageHandler.Ok("false");
-                    }
-
-                    if (url.Contains("template-render", StringComparison.Ordinal))
-                    {
-                        return VtexApiTestHttpMessageHandler.Ok();
-                    }
-
-                    return VtexApiTestHttpMessageHandler.Status(HttpStatusCode.NotFound);
-                });
-
-            var user = await service.ValidateUserToken("cookie");
-
-            Assert.Null(user);
         }
 
         [Fact]
@@ -244,7 +245,7 @@ namespace AvailabilityNotify.Tests
         }
 
         [Fact]
-        public async Task ValidateUserToken_WhenGrantedReturnsTrueText_ReturnsUser()
+        public async Task ValidateUserToken_WhenCredentialValidateSucceeds_ReturnsUser()
         {
             var httpContext = CreateHttpContext();
             var service = CreateService(
@@ -255,11 +256,6 @@ namespace AvailabilityNotify.Tests
                     if (url.Contains("credential/validate", StringComparison.Ordinal))
                     {
                         return VtexApiTestHttpMessageHandler.Ok(ValidatedUserJson());
-                    }
-
-                    if (url.Contains("/granted", StringComparison.Ordinal))
-                    {
-                        return VtexApiTestHttpMessageHandler.Ok("true");
                     }
 
                     if (url.Contains("template-render", StringComparison.Ordinal))
