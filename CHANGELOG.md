@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Removed
+
+- All functionality of the 0.x major: GraphQL API, events, e-mail sending and the subscription form. The `availability-notify` block now renders an empty `<div>` so stores still on 0.x don't break, and the HTTP routes respond `410 Gone` with a deprecation message. Migrate to `vtex.availability-notify@1.x`.
+
 ## [0.1.3] - 2022-01-19
 
 ### Fixed
