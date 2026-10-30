@@ -1,39 +1,13 @@
 {
   "stack": "dotnet",
-  "memory": 512,
-  "minReplicas": 10,
-  "maxReplicas": 100,
-  "runtimeArgs": [
-  ],
+  "memory": 256,
+  "minReplicas": 2,
+  "maxReplicas": 10,
+  "runtimeArgs": [],
   "routes": {
-    "processNotification": {
-      "path": "/availability-notify/notify",
-      "public": true
-    },
-    "initialize": {
-      "path": "/availability-notify/initialize",
-      "public": true
-    },
-    "prcocessAllRequests": {
-      "path": "/availability-notify/process-all-requests",
-      "public": true
-    },
-    "processUnsentRequests": {
-      "path": "/availability-notify/process-unsent-requests",
-      "public": true
-    }
-  },
-  "events": {
-    "onAppsLinked": {
-      "sender": "apps",
-      "keys": ["linked"]
-    },
-    "broadcasterNotification": {
-      "keys": ["broadcaster.notification"]
-    },
-    "OnAppInstalled": {
-      "sender": "apps",
-      "keys": [ "setup" ]
-    }
+    "processNotification": { "path": "/availability-notify/notify", "public": true },
+    "initialize": { "path": "/availability-notify/initialize", "public": true },
+    "prcocessAllRequests": { "path": "/availability-notify/process-all-requests", "public": true },
+    "processUnsentRequests": { "path": "/availability-notify/process-unsent-requests", "public": true }
   }
 }
