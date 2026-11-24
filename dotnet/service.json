@@ -3,7 +3,7 @@
   "memory": 512,
   "ttl": 60,
   "minReplicas": 2,
-  "maxReplicas": 10,
+  "maxReplicas": 60,
   "timeout": 60,
   "runtimeArgs": [],
   "routes": {
