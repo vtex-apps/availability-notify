@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [1.15.2] - 2026-11-24
+
 ### Changed
 
 - Raise `maxReplicas` from 10 to 60 to give the HPA headroom for Black Friday 2026.
