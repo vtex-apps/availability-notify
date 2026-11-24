@@ -1,5 +1,10 @@
 {
   "stack": "dotnet",
+  "cpu": {
+    "type": "shared",
+    "value": 25,
+    "scalingPercentage": 95
+  },
   "memory": 512,
   "ttl": 60,
   "minReplicas": 2,

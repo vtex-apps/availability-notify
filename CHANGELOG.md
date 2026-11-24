@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
 
 - Raise `maxReplicas` from 10 to 60 to give the HPA headroom for Black Friday 2026.
+- Set the CPU request to 250m (`cpu.type: shared`, `value: 25`, `scalingPercentage: 95`), raising the HPA target from ~0.095 to ~0.24 core per pod.
 
 ## [1.15.1] - 2026-09-22
 
