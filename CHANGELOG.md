@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [0.1.4] - 2026-11-25
+
 ### Changed
 
 - Scaling config for Black Friday 2026: `cpu` shared 250m (`scalingPercentage` 95), `memory` 2048, `minReplicas` 2 and `maxReplicas` 60.
