@@ -1,8 +1,13 @@
 {
   "stack": "dotnet",
-  "memory": 512,
-  "minReplicas": 10,
-  "maxReplicas": 100,
+  "cpu": {
+    "type": "shared",
+    "value": 25,
+    "scalingPercentage": 95
+  },
+  "memory": 2048,
+  "minReplicas": 2,
+  "maxReplicas": 60,
   "runtimeArgs": [
   ],
   "routes": {
