@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Changed
+
+- Scaling config for Black Friday 2026: `cpu` shared 250m (`scalingPercentage` 95), `memory` 2048, `minReplicas` 2 and `maxReplicas` 60.
+
+### Fixed
+
+- Add missing `path` attribute to `outbound-access` policies in `manifest.json`.
+
 ## [0.1.3] - 2022-01-19
 
 ### Fixed
